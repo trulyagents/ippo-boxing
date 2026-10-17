@@ -174,8 +174,10 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 end
 
 -- the bag stands outside the ring by the steps, the partner waits in the far corner
-local bagModel, bag = makeDummy("Punching Bag Dummy", spawns:WaitForChild("BagSpot") :: BasePart, Color3.fromRGB(120, 120, 125))
-local sparModel, spar = makeDummy("Sparring Partner", spawns:WaitForChild("PartnerCorner") :: BasePart, Color3.fromRGB(170, 35, 40))
+local bagModel, bag =
+	makeDummy("Punching Bag Dummy", spawns:WaitForChild("BagSpot") :: BasePart, Color3.fromRGB(120, 120, 125))
+local sparModel, spar =
+	makeDummy("Sparring Partner", spawns:WaitForChild("PartnerCorner") :: BasePart, Color3.fromRGB(170, 35, 40))
 if bag then
 	task.spawn(brain, bagModel, bag, false)
 end

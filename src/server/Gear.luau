@@ -12,7 +12,12 @@ Gear.TrunksTemplate = "http://www.roblox.com/asset/?id=17137655469"
 -- follows the arm exactly. offsets are in arm space, the hand end is -Y
 local PARTS = {
 	{ Name = "Glove", Size = Vector3.new(1.12, 1.06, 1.12), Offset = CFrame.new(0, -0.74, 0), Lace = false },
-	{ Name = "Thumb", Size = Vector3.new(0.32, 0.62, 0.42), Offset = CFrame.new(0.5, -0.6, -0.18) * CFrame.Angles(0, 0, -0.35), Lace = false },
+	{
+		Name = "Thumb",
+		Size = Vector3.new(0.32, 0.62, 0.42),
+		Offset = CFrame.new(0.5, -0.6, -0.18) * CFrame.Angles(0, 0, -0.35),
+		Lace = false,
+	},
 	{ Name = "Base", Size = Vector3.new(1.06, 0.42, 1.06), Offset = CFrame.new(0, -0.1, 0), Lace = false },
 	{ Name = "Band_Upper", Size = Vector3.new(1.09, 0.08, 1.09), Offset = CFrame.new(0, 0.05, 0), Lace = true },
 	{ Name = "Band_Down", Size = Vector3.new(1.09, 0.08, 1.09), Offset = CFrame.new(0, -0.2, 0), Lace = true },

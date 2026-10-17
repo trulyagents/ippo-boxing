@@ -250,7 +250,9 @@ local function updateLoops(rig: Rig)
 	local stamina = model:GetAttribute("Stamina") or Config.MaxStamina
 	-- a gap between going in and coming out, or it flickers on and off as stamina or health
 	-- regens across the line
-	rig.Hurt = if rig.Hurt then health < Config.MaxHealth * (Config.HurtBelow + 0.08) else health < Config.MaxHealth * Config.HurtBelow
+	rig.Hurt = if rig.Hurt
+		then health < Config.MaxHealth * (Config.HurtBelow + 0.08)
+		else health < Config.MaxHealth * Config.HurtBelow
 	rig.Gassed = if rig.Gassed then stamina < Config.GassedBelow + 10 else stamina < Config.GassedBelow
 	local hurt = free and rig.Hurt == true
 	local gassed = free and not hurt and rig.Gassed == true

@@ -1,0 +1,11 @@
+[package]
+name = "trulyagents/ippo-boxing"
+version = "0.1.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+private = true
+
+[dependencies]
+# nothing yet, add packages here when something actually needs one
+
+[server-dependencies]

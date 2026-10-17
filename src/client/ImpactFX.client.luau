@@ -56,7 +56,10 @@ local function burst(position: Vector3, facing: Vector3, result: string, move: s
 	local heavy = move == "Cross" or move == "Hook" or move == "Uppercut"
 	local counter = result == "Counter" or result == "GuardBreak"
 	local blocked = result == "Blocked" or result == "Chip"
-	local color = if counter then Color3.fromRGB(255, 205, 70) elseif blocked then Color3.fromRGB(150, 200, 255) else Color3.fromRGB(255, 245, 230)
+	local color = if counter
+		then Color3.fromRGB(255, 205, 70)
+		elseif blocked then Color3.fromRGB(150, 200, 255)
+		else Color3.fromRGB(255, 245, 230)
 
 	local holder = Instance.new("Part")
 	holder.Anchored = true
@@ -73,7 +76,10 @@ local function burst(position: Vector3, facing: Vector3, result: string, move: s
 	-- one big star at the point of contact
 	local star = emitter(at, {
 		Color = ColorSequence.new(color),
-		Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, if counter then 6 else if heavy then 4 else 2.6), NumberSequenceKeypoint.new(1, 0) }),
+		Size = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, if counter then 6 else if heavy then 4 else 2.6),
+			NumberSequenceKeypoint.new(1, 0),
+		}),
 		Lifetime = NumberRange.new(0.12),
 		Speed = NumberRange.new(0),
 		Rotation = NumberRange.new(0, 360),
@@ -123,7 +129,8 @@ local function burst(position: Vector3, facing: Vector3, result: string, move: s
 	ring.Parent = effectsFolder
 	local grow = if counter then 7 elseif heavy then 4.5 else 3
 	TweenService:Create(ring, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-		Size = Vector3.new(0.05, grow, grow), Transparency = 1,
+		Size = Vector3.new(0.05, grow, grow),
+		Transparency = 1,
 	}):Play()
 
 	task.delay(1, function()
@@ -160,13 +167,16 @@ local function fovKick(amount: number)
 	local base = camera:GetAttribute("BaseFov") or camera.FieldOfView
 	camera:SetAttribute("BaseFov", base)
 	camera.FieldOfView = base - amount
-	TweenService:Create(camera, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { FieldOfView = base }):Play()
+	TweenService
+		:Create(camera, TweenInfo.new(0.35, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { FieldOfView = base })
+		:Play()
 end
 
 -- slow-mo camera cut to the side of whoever is going down
 local cinematic: { Target: Model, Until: number, Angle: number, Started: number }? = nil
 local function startCinematic(target: Model, seconds: number)
-	cinematic = { Target = target, Until = os.clock() + seconds, Angle = math.random() < 0.5 and 1 or -1, Started = os.clock() }
+	cinematic =
+		{ Target = target, Until = os.clock() + seconds, Angle = math.random() < 0.5 and 1 or -1, Started = os.clock() }
 end
 
 RunService:BindToRenderStep("BoxingCinematic", Enum.RenderPriority.Camera.Value + 3, function()
@@ -258,7 +268,10 @@ task.spawn(function()
 					drip = emitter(at, {
 						Color = ColorSequence.new(Color3.fromRGB(210, 235, 255)),
 						LightEmission = 0.2,
-						Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.12), NumberSequenceKeypoint.new(1, 0.06) }),
+						Size = NumberSequence.new({
+							NumberSequenceKeypoint.new(0, 0.12),
+							NumberSequenceKeypoint.new(1, 0.06),
+						}),
 						Lifetime = NumberRange.new(0.5, 0.8),
 						Speed = NumberRange.new(0.5, 1.5),
 						SpreadAngle = Vector2.new(60, 60),

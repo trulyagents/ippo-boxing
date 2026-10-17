@@ -172,8 +172,12 @@ RunService:BindToRenderStep("BoxingLockOn", Enum.RenderPriority.Camera.Value + 1
 		return
 	end
 	local targetRoot = rootOf(model)
-	if not model.Parent or not targetRoot or model:GetAttribute("State") == "KO"
-		or (targetRoot.Position - root.Position).Magnitude > BREAK then
+	if
+		not model.Parent
+		or not targetRoot
+		or model:GetAttribute("State") == "KO"
+		or (targetRoot.Position - root.Position).Magnitude > BREAK
+	then
 		set(nil)
 		return
 	end

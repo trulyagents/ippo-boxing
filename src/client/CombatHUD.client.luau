@@ -68,8 +68,8 @@ local function panel(position: UDim2, anchor: Vector2, title: string): (Frame, T
 	ghost.Name = "Ghost"
 	ghost.BackgroundColor3 = Color3.fromRGB(255, 225, 200)
 	ghost.ZIndex = 1
-	ghost.Parent = health
-	;(health:FindFirstChild("Fill") :: Frame).ZIndex = 2
+	ghost.Parent = health;
+	(health:FindFirstChild("Fill") :: Frame).ZIndex = 2
 	local lost = Instance.new("Frame")
 	lost.Name = "Lost"
 	lost.AnchorPoint = Vector2.new(1, 0)
@@ -98,7 +98,9 @@ if RunService:IsStudio() then
 	test.Parent = gui
 	Instance.new("UICorner", test).CornerRadius = UDim.new(0, 6)
 	test.Activated:Connect(function()
-		(ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Action") :: RemoteEvent):FireServer("TestSecondWind")
+		(ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Action") :: RemoteEvent):FireServer(
+			"TestSecondWind"
+		)
 	end)
 end
 
@@ -138,7 +140,8 @@ hint.FontFace = bodyFont
 hint.TextSize = 15
 hint.TextColor3 = Color3.fromRGB(230, 230, 230)
 hint.TextStrokeTransparency = 0.5
-local CONTROLS = "M1 jab  M2 cross  E hook  R uppercut  Q body  |  hold F guard (look down = low)  |  hold Space weave + A/D/W/S  |  T lock on (V swap side, scroll switch)"
+local CONTROLS =
+	"M1 jab  M2 cross  E hook  R uppercut  Q body  |  hold F guard (look down = low)  |  hold Space weave + A/D/W/S  |  T lock on (V swap side, scroll switch)"
 hint.Text = CONTROLS
 hint.Parent = gui
 
@@ -151,7 +154,8 @@ local function shout(text: string, color: Color3?, size: number?)
 	TweenService:Create(callout, TweenInfo.new(0.18, Enum.EasingStyle.Back), { TextSize = size or 80 }):Play()
 	task.delay(0.7, function()
 		if callout.Text == text then
-			TweenService:Create(callout, TweenInfo.new(0.3), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+			TweenService:Create(callout, TweenInfo.new(0.3), { TextTransparency = 1, TextStrokeTransparency = 1 })
+				:Play()
 		end
 	end)
 end
@@ -177,13 +181,14 @@ thoughtLabel.TextTransparency = 1
 thoughtLabel.Parent = gui
 
 local function thought(text: string)
-	thoughtLabel.Text = "\"" .. text .. "\""
+	thoughtLabel.Text = '"' .. text .. '"'
 	thoughtLabel.TextTransparency = 1
 	thoughtLabel.TextStrokeTransparency = 1
 	TweenService:Create(thoughtLabel, TweenInfo.new(0.6), { TextTransparency = 0, TextStrokeTransparency = 0.5 }):Play()
 	task.delay(3.2, function()
-		if thoughtLabel.Text == "\"" .. text .. "\"" then
-			TweenService:Create(thoughtLabel, TweenInfo.new(0.8), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		if thoughtLabel.Text == '"' .. text .. '"' then
+			TweenService:Create(thoughtLabel, TweenInfo.new(0.8), { TextTransparency = 1, TextStrokeTransparency = 1 })
+				:Play()
 		end
 	end)
 end
@@ -194,7 +199,10 @@ local function setBars(frame: Frame, model: Model)
 	-- the ghost waits for the real bar, then catches up slowly so you see the size of the hit
 	local ghost = health:FindFirstChild("Ghost") :: Frame
 	local ghostShare = ghost.Size.X.Scale
-	ghost.Size = UDim2.fromScale(if healthShare > ghostShare then healthShare else ghostShare + (healthShare - ghostShare) * 0.04, 1)
+	ghost.Size = UDim2.fromScale(
+		if healthShare > ghostShare then healthShare else ghostShare + (healthShare - ghostShare) * 0.04,
+		1
+	)
 	local maxNow = model:GetAttribute("MaxHealthNow") or Config.MaxHealth
 	local lost = health:FindFirstChild("Lost") :: Frame
 	lost.Size = UDim2.fromScale(math.clamp(1 - maxNow / Config.MaxHealth, 0, 1), 1)
@@ -253,7 +261,7 @@ local function lockedModel(): Model?
 	return nil
 end
 
-fx.OnClientEvent:Connect(function(kind, a, b, move, result, damage, counterName)
+fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName)
 	local me = player.Character
 	if kind == "Hit" then
 		local attacker, target = a, b
@@ -263,7 +271,13 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, damage, counterName)
 		elseif result == "Chip" then
 			play("HitLight", target)
 		else
-			play(if move == "Jab" then "HitLight" elseif move == "Cross" or move == "Body" then "HitMedium" else "HitHeavy", target)
+			play(
+				if move == "Jab"
+					then "HitLight"
+					elseif move == "Cross" or move == "Body" then "HitMedium"
+					else "HitHeavy",
+				target
+			)
 		end
 		if involved then
 			local big = result == "Counter" or result == "GuardBreak" or move == "Uppercut" or move == "Hook"
@@ -340,7 +354,12 @@ RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, f
 		local other = lockedModel()
 		if not other then
 			for _, model in workspace:GetChildren() do
-				if model:IsA("Model") and model ~= me and model:GetAttribute("State") and model:FindFirstChild("HumanoidRootPart") then
+				if
+					model:IsA("Model")
+					and model ~= me
+					and model:GetAttribute("State")
+					and model:FindFirstChild("HumanoidRootPart")
+				then
 					local root = me:FindFirstChild("HumanoidRootPart")
 					if root and (model.HumanoidRootPart.Position - root.Position).Magnitude < 10 then
 						other = model
@@ -357,11 +376,8 @@ RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, f
 	end
 	if shake > 0.01 then
 		local camera = workspace.CurrentCamera
-		camera.CFrame = camera.CFrame * CFrame.Angles(
-			math.rad((math.random() - 0.5) * shake * 3),
-			math.rad((math.random() - 0.5) * shake * 3),
-			0
-		)
+		camera.CFrame = camera.CFrame
+			* CFrame.Angles(math.rad((math.random() - 0.5) * shake * 3), math.rad((math.random() - 0.5) * shake * 3), 0)
 		shake = math.max(0, shake - dt * 4)
 	end
 end)

@@ -89,7 +89,10 @@ end
 
 local function setWalk(f: Fighter)
 	local busy = f.State ~= "Idle"
-	f.Humanoid.WalkSpeed = if f.State == "Down" or f.State == "KO" or f.State == "Stunned" then 0
+	f.Humanoid.WalkSpeed = if f.State == "Down"
+			or f.State == "KO"
+			or f.State == "Stunned"
+		then 0
 		elseif f.Weaving then Config.WeaveWalkSpeed
 		elseif f.Guarding or busy then Config.GuardWalkSpeed
 		else Config.WalkSpeed
@@ -104,14 +107,42 @@ function Fighters.register(model: Model, player: Player?): Fighter?
 		return nil
 	end
 	local f: Fighter = {
-		Model = model, Root = root, Humanoid = humanoid, Player = player,
-		Health = Config.MaxHealth, Stamina = Config.MaxStamina, Guard = Config.MaxGuard,
-		State = "Idle", Guarding = false, GuardHeight = nil, GuardReadyAt = 0, BusyUntil = 0,
-		Weaving = false, SlipChain = 0, LastSlip = 0, Bobbing = false, LastTaken = nil,
-		GuardPressedAt = 0, GuardDroppedAt = 0, Whiffed = false, CounterMult = Config.CounterBonus, GassedToldAt = 0,
-		MaxHealthNow = Config.MaxHealth, Courage = 0, SecondWindUsed = false, FiredUpUntil = 0,
-		Slip = nil, SlipUntil = 0, NextSlip = 0, CounterUntil = 0, LastHit = 0,
-		Knockdowns = 0, GetUpPresses = 0, DownToken = 0, ActionToken = 0, Opponent = nil,
+		Model = model,
+		Root = root,
+		Humanoid = humanoid,
+		Player = player,
+		Health = Config.MaxHealth,
+		Stamina = Config.MaxStamina,
+		Guard = Config.MaxGuard,
+		State = "Idle",
+		Guarding = false,
+		GuardHeight = nil,
+		GuardReadyAt = 0,
+		BusyUntil = 0,
+		Weaving = false,
+		SlipChain = 0,
+		LastSlip = 0,
+		Bobbing = false,
+		LastTaken = nil,
+		GuardPressedAt = 0,
+		GuardDroppedAt = 0,
+		Whiffed = false,
+		CounterMult = Config.CounterBonus,
+		GassedToldAt = 0,
+		MaxHealthNow = Config.MaxHealth,
+		Courage = 0,
+		SecondWindUsed = false,
+		FiredUpUntil = 0,
+		Slip = nil,
+		SlipUntil = 0,
+		NextSlip = 0,
+		CounterUntil = 0,
+		LastHit = 0,
+		Knockdowns = 0,
+		GetUpPresses = 0,
+		DownToken = 0,
+		ActionToken = 0,
+		Opponent = nil,
 	}
 	byModel[model] = f
 	-- Roblox health isn't used for boxing, keep the humanoid alive
@@ -371,7 +402,9 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 	end
 	if covering then
 		counterName = nil
-		target.Guard -= move.GuardDamage * (if counter then 1.5 else 1) * (if firedUp(target) then Config.FiredUpGuard else 1)
+		target.Guard -= move.GuardDamage * (if counter then 1.5 else 1) * (if firedUp(target)
+			then Config.FiredUpGuard
+			else 1)
 		if target.Guard <= 0 then
 			target.Guard = 0
 			target.Guarding = false
@@ -389,7 +422,9 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 	end
 
 	if move.BodyDrain then
-		local drain = move.BodyDrain * (if result == "Blocked" then 0.5 else 1) * (if counterName == "BODY COUNTER" then 2 else 1)
+		local drain = move.BodyDrain
+			* (if result == "Blocked" then 0.5 else 1)
+			* (if counterName == "BODY COUNTER" then 2 else 1)
 		target.Stamina = math.max(0, target.Stamina - drain)
 	end
 	-- a cross counter on someone already hurt puts them down
@@ -404,7 +439,8 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		addCourage(target, "CleanTaken")
 		-- clean head shots stick for the rest of the fight
 		if not bodyShot then
-			target.MaxHealthNow = math.max(Config.MinMaxHealth, target.MaxHealthNow - damage * Config.LastingDamageShare)
+			target.MaxHealthNow =
+				math.max(Config.MinMaxHealth, target.MaxHealthNow - damage * Config.LastingDamageShare)
 			target.Health = math.min(target.Health, target.MaxHealthNow)
 		end
 		publish(attacker)
@@ -428,7 +464,12 @@ function Fighters.punch(f: Fighter, moveName: string)
 	if not canAct(f) then
 		-- pressed a little early (end of a slip or punch): hold it and throw it the moment you're free
 		local wait = f.BusyUntil - os.clock()
-		if (f.State == "Recovery" or f.State == "Windup") and wait > 0 and wait <= Config.InputBuffer and not buffered[f] then
+		if
+			(f.State == "Recovery" or f.State == "Windup")
+			and wait > 0
+			and wait <= Config.InputBuffer
+			and not buffered[f]
+		then
 			local token = f.ActionToken
 			buffered[f] = token
 			task.delay(wait + 0.01, function()
@@ -592,7 +633,10 @@ function Fighters.tick(dt: number)
 	for _, f in byModel do
 		if f.State ~= "Down" and f.State ~= "KO" then
 			local changed = false
-			local regen = Config.StaminaRegen * (if f.Guarding then 0.5 else 1) * (if firedUp(f) then Config.FiredUpStamina else 1) * dt
+			local regen = Config.StaminaRegen
+				* (if f.Guarding then 0.5 else 1)
+				* (if firedUp(f) then Config.FiredUpStamina else 1)
+				* dt
 			if f.Stamina < Config.MaxStamina and f.State == "Idle" then
 				f.Stamina = math.min(Config.MaxStamina, f.Stamina + regen)
 				changed = true

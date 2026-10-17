@@ -1,0 +1,4 @@
+* text=auto eol=lf
+*.rbxmx -text
+*.fbx binary
+*.blend binary

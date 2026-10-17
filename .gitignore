@@ -4,3 +4,13 @@
 *.lock
 sourcemap.json
 .env
+
+# wally
+Packages/
+ServerPackages/
+DevPackages/
+wally.lock
+
+# os
+.DS_Store
+Thumbs.db
