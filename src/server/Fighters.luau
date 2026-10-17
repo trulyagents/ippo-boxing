@@ -68,6 +68,7 @@ local function setWalk(f: Fighter)
 		elseif f.Guarding or busy then Config.GuardWalkSpeed
 		else Config.WalkSpeed
 	f.Humanoid.JumpHeight = 0
+	f.Humanoid.JumpPower = 0
 end
 
 function Fighters.register(model: Model, player: Player?): Fighter?

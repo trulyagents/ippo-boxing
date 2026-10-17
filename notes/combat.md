@@ -6,6 +6,7 @@ fighters
 - players and dummies are both Fighters. state lives in attributes on the character: Health, Stamina, Guard, State, Guarding, Action/ActionStart/ActionToken, DownCount, GetUpProgress
 - R6 forced: CombatServer builds each player from their avatar with CreateHumanoidModelFromDescription(R6). CharacterAutoLoads is off
 - roblox health is set to huge, boxing uses its own Health
+- no jumping: JumpPower/JumpHeight 0 on the server and the Jumping state off on the client (space is weave mode)
 
 moves (CombatConfig)
 - jab, cross, hook, uppercut, body. each has startup, recovery, damage, stamina cost, guard damage, range, hitstun
@@ -42,6 +43,7 @@ client
 
 dummies
 - Punching Bag Dummy covers up sometimes, never punches
+- dummies turn through an AlignOrientation (responsiveness 25), the brain only sets its target every 0.12s. setting root cframe directly looked like 8fps
 - Sparring Partner walks in, punches about every 1.1-2.2s, slips 30% / guards 35% when you wind up
 
 ring + dummies spawn points are in the place (workspace.Ring), not in src

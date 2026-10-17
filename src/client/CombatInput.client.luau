@@ -190,6 +190,18 @@ RunService:BindToRenderStep("BoxingLockOn", Enum.RenderPriority.Camera.Value + 1
 	camera.CFrame = camera.CFrame:Lerp(CFrame.lookAt(eye, focus), 0.25)
 end)
 
-player.CharacterAdded:Connect(function()
+-- no jumping in a boxing ring, and space is weave mode now
+local function noJump(character: Model)
+	local humanoid = character:WaitForChild("Humanoid", 10)
+	if humanoid and humanoid:IsA("Humanoid") then
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
+	end
+end
+
+player.CharacterAdded:Connect(function(character)
 	setLock(nil)
+	noJump(character)
 end)
+if player.Character then
+	task.spawn(noJump, player.Character)
+end

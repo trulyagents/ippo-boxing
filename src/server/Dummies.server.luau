@@ -47,11 +47,34 @@ local function nearestPlayer(f: Fighters.Fighter): (Fighters.Fighter?, number)
 	return best, bestDistance
 end
 
+-- the brain only thinks every 0.12s, so turning goes through a constraint that eases the
+-- body round every frame instead of snapping it
+local turners: { [Fighters.Fighter]: AlignOrientation } = {}
+local function turner(f: Fighters.Fighter): AlignOrientation
+	local existing = turners[f]
+	if existing then
+		return existing
+	end
+	local attachment = Instance.new("Attachment")
+	attachment.Name = "TurnAttachment"
+	attachment.Parent = f.Root
+	local align = Instance.new("AlignOrientation")
+	align.Mode = Enum.OrientationAlignmentMode.OneAttachment
+	align.Attachment0 = attachment
+	align.Responsiveness = 25
+	align.MaxTorque = math.huge
+	align.PrimaryAxisOnly = false
+	align.CFrame = f.Root.CFrame.Rotation
+	align.Parent = f.Root
+	turners[f] = align
+	return align
+end
+
 local function face(f: Fighters.Fighter, target: Fighters.Fighter)
 	local from = f.Root.Position
 	local to = Vector3.new(target.Root.Position.X, from.Y, target.Root.Position.Z)
 	if (to - from).Magnitude > 0.1 then
-		f.Root.CFrame = CFrame.lookAt(from, to)
+		turner(f).CFrame = CFrame.lookAt(from, to).Rotation
 	end
 end
 
@@ -66,6 +89,7 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 			task.wait(3)
 			Fighters.reset(f)
 			model:PivotTo(CFrame.new(home))
+			turner(f).CFrame = f.Root.CFrame.Rotation
 		elseif f.State == "Down" then
 			-- dummies always beat the count, a bit slower each time
 			Fighters.mash(f)
