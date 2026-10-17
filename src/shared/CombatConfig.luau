@@ -187,7 +187,7 @@ CombatConfig.LowGuardHeadBonus = 1.1 -- head shots on a low guard hit a bit hard
 CombatConfig.LowGuardPitch = -25 -- degrees, looking further down than this is a low guard
 
 -- weave mode (hold space)
-CombatConfig.WeaveWalkSpeed = 6
+CombatConfig.WeaveWalkSpeed = 5
 CombatConfig.WeaveSlipCooldown = 0.45
 CombatConfig.SlipChainCost = 3 -- extra stamina per slip chained inside the window
 CombatConfig.SlipChainWindow = 1.5
@@ -202,8 +202,8 @@ CombatConfig.GetUpPresses = { 8, 14, 20 } -- mashes needed, harder each knockdow
 CombatConfig.HealthAfterDown = { 60, 40, 25 }
 CombatConfig.MaxKnockdowns = 3 -- third one is a TKO
 
-CombatConfig.WalkSpeed = 13
-CombatConfig.GuardWalkSpeed = 8
+CombatConfig.WalkSpeed = 10
+CombatConfig.GuardWalkSpeed = 6
 
 -- remote rate limit
 CombatConfig.ActionsPerSecond = 14

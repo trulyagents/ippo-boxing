@@ -6,6 +6,7 @@ fighters
 - players and dummies are both Fighters. state lives in attributes on the character: Health, Stamina, Guard, State, Guarding, Action/ActionStart/ActionToken, DownCount, GetUpProgress
 - R6 forced: CombatServer builds each player from their avatar with CreateHumanoidModelFromDescription(R6). CharacterAutoLoads is off
 - roblox health is set to huge, boxing uses its own Health
+- walk speed 10, guarding 6, weaving 5 (was 13/8/6, felt too fast)
 - no jumping: JumpPower/JumpHeight 0 on the server and the Jumping state off on the client (space is weave mode)
 
 moves (CombatConfig)
@@ -20,7 +21,7 @@ defence
 - guard (F) has a height from camera pitch: looking down past -25 deg = low, else high. while locked on the mouse moves a pretend pitch (and tips the cam a bit)
 - high guard: blocks head shots (straights fully, hooks chip 40%). low guard: blocks body shots fully, half stamina drain. wrong height = "Open" hit, clean, head shots +10% on a low guard
 - switching heights takes 0.12s with no block, raising from nothing is instant
-- weave mode: hold space (walk 6). A/D slip left/right, W duck, S pull back. slips only work in weave mode for players, dummies skip that
+- weave mode: hold space (walk 5). A/D slip left/right, W duck, S pull back. slips only work in weave mode for players, dummies skip that
 - slips 0.35s i-frames, 0.45s cooldown in weave mode, 10 stamina +3 per chained slip inside 1.5s. left/right dodge straights, duck dodges hooks, back dodges almost everything. uppercut punishes a duck. body shots only get dodged by back
 - guard bobbing: slip with F held = 0.12s i-frames, keeps the guard, 6 stamina, no counter window
 - sparring partner and bag guard high or low depending on where they got hit last
