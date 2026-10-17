@@ -95,7 +95,8 @@ hint.FontFace = bodyFont
 hint.TextSize = 15
 hint.TextColor3 = Color3.fromRGB(230, 230, 230)
 hint.TextStrokeTransparency = 0.5
-hint.Text = "M1 jab  M2 cross  E hook  R uppercut  Q body  |  hold F guard (look down = low)  |  hold Space weave + A/D/W/S  |  T lock on"
+local CONTROLS = "M1 jab  M2 cross  E hook  R uppercut  Q body  |  hold F guard (look down = low)  |  hold Space weave + A/D/W/S  |  T lock on (V swap side, scroll switch)"
+hint.Text = CONTROLS
 hint.Parent = gui
 
 local function shout(text: string, color: Color3?, size: number?)
@@ -240,7 +241,7 @@ RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, f
 		else
 			count.TextTransparency = 1
 			count.TextStrokeTransparency = 1
-			hint.Text = "M1 jab  M2 cross  E hook  R uppercut  Q body  |  hold F guard  |  Space slip (+A/D/S)  |  T lock on"
+			hint.Text = CONTROLS
 		end
 		-- the opponent you're locked on to, or whoever you last traded with
 		local other = lockedModel()

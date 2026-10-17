@@ -47,7 +47,13 @@ client
 - published ids go in Shared.AnimIds (one line per role). empty = registered on the fly, studio only
 - all 28 published to my account through open cloud (assets api, assetType Animation, rbxmx file). they work in live servers now
 - OriginalIds attribute on AnimIds: any id listed there is someone else's and gets skipped. empty now
-- CombatInput: binds + lock-on (T, not Tab, roblox eats Tab). lock-on locks the mouse to center, set every frame since the camera scripts fight it
+- CombatInput: binds only. lock-on moved to its own LockOn module
+- LockOn: T toggles (not Tab, roblox eats it), V swaps shoulder, scroll switches target by angle. mouse locked to center, set every frame since the camera scripts fight it
+- framing by fighter distance, 3 to 9 studs: back 5.5-9, side 1.5-2.75, height 2.4-3.2. halfway between g1 (5-8 back, 1.75 side) and my old fixed 8.5/4.5
+- dt spring (14) instead of lerp per frame, body turns at max 720 deg/s (a 180 takes 0.26s), fov 64 under 3.5 studs else 70 (writes BaseFov so the hit fov kick still works)
+- camera raycasts focus to eye and pulls in at anything CanCollide, the rope walls are invisible but still count, keeps it inside the ring
+- red chevron over the locked target
+- auto lock-on (g1 does it when the server pairs you) comes with matchmaking
 - CombatHUD: bars, callouts, ref count, sounds (ReplicatedStorage.BoxingSounds, made in studio), screen shake
 
 dummies
