@@ -50,5 +50,7 @@ gear
 
 animations
 - no code-driven poses going forward, everything gets keyframed. both example games use R6 so we stay R6
-- Jab KeyframeSequence in ServerStorage.BoxingAnimations and RBX_ANIMSAVES.R6AnimRig (Animation Editor > Load). lead (left) hand, impact marker on frame 7 (0.117s)
+- Jab KeyframeSequence in ServerStorage.BoxingAnimations and RBX_ANIMSAVES.R6AnimRig (Animation Editor > Load). lead (left) hand, impact marker at 0.05s, done at 0.2s. old slow one kept as Jab_v1
+- what i took from the bought games' jabs (timing and ideas only, poses are mine): whole jab is 0.2s, impact on frame 3, 1 frame of anticipation, linear snap out then eased pull back. the arm translates forward from the shoulder, not just rotates. torso turns about 35 degrees into it and the head turns back the other way so the eyes stay on the target. a tiny over-extension right after impact
+- CombatConfig Jab startup still needs matching to the 0.05 impact once anims are hooked in
 - needs publishing from the Animation Editor before it works in a live server
