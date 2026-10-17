@@ -1,1 +1,8 @@
-{ "ignoreUnknownInstances": true }
+{
+  "ignoreUnknownInstances": true,
+  "properties": {
+    "Attributes": {
+      "OriginalIds": "12573039647,12595140782,12595144635,12595155118,12595164337"
+    }
+  }
+}

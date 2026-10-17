@@ -8,6 +8,11 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local AnimIds = require(ReplicatedStorage.Shared.AnimIds)
+-- ids that are still the bought game's own and won't load here until the spoofer swaps them
+local original: { [string]: boolean } = {}
+for id in string.gmatch(ReplicatedStorage.Shared.AnimIds:GetAttribute("OriginalIds") or "", "%d+") do
+	original[id] = true
+end
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Feel = require(script.Parent:WaitForChild("Feel"))
 
@@ -26,7 +31,7 @@ local function animation(role: string): Animation?
 		return nil
 	end
 	local id = AnimIds[role]
-	if id and id ~= "" then
+	if id and id ~= "" and not original[id:match("%d+") or ""] then
 		id = if id:match("^%d+$") then "rbxassetid://" .. id else id
 	else
 		local ok, temp = pcall(KeyframeSequenceProvider.RegisterKeyframeSequence, KeyframeSequenceProvider, ks)

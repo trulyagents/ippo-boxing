@@ -28,7 +28,8 @@ client
 - i animate my own character and the dummies. other players' tracks replicate from their own client, so i don't touch them
 - hit reactions come from Feel.reactions, played at 1.8x since their hit anims are a second long
 - walk anims blend by velocity in the fighter's facing space. the default Animate script gets disabled
-- published ids go in Shared.AnimIds (one line per role, just the number). empty = registered on the fly, studio only
+- published ids go in Shared.AnimIds (one line per role). empty = registered on the fly, studio only
+- idle and the 4 walks hold the bought game's real ids so my spoofer can swap them. the OriginalIds attribute on AnimIds lists those, the animator skips any id still on that list. only those 5 were in the files, the rest need publishing
 - CombatInput: binds + lock-on (T, not Tab, roblox eats Tab)
 - CombatHUD: bars, callouts, ref count, sounds (ReplicatedStorage.BoxingSounds, made in studio), screen shake
 
