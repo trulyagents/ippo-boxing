@@ -68,7 +68,11 @@ client
 - camera raycasts focus to eye and pulls in at anything CanCollide, the rope walls are invisible but still count, keeps it inside the ring
 - red chevron over the locked target
 - auto lock-on (g1 does it when the server pairs you) comes with matchmaking
-- CombatHUD: bars, callouts, ref count, sounds (ReplicatedStorage.BoxingSounds, made in studio), screen shake
+- CombatHUD: drives StarterGui.BoxingHUD (built in studio, copy in ui/BoxingHUD.rbxmx). never builds ui itself. also sounds (ReplicatedStorage.BoxingSounds) and screen shake
+- hud look is manga ink: torn cream panel with ink spikes, halftone portrait corner with your avatar headshot, name on a black brush banner in Bangers, slanted cream tags, arrow-tipped bars with ink grain. art drawn by art/hud/make_hud_art.py
+- bar colors: health red, stamina orange (throbs red when gassed), guard cyan, courage purple (glows at 90+). health has the pale ghost and the dark lost-max end
+- opponent = just their name on a banner, top centre
+- callout pops through a UIScale since the text is TextScaled
 
 dummies
 - Punching Bag Dummy covers up sometimes, never punches
