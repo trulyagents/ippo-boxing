@@ -54,3 +54,10 @@ animations
 - what i took from the bought games' jabs (timing and ideas only, poses are mine): whole jab is 0.2s, impact on frame 3, 1 frame of anticipation, linear snap out then eased pull back. the arm translates forward from the shoulder, not just rotates. torso turns about 35 degrees into it and the head turns back the other way so the eyes stay on the target. a tiny over-extension right after impact
 - CombatConfig Jab startup still needs matching to the 0.05 impact once anims are hooked in
 - needs publishing from the Animation Editor before it works in a live server
+
+bought anims
+- the two bought games' anims are in ServerStorage.ReferenceAnims (BoxingGame2 = the clean boxing one, 99 anims. BoxingGame1 = its boxing rig plus the m1 chain, 29). copies in RBX_ANIMSAVES.R6AnimRig as G2_ / G1_ so they show in Animation Editor > Load
+- renamed the ones named after ippo characters or moves to plain names (LungeUppercut, WeaveRoll, StepCounter, LeftBodyHook and so on)
+- they're R6 and play fine on our rig. their rig also keys face parts we don't have, those just get ignored
+- skipped junk (Automatic Save, tests, jump rope, mitts)
+- still need publishing from the Animation Editor before they work in a live server
