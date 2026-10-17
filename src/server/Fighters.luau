@@ -28,6 +28,10 @@ export type Fighter = {
 	Whiffed: boolean, -- the punch being recovered from hit nothing
 	CounterMult: number, -- bonus for the open counter window (slip or parry)
 	GassedToldAt: number,
+	MaxHealthNow: number, -- max health left this fight, clean head shots wear it down
+	Courage: number,
+	SecondWindUsed: boolean,
+	FiredUpUntil: number, -- os.clock(), second wind boost
 	BusyUntil: number,
 	Slip: string?,
 	SlipUntil: number,
@@ -71,6 +75,16 @@ local function publish(f: Fighter)
 	m:SetAttribute("GuardHeight", f.GuardHeight)
 	m:SetAttribute("Weaving", f.Weaving)
 	m:SetAttribute("Knockdowns", f.Knockdowns)
+	m:SetAttribute("MaxHealthNow", math.floor(f.MaxHealthNow + 0.5))
+	m:SetAttribute("Courage", math.floor(f.Courage + 0.5))
+end
+
+local function firedUp(f: Fighter): boolean
+	return os.clock() < f.FiredUpUntil
+end
+
+local function addCourage(f: Fighter, reason: string)
+	f.Courage = math.clamp(f.Courage + (Config.CourageGain[reason] or 0), 0, Config.MaxCourage)
 end
 
 local function setWalk(f: Fighter)
@@ -95,6 +109,7 @@ function Fighters.register(model: Model, player: Player?): Fighter?
 		State = "Idle", Guarding = false, GuardHeight = nil, GuardReadyAt = 0, BusyUntil = 0,
 		Weaving = false, SlipChain = 0, LastSlip = 0, Bobbing = false, LastTaken = nil,
 		GuardPressedAt = 0, GuardDroppedAt = 0, Whiffed = false, CounterMult = Config.CounterBonus, GassedToldAt = 0,
+		MaxHealthNow = Config.MaxHealth, Courage = 0, SecondWindUsed = false, FiredUpUntil = 0,
 		Slip = nil, SlipUntil = 0, NextSlip = 0, CounterUntil = 0, LastHit = 0,
 		Knockdowns = 0, GetUpPresses = 0, DownToken = 0, ActionToken = 0, Opponent = nil,
 	}
@@ -125,6 +140,8 @@ function Fighters.reset(f: Fighter)
 	f.Health, f.Stamina, f.Guard = Config.MaxHealth, Config.MaxStamina, Config.MaxGuard
 	f.State, f.Guarding, f.GuardHeight, f.Slip, f.Knockdowns = "Idle", false, nil, nil, 0
 	f.Weaving = false
+	f.MaxHealthNow, f.Courage, f.SecondWindUsed, f.FiredUpUntil = Config.MaxHealth, 0, false, 0
+	f.Model:SetAttribute("FiredUpUntil", nil)
 	f.DownToken += 1
 	publish(f)
 	setWalk(f)
@@ -171,6 +188,17 @@ local function findTarget(f: Fighter, range: number): Fighter?
 	return best
 end
 
+local getUp: (f: Fighter, secondWind: boolean?) -> ()
+
+local function secondWindChance(courage: number): number
+	for _, tier in Config.SecondWindChance do
+		if courage >= tier.At then
+			return tier.Chance
+		end
+	end
+	return 0
+end
+
 local function knockDown(target: Fighter, attacker: Fighter)
 	target.Knockdowns += 1
 	target.Guarding = false
@@ -182,11 +210,21 @@ local function knockDown(target: Fighter, attacker: Fighter)
 		broadcast("KO", target.Model, attacker.Model)
 		return
 	end
+	addCourage(target, "KnockedDown")
 	setState(target, "Down")
 	target.GetUpPresses = 0
 	target.DownToken += 1
 	local token = target.DownToken
 	broadcast("Down", target.Model, attacker.Model)
+	-- once a fight, enough courage drags you back up on its own
+	if not target.SecondWindUsed and math.random() < secondWindChance(target.Courage) then
+		target.SecondWindUsed = true
+		task.delay(Config.SecondWindDelay, function()
+			if target.DownToken == token and target.State == "Down" then
+				getUp(target, true)
+			end
+		end)
+	end
 	task.spawn(function()
 		for count = 1, Config.DownCount do
 			target.Model:SetAttribute("DownCount", count)
@@ -202,15 +240,30 @@ local function knockDown(target: Fighter, attacker: Fighter)
 	end)
 end
 
-local function getUp(f: Fighter)
+function getUp(f: Fighter, secondWind: boolean?)
 	f.DownToken += 1
 	f.Model:SetAttribute("DownCount", nil)
-	f.Health = Config.HealthAfterDown[math.min(f.Knockdowns, #Config.HealthAfterDown)]
+	f.Model:SetAttribute("GetUpProgress", nil)
 	f.Guard = Config.MaxGuard * 0.5
 	f.Stamina = math.max(f.Stamina, Config.MaxStamina * 0.5)
+	if secondWind then
+		f.MaxHealthNow += Config.SecondWindMaxHealth
+		f.Health = f.MaxHealthNow * Config.SecondWindHealth
+		f.Stamina = Config.MaxStamina
+		f.Courage = 0
+		f.FiredUpUntil = os.clock() + Config.FiredUpTime
+		f.Model:SetAttribute("FiredUpUntil", workspace:GetServerTimeNow() + Config.FiredUpTime)
+	else
+		f.Health = math.min(Config.HealthAfterDown[math.min(f.Knockdowns, #Config.HealthAfterDown)], f.MaxHealthNow)
+		addCourage(f, "GotUp")
+	end
 	setState(f, "Recovery", os.clock() + 0.6)
 	playAction(f, "GetUp")
-	broadcast("GetUp", f.Model)
+	if secondWind then
+		broadcast("SecondWind", f.Model, math.random(1, #Config.SecondWindLines))
+	else
+		broadcast("GetUp", f.Model)
+	end
 	task.delay(0.6, function()
 		if f.State == "Recovery" then
 			setState(f, "Idle")
@@ -274,6 +327,7 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 				openCounter(target, Config.CounterWindow, Config.CounterBonus)
 			end
 			attacker.Whiffed = true
+			addCourage(target, "Slipped")
 			broadcast("Slipped", target.Model, attacker.Model, moveName)
 			return
 		end
@@ -281,6 +335,7 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 
 	if parried(target, moveName, now) then
 		target.Stamina -= Config.ParryCost
+		addCourage(target, "Parried")
 		openCounter(target, Config.ParryCounterWindow, Config.ParryCounterBonus)
 		stun(attacker, Config.ParryStun)
 		broadcast("Parried", target.Model, attacker.Model, moveName)
@@ -316,7 +371,7 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 	end
 	if covering then
 		counterName = nil
-		target.Guard -= move.GuardDamage * (if counter then 1.5 else 1)
+		target.Guard -= move.GuardDamage * (if counter then 1.5 else 1) * (if firedUp(target) then Config.FiredUpGuard else 1)
 		if target.Guard <= 0 then
 			target.Guard = 0
 			target.Guarding = false
@@ -345,6 +400,14 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 
 	if result == "Clean" or result == "Counter" or result == "Open" then
 		stun(target, move.Hitstun * hitstun)
+		addCourage(attacker, if result == "Counter" then "CounterLanded" else "CleanLanded")
+		addCourage(target, "CleanTaken")
+		-- clean head shots stick for the rest of the fight
+		if not bodyShot then
+			target.MaxHealthNow = math.max(Config.MinMaxHealth, target.MaxHealthNow - damage * Config.LastingDamageShare)
+			target.Health = math.min(target.Health, target.MaxHealthNow)
+		end
+		publish(attacker)
 	end
 	broadcast("Hit", attacker.Model, target.Model, moveName, result, math.floor(damage + 0.5), counterName)
 
@@ -392,7 +455,8 @@ function Fighters.punch(f: Fighter, moveName: string)
 	f.Whiffed = false
 	f.Model:SetAttribute("CounterUntil", nil)
 	f.Stamina -= move.Stamina
-	local slow = if f.Stamina < Config.GassedBelow then Config.GassedSlowdown else 1
+	local slow = (if f.Stamina < Config.GassedBelow then Config.GassedSlowdown else 1)
+		* (if firedUp(f) then Config.FiredUpSpeed else 1)
 	local startup, recovery = move.Startup * slow, move.Recovery * slow
 	setState(f, "Windup", now + startup + recovery)
 	playAction(f, moveName)
@@ -515,9 +579,14 @@ function Fighters.tick(dt: number)
 	for _, f in byModel do
 		if f.State ~= "Down" and f.State ~= "KO" then
 			local changed = false
-			local regen = Config.StaminaRegen * (if f.Guarding then 0.5 else 1) * dt
+			local regen = Config.StaminaRegen * (if f.Guarding then 0.5 else 1) * (if firedUp(f) then Config.FiredUpStamina else 1) * dt
 			if f.Stamina < Config.MaxStamina and f.State == "Idle" then
 				f.Stamina = math.min(Config.MaxStamina, f.Stamina + regen)
+				changed = true
+			end
+			-- health only creeps back up to what's left of your max
+			if f.Health < f.MaxHealthNow and f.Health > 0 and now - f.LastHit > Config.HealthRegenDelay then
+				f.Health = math.min(f.MaxHealthNow, f.Health + Config.HealthRegen * dt)
 				changed = true
 			end
 			if f.Guard < Config.MaxGuard and now - f.LastHit > Config.GuardRegenDelay then

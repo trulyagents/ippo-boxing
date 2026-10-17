@@ -94,6 +94,12 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 				Fighters.punch(f, move)
 			end
 		end)
+		model:GetAttributeChangedSignal("TestCourage"):Connect(function()
+			local c = model:GetAttribute("TestCourage")
+			if typeof(c) == "number" then
+				f.Courage = c
+			end
+		end)
 		model:GetAttributeChangedSignal("TestGuard"):Connect(function()
 			local h = model:GetAttribute("TestGuard")
 			Fighters.setGuard(f, if h == "High" or h == "Low" then h else nil)

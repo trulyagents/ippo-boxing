@@ -43,6 +43,7 @@ step 4 of best-of-both. both ideas are g1's: max health drops during a fight, an
 - music swap, there's no fight music yet
 - injuries (cuts, swelling) from g1, later step
 
-## open questions
-- should second wind be a sure thing at 100 courage, or always a roll
-- inner thought lines on screen as text, or also a voice/sfx sting
+## decided
+- 100 courage is guaranteed
+- text lines only for now
+- built and tested, see combat.md

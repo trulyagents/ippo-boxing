@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 
+local Config = require(ReplicatedStorage:WaitForChild("Shared"):WaitForChild("CombatConfig"))
 local Feel = require(script.Parent:WaitForChild("Feel"))
 
 local player = Players.LocalPlayer
@@ -192,6 +193,47 @@ RunService:BindToRenderStep("BoxingCinematic", Enum.RenderPriority.Camera.Value 
 	camera.CFrame = CFrame.lookAt((eye :: any).Position, root.Position + Vector3.new(0, 0.5, 0))
 end)
 
+-- second wind: steam and heat coming off the body while fired up
+local function aura(model: Model, seconds: number)
+	local torso = model:FindFirstChild("Torso")
+	if not (torso and torso:IsA("BasePart")) then
+		return
+	end
+	local at = Instance.new("Attachment")
+	at.Name = "SecondWindAura"
+	at.Parent = torso
+	local steam = emitter(at, {
+		Texture = "rbxasset://textures/particles/smoke_main.dds",
+		Color = ColorSequence.new(Color3.fromRGB(255, 225, 200)),
+		LightEmission = 0.4,
+		Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.6), NumberSequenceKeypoint.new(1, 2.4) }),
+		Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.7), NumberSequenceKeypoint.new(1, 1) }),
+		Lifetime = NumberRange.new(0.8, 1.3),
+		Speed = NumberRange.new(2, 4),
+		SpreadAngle = Vector2.new(25, 25),
+		Acceleration = Vector3.new(0, 4, 0),
+		Rate = 26,
+		EmissionDirection = Enum.NormalId.Top,
+	})
+	steam.Enabled = true
+	local sparks = emitter(at, {
+		Color = ColorSequence.new(Color3.fromRGB(255, 170, 60)),
+		Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.18), NumberSequenceKeypoint.new(1, 0) }),
+		Lifetime = NumberRange.new(0.4, 0.7),
+		Speed = NumberRange.new(3, 6),
+		SpreadAngle = Vector2.new(180, 180),
+		Rate = 14,
+	})
+	sparks.Enabled = true
+	task.delay(seconds, function()
+		steam.Enabled = false
+		sparks.Enabled = false
+		task.delay(1.5, function()
+			at:Destroy()
+		end)
+	end)
+end
+
 local function near(model: Model): boolean
 	local me = player.Character
 	local a = me and me:FindFirstChild("HumanoidRootPart")
@@ -267,6 +309,20 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName
 		end
 		Feel.hitstop(0.05)
 		Feel.react(attacker, move, "Blocked", 1)
+	elseif kind == "SecondWind" and typeof(a) == "Instance" then
+		local fighter = a :: Model
+		aura(fighter, Config.FiredUpTime)
+		if fighter == me or near(fighter) then
+			Feel.slowmo(0.7, 0.35)
+			impactFrame(false)
+		end
+		if fighter == me then
+			-- warm the screen while you're fired up
+			grade.TintColor = Color3.fromRGB(255, 225, 195)
+			task.delay(Config.FiredUpTime, function()
+				TweenService:Create(grade, TweenInfo.new(1), { TintColor = Color3.new(1, 1, 1) }):Play()
+			end)
+		end
 	elseif kind == "Down" and typeof(a) == "Instance" then
 		local target = a :: Model
 		if near(target) then

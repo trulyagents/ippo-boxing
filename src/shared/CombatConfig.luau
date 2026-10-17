@@ -68,6 +68,39 @@ CombatConfig.CounterBonus = 1.6
 CombatConfig.SlipPunishBonus = 1.5 -- uppercut into a duck
 CombatConfig.InputBuffer = 0.3 -- a punch pressed this early still comes out
 
+-- lasting damage: clean head shots also eat into max health for the rest of the fight
+CombatConfig.LastingDamageShare = 0.2
+CombatConfig.MinMaxHealth = 50
+CombatConfig.HealthRegen = 2 -- per second, up to your current max
+CombatConfig.HealthRegenDelay = 3 -- seconds without getting hit
+
+-- courage builds as you fight and can trigger a second wind when you're knocked down
+CombatConfig.MaxCourage = 100
+CombatConfig.CourageGain = {
+	CleanLanded = 3, CounterLanded = 8, Slipped = 4, Parried = 6,
+	KnockedDown = 15, GotUp = 10, CleanTaken = -2,
+}
+-- chance of a second wind by courage, checked top down. 100 always gets it
+CombatConfig.SecondWindChance = {
+	{ At = 100, Chance = 1 }, { At = 90, Chance = 0.7 }, { At = 60, Chance = 0.35 },
+	{ At = 30, Chance = 0.15 }, { At = 0, Chance = 0.05 },
+}
+CombatConfig.SecondWindDelay = 1.2 -- the beat on the canvas before you get up
+CombatConfig.SecondWindMaxHealth = 20 -- added to max health, can go past 100
+CombatConfig.SecondWindHealth = 0.7 -- share of the new max you get up with
+CombatConfig.FiredUpTime = 8
+CombatConfig.FiredUpStamina = 2 -- stamina regen multiplier
+CombatConfig.FiredUpSpeed = 0.9 -- wind up multiplier
+CombatConfig.FiredUpGuard = 0.75 -- guard damage multiplier
+CombatConfig.SecondWindLines = {
+	"not yet... my legs still work",
+	"i didn't come this far to stay down",
+	"one more round. just one more",
+	"everyone's watching. get up",
+	"it hurts. good. that means i'm still here",
+	"i haven't shown them anything yet",
+}
+
 -- read counters: your punch lands while theirs is still winding up. [yours][theirs]
 export type Counter = { Name: string, Damage: number, Hitstun: number }
 CombatConfig.Counters = {

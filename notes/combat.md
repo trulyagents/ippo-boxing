@@ -36,6 +36,12 @@ defence
 knockdowns
 - health 0 = down, 10 count, mash Space to get up (8/14/20 presses). get up with 60/40/25 health
 - 3rd knockdown or counted out = KO. Enter resets you
+- lasting damage: clean head shots and counters take 20% of their damage off MaxHealthNow (floor 50). health regens 2/s after 3s unhit, only up to MaxHealthNow. get-up health is min(60/40/25, MaxHealthNow)
+- courage 0-100: +3 clean landed, +8 counter, +4 slip, +6 parry, +15 knocked down, +10 got up, -2 clean taken
+- second wind: rolled at the knockdown (not on the 3rd, that's straight KO), once per fight. 5/15/35/70% by courage tiers, 100 = guaranteed. up after 1.2s, +20 max health, 70% of it as health, full stamina, courage to 0, 8s fired up (stamina regen x2, wind up x0.9, guard damage x0.75)
+- second wind fx: steam + sparks aura for 8s, slow-mo + impact frame, warm screen tint for you, SECOND WIND! callout, an inner thought line (CombatConfig.SecondWindLines) only for you
+- hud: health has a pale ghost that trails the hit and a dark end for max health lost, thin courage bar under guard that glows at 90+
+- studio test hook TestCourage sets a dummy's courage
 
 client
 - LowGuard anim is g1's "low guard" (one pose, i added an end keyframe so it loops), Weave is g2's peek a boo stance bob

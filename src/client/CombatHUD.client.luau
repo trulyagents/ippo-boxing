@@ -43,7 +43,7 @@ local function panel(position: UDim2, anchor: Vector2, title: string): (Frame, T
 	local frame = Instance.new("Frame")
 	frame.AnchorPoint = anchor
 	frame.Position = position
-	frame.Size = UDim2.fromOffset(300, 74)
+	frame.Size = UDim2.fromOffset(300, 88)
 	frame.BackgroundTransparency = 1
 	frame.Parent = gui
 	local label = Instance.new("TextLabel")
@@ -60,6 +60,26 @@ local function panel(position: UDim2, anchor: Vector2, title: string): (Frame, T
 	bar(frame, "Health", Color3.fromRGB(215, 45, 45), 26)
 	bar(frame, "Stamina", Color3.fromRGB(235, 190, 50), 44)
 	bar(frame, "Guard", Color3.fromRGB(70, 140, 230), 62)
+	local courage = bar(frame, "Courage", Color3.fromRGB(255, 140, 40), 80)
+	courage.Size = UDim2.new(1, 0, 0, 6)
+	-- health gets a pale ghost that trails the real bar, and a dark end for max health lost
+	local health = frame:FindFirstChild("Health") :: Frame
+	local ghost = (health:FindFirstChild("Fill") :: Frame):Clone()
+	ghost.Name = "Ghost"
+	ghost.BackgroundColor3 = Color3.fromRGB(255, 225, 200)
+	ghost.ZIndex = 1
+	ghost.Parent = health
+	;(health:FindFirstChild("Fill") :: Frame).ZIndex = 2
+	local lost = Instance.new("Frame")
+	lost.Name = "Lost"
+	lost.AnchorPoint = Vector2.new(1, 0)
+	lost.Position = UDim2.fromScale(1, 0)
+	lost.Size = UDim2.fromScale(0, 1)
+	lost.BackgroundColor3 = Color3.fromRGB(55, 55, 60)
+	lost.BorderSizePixel = 0
+	lost.ZIndex = 3
+	lost.Parent = health
+	Instance.new("UICorner", lost).CornerRadius = UDim.new(0, 4)
 	return frame, label
 end
 
@@ -117,7 +137,51 @@ local STAMINA_COLOR = Color3.fromRGB(235, 190, 50)
 local GASSED_COLOR = Color3.fromRGB(230, 70, 40)
 local staminaFlash = 0 -- os.clock() until which my stamina bar flashes after a gassed punch
 
+local COURAGE_COLOR = Color3.fromRGB(255, 140, 40)
+local COURAGE_HOT = Color3.fromRGB(255, 235, 120)
+
+-- inner thought line for a second wind, quiet italic text low on the screen
+local thoughtLabel = Instance.new("TextLabel")
+thoughtLabel.AnchorPoint = Vector2.new(0.5, 0.5)
+thoughtLabel.Position = UDim2.fromScale(0.5, 0.7)
+thoughtLabel.Size = UDim2.fromOffset(800, 40)
+thoughtLabel.BackgroundTransparency = 1
+thoughtLabel.FontFace = Font.new(bodyFont.Family, Enum.FontWeight.Medium, Enum.FontStyle.Italic)
+thoughtLabel.TextSize = 26
+thoughtLabel.TextColor3 = Color3.fromRGB(255, 245, 230)
+thoughtLabel.TextStrokeTransparency = 0.5
+thoughtLabel.TextTransparency = 1
+thoughtLabel.Parent = gui
+
+local function thought(text: string)
+	thoughtLabel.Text = "\"" .. text .. "\""
+	thoughtLabel.TextTransparency = 1
+	thoughtLabel.TextStrokeTransparency = 1
+	TweenService:Create(thoughtLabel, TweenInfo.new(0.6), { TextTransparency = 0, TextStrokeTransparency = 0.5 }):Play()
+	task.delay(3.2, function()
+		if thoughtLabel.Text == "\"" .. text .. "\"" then
+			TweenService:Create(thoughtLabel, TweenInfo.new(0.8), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+		end
+	end)
+end
+
 local function setBars(frame: Frame, model: Model)
+	local health = frame:FindFirstChild("Health") :: Frame
+	local healthShare = math.clamp((model:GetAttribute("Health") or Config.MaxHealth) / Config.MaxHealth, 0, 1)
+	-- the ghost waits for the real bar, then catches up slowly so you see the size of the hit
+	local ghost = health:FindFirstChild("Ghost") :: Frame
+	local ghostShare = ghost.Size.X.Scale
+	ghost.Size = UDim2.fromScale(if healthShare > ghostShare then healthShare else ghostShare + (healthShare - ghostShare) * 0.04, 1)
+	local maxNow = model:GetAttribute("MaxHealthNow") or Config.MaxHealth
+	local lost = health:FindFirstChild("Lost") :: Frame
+	lost.Size = UDim2.fromScale(math.clamp(1 - maxNow / Config.MaxHealth, 0, 1), 1)
+	local courage = model:GetAttribute("Courage") or 0
+	local courageFill = (frame:FindFirstChild("Courage") :: Frame):FindFirstChild("Fill") :: Frame
+	courageFill.Size = courageFill.Size:Lerp(UDim2.fromScale(courage / Config.MaxCourage, 1), 0.2)
+	-- 90+ is when a second wind gets likely, make it glow
+	courageFill.BackgroundColor3 = if courage >= 90
+		then COURAGE_COLOR:Lerp(COURAGE_HOT, 0.5 + 0.5 * math.sin(os.clock() * 8))
+		else COURAGE_COLOR
 	for _, stat in { "Health", "Stamina", "Guard" } do
 		local max = Config["Max" .. stat]
 		local value = model:GetAttribute(stat) or max
@@ -217,6 +281,12 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, damage, counterName)
 		play("Bell", a)
 		play("Crowd", a, 1.05)
 		shout("K.O.!", Color3.fromRGB(255, 50, 50), 140)
+	elseif kind == "SecondWind" and typeof(a) == "Instance" then
+		play("Crowd", a, 1.1)
+		shout("SECOND WIND!", Color3.fromRGB(255, 170, 60), 100)
+		if a == me then
+			thought(Config.SecondWindLines[b] or "")
+		end
 	elseif kind == "GetUp" and a == me then
 		shout("BACK UP!", Color3.fromRGB(255, 255, 255), 60)
 	end
