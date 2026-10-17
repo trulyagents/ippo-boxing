@@ -103,21 +103,41 @@ local function thought(text: string)
 	end)
 end
 
+-- each fill has an arrow Tip riding on its end. the body only goes as far as the tip lets it,
+-- so a full bar puts the tip right in the track's point
+local function usable(fill: ImageLabel): number
+	local clipSize = (fill.Parent :: Frame).AbsoluteSize
+	if clipSize.X <= 0 then
+		return 1
+	end
+	return 1 - (clipSize.Y * 0.5) / clipSize.X
+end
+
 local function setFill(fill: ImageLabel, share: number, speed: number)
-	fill.Size = fill.Size:Lerp(UDim2.fromScale(math.clamp(share, 0, 1), 1), speed)
+	share = math.clamp(share, 0, 1)
+	fill.Size = fill.Size:Lerp(UDim2.fromScale(share * usable(fill), 1), speed)
+	local tip = fill:FindFirstChild("Tip") :: ImageLabel?
+	if tip then
+		tip.Visible = fill.Size.X.Scale > 0.003
+		tip.ImageColor3 = fill.ImageColor3
+	end
 end
 
 local function setBars(model: Model)
 	local healthShare = math.clamp((model:GetAttribute("Health") or Config.MaxHealth) / Config.MaxHealth, 0, 1)
 	setFill(fills.Health, healthShare, 0.3)
 	-- the ghost waits for the real bar, then catches up slowly so you see the size of the hit
+	local target = healthShare * usable(ghost)
 	local ghostShare = ghost.Size.X.Scale
-	ghost.Size = UDim2.fromScale(
-		if healthShare > ghostShare then healthShare else ghostShare + (healthShare - ghostShare) * 0.04,
-		1
-	)
+	ghost.Size = UDim2.fromScale(if target > ghostShare then target else ghostShare + (target - ghostShare) * 0.04, 1)
+	local ghostTip = ghost:FindFirstChild("Tip") :: ImageLabel?
+	if ghostTip then
+		ghostTip.Visible = ghost.Size.X.Scale > 0.003
+	end
 	local maxNow = model:GetAttribute("MaxHealthNow") or Config.MaxHealth
-	lost.Size = UDim2.fromScale(math.clamp(1 - maxNow / Config.MaxHealth, 0, 1), 1)
+	-- the dark lost chunk also covers the point so it reads as gone
+	local lostShare = math.clamp(1 - maxNow / Config.MaxHealth, 0, 1)
+	lost.Size = UDim2.fromScale(if lostShare > 0 then lostShare * usable(ghost) + (1 - usable(ghost)) else 0, 1)
 
 	local stamina = model:GetAttribute("Stamina") or Config.MaxStamina
 	setFill(fills.Stamina, stamina / Config.MaxStamina, 0.3)

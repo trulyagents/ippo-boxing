@@ -150,6 +150,22 @@ def fill():
         d.line([(0, y), (W, y)], fill=(0, 0, 0, a))
     img.save(os.path.join(OUT, "fill.png"))
 
+# fill tip: the arrow point that rides on the end of each bar, same grain as the fill
+def tip():
+    W, H = 48, 96
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    mask = Image.new("L", (W, H), 0)
+    ImageDraw.Draw(mask).polygon([(0, 0), (W - 1, H / 2), (0, H - 1)], fill=255)
+    grain = Image.new("RGBA", (W, H), (255, 255, 255, 255))
+    d = ImageDraw.Draw(grain)
+    for _ in range(140):
+        x, y = random.uniform(0, W), random.uniform(0, H)
+        g = random.randint(150, 225)
+        d.point((x, y), fill=(g, g, g, 255))
+    img.paste(grain, (0, 0), mask)
+    img.save(os.path.join(OUT, "tip.png"))
+
 for f in (panel, banner, tag, track, fill):
     f()
+tip()
 print("done")

@@ -70,6 +70,7 @@ client
 - auto lock-on (g1 does it when the server pairs you) comes with matchmaking
 - CombatHUD: drives StarterGui.BoxingHUD (built in studio, copy in ui/BoxingHUD.rbxmx). never builds ui itself. also sounds (ReplicatedStorage.BoxingSounds) and screen shake
 - hud look is manga ink: torn cream panel with ink spikes, halftone portrait corner with your avatar headshot, name on a black brush banner in Bangers, slanted cream tags, arrow-tipped bars with ink grain. art drawn by art/hud/make_hud_art.py
+- each fill (and the health ghost) has an arrow Tip child riding on its end. the clip runs into the track point, the fill body is share * (1 - tip width), so a full bar lands exactly in the point. tip hides at 0 and copies the fill color
 - bar colors: health red, stamina orange (throbs red when gassed), guard cyan, courage purple (glows at 90+). health has the pale ghost and the dark lost-max end
 - opponent = just their name on a banner, top centre
 - callout pops through a UIScale since the text is TextScaled
