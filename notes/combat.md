@@ -23,6 +23,13 @@ defence
 - guard bobbing: slip with F held = 0.12s i-frames, keeps the guard, 6 stamina, no counter window
 - sparring partner and bag guard high or low depending on where they got hit last
 - clean slip = 0.7s counter window, next punch x1.6
+- read counters: your punch lands while theirs is winding up. cross into jab/cross = CROSS COUNTER 2x, hook into cross 1.7x, uppercut into hook = INSIDE 1.8x, body into uppercut 1.5x + double drain, anything else = STOP 1.2x. table is CombatConfig.Counters
+- cross counter on someone under 35 health = knockdown
+- PUNISHED 1.3x: hitting someone recovering from a whiff (or a slipped punch)
+- parry: fresh F press (guard down 0.6s first) within 0.15s of a jab/cross landing, high guard. no damage, attacker stunned 0.65s, you get 0.5s counter window at 1.4x, costs 4 stamina. holding guard just blocks
+- hit broadcast has the counter name as the 7th arg, hud shouts it, cross counter gets the strong impact frame
+- sparring partner parries ~20% of your straights, decides once per punch (ActionToken)
+- studio only test hooks on dummies: TestFreeze, TestPunch, TestGuard attributes
 
 knockdowns
 - health 0 = down, 10 count, mash Space to get up (8/14/20 presses). get up with 60/40/25 health

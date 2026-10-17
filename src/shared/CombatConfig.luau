@@ -68,6 +68,30 @@ CombatConfig.CounterBonus = 1.6
 CombatConfig.SlipPunishBonus = 1.5 -- uppercut into a duck
 CombatConfig.InputBuffer = 0.3 -- a punch pressed this early still comes out
 
+-- read counters: your punch lands while theirs is still winding up. [yours][theirs]
+export type Counter = { Name: string, Damage: number, Hitstun: number }
+CombatConfig.Counters = {
+	Cross = {
+		Jab = { Name = "CROSS COUNTER", Damage = 2, Hitstun = 1.6 },
+		Cross = { Name = "CROSS COUNTER", Damage = 2, Hitstun = 1.6 },
+	},
+	Hook = { Cross = { Name = "HOOK COUNTER", Damage = 1.7, Hitstun = 1.4 } },
+	Uppercut = { Hook = { Name = "INSIDE", Damage = 1.8, Hitstun = 1.4 } },
+	Body = { Uppercut = { Name = "BODY COUNTER", Damage = 1.5, Hitstun = 1.3 } },
+} :: { [string]: { [string]: Counter } }
+CombatConfig.StopCounter = { Name = "STOP", Damage = 1.2, Hitstun = 1 } :: Counter -- anything else in their wind up
+CombatConfig.CrossCounterKnockdownBelow = 35 -- health, a cross counter on someone this low drops them
+CombatConfig.PunishBonus = 1.3 -- hitting someone recovering from a whiff
+
+-- parry: tap guard just before a straight lands
+CombatConfig.ParryWindow = 0.15
+CombatConfig.ParryRearm = 0.6 -- must have been unguarded this long, so holding and tapping doesn't work
+CombatConfig.ParryCost = 4
+CombatConfig.ParryStun = 0.65 -- the attacker's arm gets knocked aside
+CombatConfig.ParryCounterWindow = 0.5
+CombatConfig.ParryCounterBonus = 1.4
+CombatConfig.ParryMoves = { Jab = true, Cross = true } :: { [string]: boolean }
+
 -- guard height: high blocks head shots, low blocks body shots
 CombatConfig.GuardSwitchTime = 0.12 -- not blocking while the hands move between heights
 CombatConfig.LowGuardHeadBonus = 1.1 -- head shots on a low guard hit a bit harder

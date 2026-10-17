@@ -199,7 +199,7 @@ local function near(model: Model): boolean
 	return a ~= nil and b ~= nil and ((a :: BasePart).Position - (b :: BasePart).Position).Magnitude < CINEMATIC_RANGE
 end
 
-fx.OnClientEvent:Connect(function(kind, a, b, move, result)
+fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName)
 	local me = player.Character
 	if kind == "Hit" and typeof(a) == "Instance" and typeof(b) == "Instance" then
 		local attacker, target = a :: Model, b :: Model
@@ -227,7 +227,15 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result)
 		if result ~= "Blocked" then
 			flash(target, result)
 		end
-		if result == "Counter" then
+		if result == "Counter" and counterName == "CROSS COUNTER" then
+			-- the big one gets close to knockdown treatment
+			Feel.hitstop(0.12)
+			if involved or near(target) then
+				Feel.slowmo(0.8, 0.25)
+				impactFrame(true)
+				fovKick(10)
+			end
+		elseif result == "Counter" then
 			Feel.hitstop(0.09)
 			if involved then
 				Feel.slowmo(0.45, 0.3)
@@ -247,6 +255,18 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result)
 		elseif result == "Chip" then
 			Feel.hitstop(0.025)
 		end
+	elseif kind == "Parried" and typeof(a) == "Instance" and typeof(b) == "Instance" then
+		-- a = who parried, b = whose arm got knocked aside
+		local parrier, attacker = a :: Model, b :: Model
+		local point = contactPoint(attacker, parrier, move)
+		if point then
+			local from = attacker:FindFirstChild("HumanoidRootPart") :: BasePart?
+			local facing = if from then point - from.Position else Vector3.zAxis
+			facing = Vector3.new(facing.X, 0, facing.Z)
+			burst(point, if facing.Magnitude > 0.01 then facing.Unit else Vector3.zAxis, "Blocked", move)
+		end
+		Feel.hitstop(0.05)
+		Feel.react(attacker, move, "Blocked", 1)
 	elseif kind == "Down" and typeof(a) == "Instance" then
 		local target = a :: Model
 		if near(target) then

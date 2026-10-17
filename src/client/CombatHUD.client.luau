@@ -150,7 +150,7 @@ local function lockedModel(): Model?
 	return nil
 end
 
-fx.OnClientEvent:Connect(function(kind, a, b, move, result, damage)
+fx.OnClientEvent:Connect(function(kind, a, b, move, result, damage, counterName)
 	local me = player.Character
 	if kind == "Hit" then
 		local attacker, target = a, b
@@ -168,12 +168,19 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, damage)
 		end
 		if attacker == me or target == me then
 			if result == "Counter" then
-				shout("COUNTER!", Color3.fromRGB(255, 90, 60))
+				local name = if typeof(counterName) == "string" then counterName else "COUNTER"
+				shout(name .. "!", Color3.fromRGB(255, 90, 60), if name == "CROSS COUNTER" then 110 else nil)
 			elseif result == "GuardBreak" then
 				shout("GUARD BREAK!", Color3.fromRGB(110, 170, 255))
 			elseif result == "Open" then
 				shout("OPEN!", Color3.fromRGB(255, 200, 70), 60)
 			end
+		end
+	elseif kind == "Parried" then
+		play("Block", a, 1.35)
+		if a == me or b == me then
+			shout("PARRY!", Color3.fromRGB(120, 200, 255), 70)
+			addShake(0.4)
 		end
 	elseif kind == "Whiff" then
 		play("Whoosh", a)

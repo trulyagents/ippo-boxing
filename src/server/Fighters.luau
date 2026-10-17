@@ -23,6 +23,10 @@ export type Fighter = {
 	LastSlip: number,
 	Bobbing: boolean, -- current slip was done with the guard up
 	LastTaken: string?, -- "Head" or "Body", where the last punch at this fighter went
+	GuardPressedAt: number, -- when the guard last went up from nothing after being down a while (parry timing)
+	GuardDroppedAt: number,
+	Whiffed: boolean, -- the punch being recovered from hit nothing
+	CounterMult: number, -- bonus for the open counter window (slip or parry)
 	BusyUntil: number,
 	Slip: string?,
 	SlipUntil: number,
@@ -82,6 +86,7 @@ function Fighters.register(model: Model, player: Player?): Fighter?
 		Health = Config.MaxHealth, Stamina = Config.MaxStamina, Guard = Config.MaxGuard,
 		State = "Idle", Guarding = false, GuardHeight = nil, GuardReadyAt = 0, BusyUntil = 0,
 		Weaving = false, SlipChain = 0, LastSlip = 0, Bobbing = false, LastTaken = nil,
+		GuardPressedAt = 0, GuardDroppedAt = 0, Whiffed = false, CounterMult = Config.CounterBonus,
 		Slip = nil, SlipUntil = 0, NextSlip = 0, CounterUntil = 0, LastHit = 0,
 		Knockdowns = 0, GetUpPresses = 0, DownToken = 0, ActionToken = 0, Opponent = nil,
 	}
@@ -216,10 +221,27 @@ local function stun(target: Fighter, seconds: number)
 	end)
 end
 
-local function resolveHit(attacker: Fighter, moveName: string, counter: boolean)
+local function openCounter(f: Fighter, seconds: number, mult: number)
+	f.CounterUntil = os.clock() + seconds
+	f.CounterMult = mult
+	f.Model:SetAttribute("CounterUntil", workspace:GetServerTimeNow() + seconds)
+end
+
+-- straight into a guard that went up in the last moment, after being down a while
+local function parried(target: Fighter, moveName: string, now: number): boolean
+	return Config.ParryMoves[moveName] == true
+		and target.GuardHeight == "High"
+		and target.State ~= "Stunned"
+		and now - target.GuardPressedAt <= Config.ParryWindow
+		and target.Stamina >= Config.ParryCost
+end
+
+-- slipBonus is set when the attacker threw this out of an open counter window
+local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number?)
 	local move = Config.Moves[moveName]
 	local target = findTarget(attacker, move.Range)
 	if not target or target.State == "Down" or target.State == "KO" then
+		attacker.Whiffed = true
 		broadcast("Whiff", attacker.Model, moveName)
 		return
 	end
@@ -229,25 +251,47 @@ local function resolveHit(attacker: Fighter, moveName: string, counter: boolean)
 	attacker.Opponent = target.Model
 	target.Opponent = attacker.Model
 
+	local mult, hitstun, counterName = 1, 1, nil
+	if slipBonus then
+		mult, hitstun, counterName = slipBonus, 1.4, "COUNTER"
+	end
+
 	-- slips
 	if target.Slip and now < target.SlipUntil then
 		if move.BeatsSlip and move.BeatsSlip[target.Slip] then
-			counter = true
+			mult, hitstun, counterName = math.max(mult, Config.SlipPunishBonus), 1.4, "COUNTER"
 		elseif move.DodgedBy[target.Slip] then
 			-- a slip with the guard up is safer but doesn't set up a counter
 			if not target.Bobbing then
-				target.CounterUntil = now + Config.CounterWindow
-				target.Model:SetAttribute("CounterUntil", workspace:GetServerTimeNow() + Config.CounterWindow)
+				openCounter(target, Config.CounterWindow, Config.CounterBonus)
 			end
+			attacker.Whiffed = true
 			broadcast("Slipped", target.Model, attacker.Model, moveName)
 			return
 		end
 	end
 
-	local damage = move.Damage
-	if counter then
-		damage *= if move.BeatsSlip and target.Slip and move.BeatsSlip[target.Slip] then Config.SlipPunishBonus else Config.CounterBonus
+	if parried(target, moveName, now) then
+		target.Stamina -= Config.ParryCost
+		openCounter(target, Config.ParryCounterWindow, Config.ParryCounterBonus)
+		stun(attacker, Config.ParryStun)
+		broadcast("Parried", target.Model, attacker.Model, moveName)
+		publish(target)
+		return
 	end
+
+	-- read counters: what you hit them with against what they were throwing
+	local theirs = target.Model:GetAttribute("Action")
+	if target.State == "Windup" and typeof(theirs) == "string" and Config.Moves[theirs] then
+		local c = (Config.Counters[moveName] and Config.Counters[moveName][theirs]) or Config.StopCounter
+		if c.Damage > mult then
+			mult, hitstun, counterName = c.Damage, c.Hitstun, c.Name
+		end
+	elseif target.State == "Recovery" and target.Whiffed and Config.PunishBonus > mult then
+		mult, hitstun, counterName = Config.PunishBonus, 1.2, "PUNISHED"
+	end
+	local counter = counterName ~= nil
+	local damage = move.Damage * mult
 
 	local result = if counter then "Counter" else "Clean"
 	local covering = target.Guarding and target.State ~= "Stunned" and now >= target.GuardReadyAt
@@ -263,6 +307,7 @@ local function resolveHit(attacker: Fighter, moveName: string, counter: boolean)
 		end
 	end
 	if covering then
+		counterName = nil
 		target.Guard -= move.GuardDamage * (if counter then 1.5 else 1)
 		if target.Guard <= 0 then
 			target.Guard = 0
@@ -281,14 +326,19 @@ local function resolveHit(attacker: Fighter, moveName: string, counter: boolean)
 	end
 
 	if move.BodyDrain then
-		target.Stamina = math.max(0, target.Stamina - move.BodyDrain * (if result == "Blocked" then 0.5 else 1))
+		local drain = move.BodyDrain * (if result == "Blocked" then 0.5 else 1) * (if counterName == "BODY COUNTER" then 2 else 1)
+		target.Stamina = math.max(0, target.Stamina - drain)
+	end
+	-- a cross counter on someone already hurt puts them down
+	if counterName == "CROSS COUNTER" and target.Health < Config.CrossCounterKnockdownBelow then
+		damage = math.max(damage, target.Health)
 	end
 	target.Health -= damage
 
 	if result == "Clean" or result == "Counter" or result == "Open" then
-		stun(target, move.Hitstun * (if counter then 1.4 else 1))
+		stun(target, move.Hitstun * hitstun)
 	end
-	broadcast("Hit", attacker.Model, target.Model, moveName, result, math.floor(damage + 0.5))
+	broadcast("Hit", attacker.Model, target.Model, moveName, result, math.floor(damage + 0.5), counterName)
 
 	if target.Health <= 0 then
 		target.Health = 0
@@ -324,8 +374,9 @@ function Fighters.punch(f: Fighter, moveName: string)
 		return
 	end
 	local now = os.clock()
-	local counter = now < f.CounterUntil
+	local counter = if now < f.CounterUntil then f.CounterMult else nil
 	f.CounterUntil = 0
+	f.Whiffed = false
 	f.Model:SetAttribute("CounterUntil", nil)
 	f.Stamina -= move.Stamina
 	local slow = if f.Stamina < Config.GassedBelow then Config.GassedSlowdown else 1
@@ -360,9 +411,15 @@ function Fighters.setGuard(f: Fighter, height: string?)
 	if f.GuardHeight == height then
 		return
 	end
+	local now = os.clock()
 	-- raising the guard from nothing is instant, moving it between heights takes a moment
 	if height and f.GuardHeight then
-		f.GuardReadyAt = os.clock() + Config.GuardSwitchTime
+		f.GuardReadyAt = now + Config.GuardSwitchTime
+	elseif height and not f.GuardHeight then
+		-- only a fresh guard press can parry, so holding and tapping does nothing
+		f.GuardPressedAt = if now - f.GuardDroppedAt >= Config.ParryRearm then now else 0
+	elseif not height then
+		f.GuardDroppedAt = now
 	end
 	f.GuardHeight = height
 	f.Guarding = height ~= nil

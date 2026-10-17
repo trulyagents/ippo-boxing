@@ -2,6 +2,7 @@
 -- partner that throws back, guards and slips.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Fighters = require(script.Parent.Fighters)
@@ -78,12 +79,31 @@ local function face(f: Fighters.Fighter, target: Fighters.Fighter)
 	end
 end
 
+-- the last punch (by ActionToken) each dummy already chose a reaction to
+local decided: { [Fighters.Fighter]: any } = {}
+
 local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 	f.Humanoid.AutoRotate = false
 	local nextPunch = 0
 	local home = f.Root.Position
+	-- studio only: tests can freeze the brain and make it punch or guard on cue
+	if RunService:IsStudio() then
+		model:GetAttributeChangedSignal("TestPunch"):Connect(function()
+			local move = model:GetAttribute("TestPunch")
+			if typeof(move) == "string" and move ~= "" then
+				Fighters.punch(f, move)
+			end
+		end)
+		model:GetAttributeChangedSignal("TestGuard"):Connect(function()
+			local h = model:GetAttribute("TestGuard")
+			Fighters.setGuard(f, if h == "High" or h == "Low" then h else nil)
+		end)
+	end
 	while model.Parent do
 		task.wait(0.12)
+		if model:GetAttribute("TestFreeze") then
+			continue
+		end
 		local target, distance = nearestPlayer(f)
 		if f.State == "KO" then
 			task.wait(3)
@@ -105,10 +125,27 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 				else
 					f.Humanoid:Move(Vector3.zero)
 				end
-				if targetState == "Windup" and random:NextNumber() < 0.3 then
+				local action = target.Model:GetAttribute("Action")
+				local token = target.Model:GetAttribute("ActionToken")
+				local fresh = targetState == "Windup" and token ~= decided[f]
+				if fresh then
+					decided[f] = token
+				end
+				if fresh and Config.ParryMoves[action] and not f.Guarding and random:NextNumber() < 0.2 then
+					-- time the guard to go up right before the straight lands
+					local startup = target.Model:GetAttribute("ActionLength") or Config.Moves[action].Startup
+					local started = target.Model:GetAttribute("ActionStart") or workspace:GetServerTimeNow()
+					local raiseIn = started + startup - 0.07 - workspace:GetServerTimeNow()
+					task.delay(math.max(raiseIn, 0), function()
+						Fighters.setGuard(f, "High")
+						task.delay(0.4, function()
+							Fighters.setGuard(f, nil)
+						end)
+					end)
+				elseif fresh and random:NextNumber() < 0.3 then
 					local dirs = { "Left", "Right", "Duck" }
 					Fighters.slip(f, dirs[random:NextInteger(1, #dirs)])
-				elseif targetState == "Windup" and random:NextNumber() < 0.35 then
+				elseif fresh and random:NextNumber() < 0.35 then
 					-- guards where you hit it last, so switching levels opens it up
 					Fighters.setGuard(f, if f.LastTaken == "Body" then "Low" else "High")
 					task.delay(0.6, function()
