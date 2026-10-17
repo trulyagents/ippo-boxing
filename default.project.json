@@ -1,0 +1,27 @@
+{
+  "name": "IppoBoxing",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "$ignoreUnknownInstances": true,
+      "Shared": {
+        "$path": "src/shared"
+      }
+    },
+    "ServerScriptService": {
+      "$ignoreUnknownInstances": true,
+      "Boxing": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "$ignoreUnknownInstances": true,
+      "StarterPlayerScripts": {
+        "$ignoreUnknownInstances": true,
+        "Boxing": {
+          "$path": "src/client"
+        }
+      }
+    }
+  }
+}

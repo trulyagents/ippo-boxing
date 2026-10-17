@@ -1,0 +1,5 @@
+# roblox
+*.rbxl
+*.rbxlx
+*.lock
+sourcemap.json
