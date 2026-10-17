@@ -29,6 +29,7 @@ defence
 - parry: fresh F press (guard down 0.6s first) within 0.15s of a jab/cross landing, high guard. no damage, attacker stunned 0.65s, you get 0.5s counter window at 1.4x, costs 4 stamina. holding guard just blocks
 - hit broadcast has the counter name as the 7th arg, hud shouts it, cross counter gets the strong impact frame
 - sparring partner parries ~20% of your straights, decides once per punch (ActionToken)
+- dummies cover up on reflex with setGuard(f, h, false) so it can't parry. without that every reactive guard vs a jab was a parry (jab wind up 0.12 is inside the 0.15 window), partner parried 20 jabs in 45s
 - studio only test hooks on dummies: TestFreeze, TestPunch, TestGuard attributes
 
 knockdowns

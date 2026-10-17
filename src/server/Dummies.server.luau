@@ -147,7 +147,7 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 					Fighters.slip(f, dirs[random:NextInteger(1, #dirs)])
 				elseif fresh and random:NextNumber() < 0.35 then
 					-- guards where you hit it last, so switching levels opens it up
-					Fighters.setGuard(f, if f.LastTaken == "Body" then "Low" else "High")
+					Fighters.setGuard(f, if f.LastTaken == "Body" then "Low" else "High", false)
 					task.delay(0.6, function()
 						Fighters.setGuard(f, nil)
 					end)
@@ -159,7 +159,7 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 			else
 				-- the bag just covers up when you get going
 				local cover = targetState == "Windup" and random:NextNumber() < 0.4
-				Fighters.setGuard(f, if cover then (if f.LastTaken == "Body" then "Low" else "High") else nil)
+				Fighters.setGuard(f, if cover then (if f.LastTaken == "Body" then "Low" else "High") else nil, false)
 			end
 		else
 			Fighters.setGuard(f, nil)

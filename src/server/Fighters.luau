@@ -400,8 +400,9 @@ function Fighters.punch(f: Fighter, moveName: string)
 	end)
 end
 
--- height is "High", "Low", or nil to drop the guard
-function Fighters.setGuard(f: Fighter, height: string?)
+-- height is "High", "Low", or nil to drop the guard. canParry false is for dummies covering
+-- up on reflex, otherwise every reactive guard against a fast jab would count as a parry
+function Fighters.setGuard(f: Fighter, height: string?, canParry: boolean?)
 	if height ~= nil and height ~= "High" and height ~= "Low" then
 		return
 	end
@@ -417,7 +418,7 @@ function Fighters.setGuard(f: Fighter, height: string?)
 		f.GuardReadyAt = now + Config.GuardSwitchTime
 	elseif height and not f.GuardHeight then
 		-- only a fresh guard press can parry, so holding and tapping does nothing
-		f.GuardPressedAt = if now - f.GuardDroppedAt >= Config.ParryRearm then now else 0
+		f.GuardPressedAt = if canParry ~= false and now - f.GuardDroppedAt >= Config.ParryRearm then now else 0
 	elseif not height then
 		f.GuardDroppedAt = now
 	end
