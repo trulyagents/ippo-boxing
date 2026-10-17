@@ -7,14 +7,15 @@ local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
+local AnimIds = require(ReplicatedStorage.Shared.AnimIds)
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Feel = require(script.Parent:WaitForChild("Feel"))
 
 local player = Players.LocalPlayer
 local animFolder = ReplicatedStorage:WaitForChild("BoxingAnims")
 
--- published anims carry an AnimId attribute. without one, register the sequence so it
--- still plays in studio
+-- published ids live in Shared.AnimIds. without one, register the sequence so it still
+-- plays in studio
 local animations: { [string]: Animation } = {}
 local function animation(role: string): Animation?
 	if animations[role] then
@@ -24,11 +25,13 @@ local function animation(role: string): Animation?
 	if not (ks and ks:IsA("KeyframeSequence")) then
 		return nil
 	end
-	local id = ks:GetAttribute("AnimId")
-	if typeof(id) ~= "string" then
+	local id = AnimIds[role]
+	if id and id ~= "" then
+		id = if id:match("^%d+$") then "rbxassetid://" .. id else id
+	else
 		local ok, temp = pcall(KeyframeSequenceProvider.RegisterKeyframeSequence, KeyframeSequenceProvider, ks)
 		if not ok then
-			warn("[FighterAnimator] no AnimId and can't register " .. role)
+			warn("[FighterAnimator] no id in AnimIds and can't register " .. role)
 			return nil
 		end
 		id = temp

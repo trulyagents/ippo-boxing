@@ -28,7 +28,7 @@ client
 - i animate my own character and the dummies. other players' tracks replicate from their own client, so i don't touch them
 - hit reactions come from Feel.reactions, played at 1.8x since their hit anims are a second long
 - walk anims blend by velocity in the fighter's facing space. the default Animate script gets disabled
-- anims use a KS AnimId attribute when it's set, otherwise they get registered on the fly (studio only). for live servers, publish each one and put the id on its KS
+- published ids go in Shared.AnimIds (one line per role, just the number). empty = registered on the fly, studio only
 - CombatInput: binds + lock-on (T, not Tab, roblox eats Tab)
 - CombatHUD: bars, callouts, ref count, sounds (ReplicatedStorage.BoxingSounds, made in studio), screen shake
 
