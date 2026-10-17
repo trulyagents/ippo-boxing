@@ -40,7 +40,11 @@ knockdowns
 - courage 0-100: +3 clean landed, +8 counter, +4 slip, +6 parry, +15 knocked down, +10 got up, -2 clean taken
 - second wind: rolled at the knockdown (not on the 3rd, that's straight KO), once per fight. 5/15/35/70% by courage tiers, 100 = guaranteed. up after 1.2s, +20 max health, 70% of it as health, full stamina, courage to 0, 8s fired up (stamina regen x2, wind up x0.9, guard damage x0.75)
 - second wind fx: steam + sparks aura for 8s, slow-mo + impact frame, warm screen tint for you, SECOND WIND! callout, an inner thought line (CombatConfig.SecondWindLines) only for you
-- opponent panel only shows health and stamina, their guard and courage are hidden (they still have them)
+- no bars on the opponent, just their name. you read them off their body instead:
+  - under 35% health (HurtBelow) = Hurt loop, side to side wobble with the head heavy
+  - under 20 stamina = Gassed loop, heavy breathing leaning over with the guard sagging, plus sweat dripping off the head
+  - both replace the idle (idle weight drops to ~0), hurt wins if both
+- Hurt and Gassed are keyframed by me on top of the idle pose (bought games had no tired/hurt idle). built from a python script so the uploaded file matches studio exactly
 - hud: health has a pale ghost that trails the hit and a dark end for max health lost, thin courage bar under guard that glows at 90+
 - studio test hook TestCourage sets a dummy's courage
 - studio only "TEST SECOND WIND" button bottom right: drops you at 100 courage so it always fires (server checks IsStudio)

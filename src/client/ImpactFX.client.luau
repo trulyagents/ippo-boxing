@@ -234,6 +234,58 @@ local function aura(model: Model, seconds: number)
 	end)
 end
 
+-- gassed fighters drip sweat, part of reading the other guy without bars
+local CollectionService = game:GetService("CollectionService")
+local drips: { [Model]: ParticleEmitter } = {}
+task.spawn(function()
+	while true do
+		task.wait(0.25)
+		for _, model in CollectionService:GetTagged("Fighter") do
+			if not model:IsA("Model") then
+				continue
+			end
+			local tired = (model:GetAttribute("Stamina") or 100) < Config.GassedBelow
+				and model:GetAttribute("State") ~= "KO"
+			local drip = drips[model]
+			if tired and not drip then
+				local head = model:FindFirstChild("Head")
+				if head and head:IsA("BasePart") then
+					local at = Instance.new("Attachment")
+					at.Name = "SweatDrip"
+					at.Position = Vector3.new(0, 0.2, -0.3)
+					at.Parent = head
+					drip = emitter(at, {
+						Color = ColorSequence.new(Color3.fromRGB(210, 235, 255)),
+						LightEmission = 0.2,
+						Size = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.12), NumberSequenceKeypoint.new(1, 0.06) }),
+						Lifetime = NumberRange.new(0.5, 0.8),
+						Speed = NumberRange.new(0.5, 1.5),
+						SpreadAngle = Vector2.new(60, 60),
+						Acceleration = Vector3.new(0, -30, 0),
+						Rate = 10,
+					})
+					drip.Enabled = true
+					drips[model] = drip
+				end
+			elseif drip and not tired then
+				drip.Enabled = false
+				local at = drip.Parent
+				drips[model] = nil
+				task.delay(1, function()
+					if at then
+						at:Destroy()
+					end
+				end)
+			end
+		end
+		for model in drips do
+			if not model.Parent then
+				drips[model] = nil
+			end
+		end
+	end
+end)
+
 local function near(model: Model): boolean
 	local me = player.Character
 	local a = me and me:FindFirstChild("HumanoidRootPart")

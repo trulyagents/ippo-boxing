@@ -57,6 +57,7 @@ CombatConfig.GuardRegen = 14 -- per second, after GuardRegenDelay without being 
 CombatConfig.GuardRegenDelay = 1.2
 CombatConfig.GassedBelow = 20 -- under this, punches wind up slower
 CombatConfig.GassedSlowdown = 1.4
+CombatConfig.HurtBelow = 0.35 -- share of max health, under this a fighter looks hurt
 
 CombatConfig.GuardBreakStun = 1.2
 

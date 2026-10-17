@@ -105,9 +105,10 @@ end
 local mine = panel(UDim2.new(0, 24, 1, -24), Vector2.new(0, 1), "YOU")
 local theirs, theirName = panel(UDim2.new(0.5, 0, 0, 24), Vector2.new(0.5, 0), "")
 theirs.Visible = false
--- you can't read how much someone's guard or nerve has left, only how hurt and tired they look
-;(theirs:FindFirstChild("Guard") :: Frame).Visible = false
-;(theirs:FindFirstChild("Courage") :: Frame).Visible = false
+-- no bars on the other guy, you read how hurt and tired they are off their body (FighterAnimator)
+for _, name in { "Health", "Stamina", "Guard", "Courage" } do
+	(theirs:FindFirstChild(name) :: Frame).Visible = false
+end
 
 local callout = Instance.new("TextLabel")
 callout.AnchorPoint = Vector2.new(0.5, 0.5)

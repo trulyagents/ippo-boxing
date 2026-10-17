@@ -243,6 +243,26 @@ local function updateLoops(rig: Rig)
 		end
 	end
 
+	-- tells instead of bars: hurt fighters wobble, gassed ones heave. both replace the idle
+	local health = model:GetAttribute("Health") or Config.MaxHealth
+	local stamina = model:GetAttribute("Stamina") or Config.MaxStamina
+	local hurt = free and health < Config.MaxHealth * Config.HurtBelow
+	local gassed = free and not hurt and stamina < Config.GassedBelow
+	local idle = load(rig, "Idle")
+	if idle then
+		idle:AdjustWeight(if hurt or gassed then 0.001 else 1, 0.3)
+	end
+	for role, want in { Hurt = hurt, Gassed = gassed } do
+		local t = load(rig, role)
+		if t then
+			if want and not t.IsPlaying then
+				t:Play(0.3)
+			elseif not want and t.IsPlaying then
+				t:Stop(0.4)
+			end
+		end
+	end
+
 	-- walk anims by which way the fighter is moving relative to where it faces
 	local root = model:FindFirstChild("HumanoidRootPart") :: BasePart?
 	local v = if root then root.CFrame:VectorToObjectSpace(root.AssemblyLinearVelocity) else Vector3.zero

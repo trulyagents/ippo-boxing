@@ -7,6 +7,8 @@ return {
 	Guard = "rbxassetid://90596097636849",
 	LowGuard = "rbxassetid://74985604077382",
 	Weave = "rbxassetid://103729062707961",
+	Gassed = "rbxassetid://114207157111081",
+	Hurt = "rbxassetid://110082653330287",
 	WalkForward = "rbxassetid://131348826657355",
 	WalkBack = "rbxassetid://97792164577747",
 	WalkLeft = "rbxassetid://81778306568182",
