@@ -40,9 +40,13 @@ def upload(path, asset_type, name, content_type):
         op = json.loads(out)["operationId"]
     except Exception:
         raise SystemExit("upload failed for " + path + ": " + out[:300])
-    for _ in range(40):
+    for _ in range(90):
         time.sleep(2)
-        r = json.loads(_curl(["https://apis.roblox.com/assets/v1/operations/" + op, "-H", "x-api-key: " + key]))
+        try:
+            r = json.loads(_curl(["https://apis.roblox.com/assets/v1/operations/" + op, "-H", "x-api-key: " + key]))
+        except json.JSONDecodeError:
+            # roblox sometimes answers a poll with nothing, just ask again
+            continue
         if r.get("done"):
             res = r["response"]
             return res["assetId"], res.get("moderationResult", {}).get("moderationState")
