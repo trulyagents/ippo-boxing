@@ -95,7 +95,7 @@ hint.FontFace = bodyFont
 hint.TextSize = 15
 hint.TextColor3 = Color3.fromRGB(230, 230, 230)
 hint.TextStrokeTransparency = 0.5
-hint.Text = "M1 jab  M2 cross  E hook  R uppercut  Q body  |  hold F guard  |  Space slip (+A/D/S)  |  T lock on"
+hint.Text = "M1 jab  M2 cross  E hook  R uppercut  Q body  |  hold F guard (look down = low)  |  hold Space weave + A/D/W/S  |  T lock on"
 hint.Parent = gui
 
 local function shout(text: string, color: Color3?, size: number?)
@@ -112,12 +112,27 @@ local function shout(text: string, color: Color3?, size: number?)
 	end)
 end
 
+local STAMINA_COLOR = Color3.fromRGB(235, 190, 50)
+local GASSED_COLOR = Color3.fromRGB(230, 70, 40)
+local staminaFlash = 0 -- os.clock() until which my stamina bar flashes after a gassed punch
+
 local function setBars(frame: Frame, model: Model)
 	for _, stat in { "Health", "Stamina", "Guard" } do
 		local max = Config["Max" .. stat]
 		local value = model:GetAttribute(stat) or max
 		local fill = frame:FindFirstChild(stat):FindFirstChild("Fill") :: Frame
 		fill.Size = fill.Size:Lerp(UDim2.fromScale(math.clamp(value / max, 0, 1), 1), 0.3)
+		if stat == "Stamina" then
+			-- under the gassed line the bar throbs red so you know punches are slow
+			local pulse = 0
+			if value < Config.GassedBelow then
+				pulse = 0.5 + 0.5 * math.sin(os.clock() * 10)
+			end
+			if frame == mine and os.clock() < staminaFlash then
+				pulse = 1
+			end
+			fill.BackgroundColor3 = STAMINA_COLOR:Lerp(GASSED_COLOR, pulse)
+		end
 	end
 end
 
@@ -176,6 +191,10 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, damage, counterName)
 				shout("OPEN!", Color3.fromRGB(255, 200, 70), 60)
 			end
 		end
+	elseif kind == "Gassed" then
+		-- only ever sent to me
+		staminaFlash = os.clock() + 0.35
+		shout("NO STAMINA", Color3.fromRGB(200, 200, 200), 42)
 	elseif kind == "Parried" then
 		play("Block", a, 1.35)
 		if a == me or b == me then

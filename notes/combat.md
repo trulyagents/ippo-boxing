@@ -12,6 +12,7 @@ moves (CombatConfig)
 - jab, cross, hook, uppercut, body. each has startup, recovery, damage, stamina cost, guard damage, range, hitstun
 - getting hit during wind up cancels your punch
 - under 20 stamina you're gassed, punches 1.4x slower
+- under 20 the stamina bar throbs red. a punch you can't afford sends "Gassed" to just you (max every 0.6s): NO STAMINA callout + the bar flashes
 - input buffer 0.3s, a punch pressed at the end of a slip/punch still comes out
 
 defence
@@ -66,6 +67,7 @@ feel (all client side, server never slows down)
 - punches step forward with body weight and snap out at speed 70, pull back slower so they feel heavy
 
 gear
+- Gear.strip runs first on players: drops every accessory except hair, plus shirts and t-shirts, so everyone is shirtless in trunks and gloves
 - gloves: copied the second example game's setup, not their meshes. each glove is 5 separate mesh parts (Glove fist, Thumb, Base cuff, Band_Upper and Band_Down laces) welded flat onto the arm with no rotation, barely wider than the arm. made in blender (models/glove/glove.blend), imported as ReplicatedStorage.BoxingGear.GloveParts. Gear.gloves sets sizes, offsets and colors in code, thumb mirrors to the body side on each arm
 - the old one-piece ai glove looked bulky and weird, dont go back to it
 - trunks: real catalog pants, "J. Parker Red White & Gold Boxing Shorts" by Ro-Boxing Apparel (template 17137655469). everyone wears them, players and dummies

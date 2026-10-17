@@ -27,6 +27,7 @@ export type Fighter = {
 	GuardDroppedAt: number,
 	Whiffed: boolean, -- the punch being recovered from hit nothing
 	CounterMult: number, -- bonus for the open counter window (slip or parry)
+	GassedToldAt: number,
 	BusyUntil: number,
 	Slip: string?,
 	SlipUntil: number,
@@ -50,6 +51,13 @@ end
 local function broadcast(...: any)
 	if fx then
 		fx:FireAllClients(...)
+	end
+end
+
+-- just to the fighter's own player, for things only they need to see
+local function tell(f: Fighter, ...: any)
+	if fx and f.Player then
+		fx:FireClient(f.Player, ...)
 	end
 end
 
@@ -86,7 +94,7 @@ function Fighters.register(model: Model, player: Player?): Fighter?
 		Health = Config.MaxHealth, Stamina = Config.MaxStamina, Guard = Config.MaxGuard,
 		State = "Idle", Guarding = false, GuardHeight = nil, GuardReadyAt = 0, BusyUntil = 0,
 		Weaving = false, SlipChain = 0, LastSlip = 0, Bobbing = false, LastTaken = nil,
-		GuardPressedAt = 0, GuardDroppedAt = 0, Whiffed = false, CounterMult = Config.CounterBonus,
+		GuardPressedAt = 0, GuardDroppedAt = 0, Whiffed = false, CounterMult = Config.CounterBonus, GassedToldAt = 0,
 		Slip = nil, SlipUntil = 0, NextSlip = 0, CounterUntil = 0, LastHit = 0,
 		Knockdowns = 0, GetUpPresses = 0, DownToken = 0, ActionToken = 0, Opponent = nil,
 	}
@@ -371,6 +379,11 @@ function Fighters.punch(f: Fighter, moveName: string)
 	end
 	buffered[f] = nil
 	if f.Stamina < move.Stamina then
+		-- otherwise the punch just silently doesn't come out
+		if os.clock() - f.GassedToldAt > 0.6 then
+			f.GassedToldAt = os.clock()
+			tell(f, "Gassed")
+		end
 		return
 	end
 	local now = os.clock()

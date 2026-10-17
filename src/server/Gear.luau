@@ -71,6 +71,20 @@ function Gear.gloves(model: Model)
 	end
 end
 
+-- boxers fight shirtless with no hats or gear from their avatar. hair stays so people still
+-- look like themselves
+function Gear.strip(model: Model)
+	for _, c in model:GetChildren() do
+		if c:IsA("Accessory") then
+			if c.AccessoryType ~= Enum.AccessoryType.Hair then
+				c:Destroy()
+			end
+		elseif c:IsA("Shirt") or c:IsA("ShirtGraphic") then
+			c:Destroy()
+		end
+	end
+end
+
 function Gear.trunks(model: Model)
 	for _, c in model:GetChildren() do
 		if c:IsA("Pants") then

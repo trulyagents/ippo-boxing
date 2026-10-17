@@ -52,6 +52,7 @@ local function loadBoxer(player: Player)
 	character:PivotTo(spawnPoint())
 	player.Character = character
 	character.Parent = workspace
+	Gear.strip(character)
 	Gear.gloves(character)
 	Gear.trunks(character)
 	Fighters.register(character, player)
