@@ -22,7 +22,14 @@ Fighters.setFxRemote(fx)
 -- R6 for everyone so the boxing poses fit every avatar the same way
 Players.CharacterAutoLoads = false
 
+-- players start in their corner of the ring, the sparring partner takes the other one
 local function spawnPoint(): CFrame
+	local ring = workspace:FindFirstChild("Ring")
+	local spawns = ring and ring:FindFirstChild("FighterSpawns")
+	local corner = spawns and spawns:FindFirstChild("PlayerCorner")
+	if corner and corner:IsA("BasePart") then
+		return corner.CFrame
+	end
 	local spawn = workspace:FindFirstChild("SpawnLocation")
 	return if spawn and spawn:IsA("BasePart") then spawn.CFrame + Vector3.new(0, 3.5, 0) else CFrame.new(0, 5, 0)
 end

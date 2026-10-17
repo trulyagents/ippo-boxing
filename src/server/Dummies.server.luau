@@ -85,7 +85,7 @@ local decided: { [Fighters.Fighter]: any } = {}
 local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 	f.Humanoid.AutoRotate = false
 	local nextPunch = 0
-	local home = f.Root.Position
+	local home = f.Root.CFrame
 	-- studio only: tests can freeze the brain and make it punch or guard on cue
 	if RunService:IsStudio() then
 		model:GetAttributeChangedSignal("TestPunch"):Connect(function()
@@ -108,7 +108,7 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 		if f.State == "KO" then
 			task.wait(3)
 			Fighters.reset(f)
-			model:PivotTo(CFrame.new(home))
+			model:PivotTo(home)
 			turner(f).CFrame = f.Root.CFrame.Rotation
 		elseif f.State == "Down" then
 			-- dummies always beat the count, a bit slower each time
@@ -167,8 +167,9 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 	end
 end
 
-local bagModel, bag = makeDummy("Punching Bag Dummy", spawns:WaitForChild("Spawn1") :: BasePart, Color3.fromRGB(120, 120, 125))
-local sparModel, spar = makeDummy("Sparring Partner", spawns:WaitForChild("Spawn2") :: BasePart, Color3.fromRGB(170, 35, 40))
+-- the bag stands outside the ring by the steps, the partner waits in the far corner
+local bagModel, bag = makeDummy("Punching Bag Dummy", spawns:WaitForChild("BagSpot") :: BasePart, Color3.fromRGB(120, 120, 125))
+local sparModel, spar = makeDummy("Sparring Partner", spawns:WaitForChild("PartnerCorner") :: BasePart, Color3.fromRGB(170, 35, 40))
 if bag then
 	task.spawn(brain, bagModel, bag, false)
 end

@@ -53,7 +53,7 @@ dummies
 - dummies turn through an AlignOrientation (responsiveness 25), the brain only sets its target every 0.12s. setting root cframe directly looked like 8fps
 - Sparring Partner walks in, punches about every 1.1-2.2s, slips 30% / guards 35% when you wind up
 
-ring + dummies spawn points are in the place (workspace.Ring), not in src
+ring + spawn points are in the place (workspace.Ring.FighterSpawns), not in src. PlayerCorner (-10,-10) for players, PartnerCorner (10,10) for the sparring partner, BagSpot outside the ring by the steps for the bag. R6AnimRig stands outside the ring at (-24,-24)
 
 feel (all client side, server never slows down)
 - Feel module = shared hitstop / slowmo clock + hit reactions. animator multiplies its blend speed by Feel.scale()
