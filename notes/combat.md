@@ -43,7 +43,8 @@ feel (all client side, server never slows down)
 - punches step forward with body weight and snap out at speed 70, pull back slower so they feel heavy
 
 gear
-- gloves: ReplicatedStorage.BoxingGear.Glove, an ai-made mesh (studio mesh gen) sized to wrap the end of an R6 arm. Gear.gloves welds one on each arm, cuff toward the elbow, thumb toward the body. players and dummies both get them
+- gloves: copied the second example game's setup, not their meshes. each glove is 5 separate mesh parts (Glove fist, Thumb, Base cuff, Band_Upper and Band_Down laces) welded flat onto the arm with no rotation, barely wider than the arm. made in blender (models/glove/glove.blend), imported as ReplicatedStorage.BoxingGear.GloveParts. Gear.gloves sets sizes, offsets and colors in code, thumb mirrors to the body side on each arm
+- the old one-piece ai glove looked bulky and weird, dont go back to it
 - trunks: real catalog pants, "J. Parker Red White & Gold Boxing Shorts" by Ro-Boxing Apparel (template 17137655469). everyone wears them, players and dummies
 - R6AnimRig in the ring wears both, for animating in the Animation Editor
 
