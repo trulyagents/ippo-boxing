@@ -181,6 +181,8 @@ RunService:BindToRenderStep("BoxingLockOn", Enum.RenderPriority.Camera.Value + 1
 	end
 	local camera = workspace.CurrentCamera
 	camera.CameraType = Enum.CameraType.Scriptable
+	-- set every frame, the default camera scripts keep trying to free it
+	UserInputService.MouseBehavior = Enum.MouseBehavior.LockCenter
 	local toTarget = (flat - root.Position).Unit
 	local rightVector = toTarget:Cross(Vector3.yAxis)
 	-- far enough to the side that your own body doesn't hide the punches landing

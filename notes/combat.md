@@ -38,7 +38,7 @@ client
 - published ids go in Shared.AnimIds (one line per role). empty = registered on the fly, studio only
 - all 28 published to my account through open cloud (assets api, assetType Animation, rbxmx file). they work in live servers now
 - OriginalIds attribute on AnimIds: any id listed there is someone else's and gets skipped. empty now
-- CombatInput: binds + lock-on (T, not Tab, roblox eats Tab)
+- CombatInput: binds + lock-on (T, not Tab, roblox eats Tab). lock-on locks the mouse to center, set every frame since the camera scripts fight it
 - CombatHUD: bars, callouts, ref count, sounds (ReplicatedStorage.BoxingSounds, made in studio), screen shake
 
 dummies
