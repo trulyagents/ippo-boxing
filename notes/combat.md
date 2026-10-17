@@ -41,3 +41,13 @@ feel (all client side, server never slows down)
 - knockdown within 45 studs: slowmo 1.1s, strong impact frame, orbit camera cut on the fighter going down. KO = longer + desaturated
 - reactions: jab/cross head snaps back, hook whips sideways, uppercut throws the head up, body folds you over, blocks knock the gloves back
 - punches step forward with body weight and snap out at speed 70, pull back slower so they feel heavy
+
+gear
+- gloves: ReplicatedStorage.BoxingGear.Glove, an ai-made mesh (studio mesh gen) sized to wrap the end of an R6 arm. Gear.gloves welds one on each arm, cuff toward the elbow, thumb toward the body. players and dummies both get them
+- trunks: real catalog pants, "J. Parker Red White & Gold Boxing Shorts" by Ro-Boxing Apparel (template 17137655469). dummies wear them, players keep their own clothes for now
+- R6AnimRig in the ring wears both, for animating in the Animation Editor
+
+animations
+- no code-driven poses going forward, everything gets keyframed. both example games use R6 so we stay R6
+- Jab KeyframeSequence in ServerStorage.BoxingAnimations and RBX_ANIMSAVES.R6AnimRig (Animation Editor > Load). lead (left) hand, impact marker on frame 7 (0.117s)
+- needs publishing from the Animation Editor before it works in a live server

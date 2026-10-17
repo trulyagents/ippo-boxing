@@ -5,6 +5,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Fighters = require(script.Parent.Fighters)
+local Gear = require(script.Parent.Gear)
 
 local ring = workspace:WaitForChild("Ring")
 local spawns = ring:WaitForChild("FighterSpawns")
@@ -22,6 +23,8 @@ local function makeDummy(name: string, spawnPart: BasePart, shirt: Color3)
 	model.Name = name
 	model:PivotTo(spawnPart.CFrame)
 	model.Parent = workspace
+	Gear.gloves(model)
+	Gear.trunks(model)
 	-- the server simulates them, a nearby client can't shove them around
 	local root = model:FindFirstChild("HumanoidRootPart")
 	if root and root:IsA("BasePart") then

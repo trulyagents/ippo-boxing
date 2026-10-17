@@ -6,6 +6,7 @@ local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Fighters = require(script.Parent.Fighters)
+local Gear = require(script.Parent.Gear)
 
 local remotes = ReplicatedStorage:FindFirstChild("BoxingRemotes") or Instance.new("Folder")
 remotes.Name = "BoxingRemotes"
@@ -44,6 +45,7 @@ local function loadBoxer(player: Player)
 	character:PivotTo(spawnPoint())
 	player.Character = character
 	character.Parent = workspace
+	Gear.gloves(character)
 	Fighters.register(character, player)
 	-- boxing never kills you, so dying means you fell off the map or reset
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
