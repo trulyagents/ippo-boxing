@@ -42,6 +42,7 @@ knockdowns
 - second wind fx: steam + sparks aura for 8s, slow-mo + impact frame, warm screen tint for you, SECOND WIND! callout, an inner thought line (CombatConfig.SecondWindLines) only for you
 - hud: health has a pale ghost that trails the hit and a dark end for max health lost, thin courage bar under guard that glows at 90+
 - studio test hook TestCourage sets a dummy's courage
+- studio only "TEST SECOND WIND" button bottom right: drops you at 100 courage so it always fires (server checks IsStudio)
 
 client
 - LowGuard anim is g1's "low guard" (one pose, i added an end keyframe so it loops), Weave is g2's peek a boo stance bob

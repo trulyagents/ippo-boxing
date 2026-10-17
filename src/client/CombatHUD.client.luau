@@ -83,6 +83,25 @@ local function panel(position: UDim2, anchor: Vector2, title: string): (Frame, T
 	return frame, label
 end
 
+-- studio only test button
+if RunService:IsStudio() then
+	local test = Instance.new("TextButton")
+	test.Name = "TestSecondWind"
+	test.AnchorPoint = Vector2.new(1, 1)
+	test.Position = UDim2.new(1, -24, 1, -70)
+	test.Size = UDim2.fromOffset(170, 34)
+	test.BackgroundColor3 = Color3.fromRGB(150, 70, 20)
+	test.TextColor3 = Color3.new(1, 1, 1)
+	test.FontFace = bodyFont
+	test.TextSize = 15
+	test.Text = "TEST SECOND WIND"
+	test.Parent = gui
+	Instance.new("UICorner", test).CornerRadius = UDim.new(0, 6)
+	test.Activated:Connect(function()
+		(ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Action") :: RemoteEvent):FireServer("TestSecondWind")
+	end)
+end
+
 local mine = panel(UDim2.new(0, 24, 1, -24), Vector2.new(0, 1), "YOU")
 local theirs, theirName = panel(UDim2.new(0.5, 0, 0, 24), Vector2.new(0.5, 0), "")
 theirs.Visible = false

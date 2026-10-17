@@ -107,6 +107,8 @@ action.OnServerEvent:Connect(function(player, kind, value)
 		Fighters.setWeave(f, value)
 	elseif kind == "Slip" and typeof(value) == "string" then
 		Fighters.slip(f, value)
+	elseif kind == "TestSecondWind" and RunService:IsStudio() then
+		Fighters.testSecondWind(f)
 	elseif kind == "GetUp" then
 		Fighters.mash(f)
 	elseif kind == "Reset" then

@@ -560,6 +560,19 @@ function Fighters.slip(f: Fighter, direction: string)
 	end)
 end
 
+-- studio only (CombatServer checks): drop the fighter at full courage so the second wind fires
+function Fighters.testSecondWind(f: Fighter)
+	if f.State == "Down" or f.State == "KO" then
+		return
+	end
+	f.Knockdowns = 0
+	f.SecondWindUsed = false
+	f.Courage = Config.MaxCourage
+	f.Health = 0
+	knockDown(f, f)
+	publish(f)
+end
+
 function Fighters.mash(f: Fighter)
 	if f.State ~= "Down" then
 		return
