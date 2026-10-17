@@ -72,6 +72,8 @@ type Rig = {
 	Token: number?,
 	State: string?,
 	Reaction: number?,
+	Hurt: boolean?,
+	Gassed: boolean?,
 }
 local rigs: { [Model]: Rig } = {}
 
@@ -246,8 +248,12 @@ local function updateLoops(rig: Rig)
 	-- tells instead of bars: hurt fighters wobble, gassed ones heave. both replace the idle
 	local health = model:GetAttribute("Health") or Config.MaxHealth
 	local stamina = model:GetAttribute("Stamina") or Config.MaxStamina
-	local hurt = free and health < Config.MaxHealth * Config.HurtBelow
-	local gassed = free and not hurt and stamina < Config.GassedBelow
+	-- a gap between going in and coming out, or it flickers on and off as stamina or health
+	-- regens across the line
+	rig.Hurt = if rig.Hurt then health < Config.MaxHealth * (Config.HurtBelow + 0.08) else health < Config.MaxHealth * Config.HurtBelow
+	rig.Gassed = if rig.Gassed then stamina < Config.GassedBelow + 10 else stamina < Config.GassedBelow
+	local hurt = free and rig.Hurt == true
+	local gassed = free and not hurt and rig.Gassed == true
 	local idle = load(rig, "Idle")
 	if idle then
 		idle:AdjustWeight(if hurt or gassed then 0.001 else 1, 0.3)

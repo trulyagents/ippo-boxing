@@ -244,9 +244,10 @@ task.spawn(function()
 			if not model:IsA("Model") then
 				continue
 			end
-			local tired = (model:GetAttribute("Stamina") or 100) < Config.GassedBelow
-				and model:GetAttribute("State") ~= "KO"
 			local drip = drips[model]
+			-- same gap as the gassed anim so the sweat doesn't blink
+			local line = Config.GassedBelow + (if drip then 10 else 0)
+			local tired = (model:GetAttribute("Stamina") or 100) < line and model:GetAttribute("State") ~= "KO"
 			if tired and not drip then
 				local head = model:FindFirstChild("Head")
 				if head and head:IsA("BasePart") then

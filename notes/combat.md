@@ -44,6 +44,8 @@ knockdowns
   - under 35% health (HurtBelow) = Hurt loop, side to side wobble with the head heavy
   - under 20 stamina = Gassed loop, heavy breathing leaning over with the guard sagging, plus sweat dripping off the head
   - both replace the idle (idle weight drops to ~0), hurt wins if both
+  - they come off at a gap (gassed until 30 stamina, hurt until 43% health), first version flickered on and off at the line and looked like shaking
+  - legs are counter-rotated against the torso lean so the feet stay exactly in the idle stance. first version leaned the whole body and the feet left the fight stance
 - Hurt and Gassed are keyframed by me on top of the idle pose (bought games had no tired/hurt idle). built from a python script so the uploaded file matches studio exactly
 - hud: health has a pale ghost that trails the hit and a dark end for max health lost, thin courage bar under guard that glows at 90+
 - studio test hook TestCourage sets a dummy's courage
