@@ -3,6 +3,8 @@
 
 export type Move = {
 	Startup: number, -- wind up before the punch can land
+	MoveSpeed: number, -- walk speed while throwing it, so you plant your feet
+	Step: number, -- studs per second of push forward when it fires
 	Recovery: number, -- after it lands or whiffs, before you can act
 	Damage: number,
 	Stamina: number, -- cost to throw
@@ -21,6 +23,8 @@ local CombatConfig = {}
 CombatConfig.Moves = {
 	Jab = {
 		Startup = 0.12,
+		MoveSpeed = 6,
+		Step = 4,
 		Recovery = 0.16,
 		Damage = 4,
 		Stamina = 4,
@@ -33,6 +37,8 @@ CombatConfig.Moves = {
 	},
 	Cross = {
 		Startup = 0.2,
+		MoveSpeed = 2,
+		Step = 9,
 		Recovery = 0.28,
 		Damage = 8,
 		Stamina = 8,
@@ -45,6 +51,8 @@ CombatConfig.Moves = {
 	},
 	Hook = {
 		Startup = 0.26,
+		MoveSpeed = 2,
+		Step = 6,
 		Recovery = 0.32,
 		Damage = 10,
 		Stamina = 10,
@@ -57,6 +65,8 @@ CombatConfig.Moves = {
 	},
 	Uppercut = {
 		Startup = 0.3,
+		MoveSpeed = 1,
+		Step = 7,
 		Recovery = 0.38,
 		Damage = 12,
 		Stamina = 12,
@@ -70,6 +80,8 @@ CombatConfig.Moves = {
 	},
 	Body = {
 		Startup = 0.22,
+		MoveSpeed = 1,
+		Step = 8,
 		Recovery = 0.3,
 		Damage = 6,
 		Stamina = 9,

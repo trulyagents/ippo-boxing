@@ -119,7 +119,51 @@ local function noJump(character: Model)
 	end
 end
 
-player.CharacterAdded:Connect(noJump)
+-- step into my own punches when they fire. i own my character's physics so the push goes here
+local function stepIn(character: Model)
+	character:GetAttributeChangedSignal("ActionToken"):Connect(function()
+		local move = Config.Moves[character:GetAttribute("Action")]
+		local root = character:FindFirstChild("HumanoidRootPart")
+		if not (move and root and root:IsA("BasePart")) then
+			return
+		end
+		local token = character:GetAttribute("ActionToken")
+		-- the punch fires when the server flips me to Recovery, push then
+		local changed: RBXScriptConnection
+		changed = character:GetAttributeChangedSignal("State"):Connect(function()
+			if character:GetAttribute("ActionToken") ~= token then
+				changed:Disconnect()
+				return
+			end
+			if character:GetAttribute("State") ~= "Recovery" then
+				return
+			end
+			changed:Disconnect()
+			-- impulses and velocity get eaten by the humanoid, so slide the root forward for a beat
+			local look = root.CFrame.LookVector
+			local ends = os.clock() + 0.12
+			local push: RBXScriptConnection
+			push = RunService.Heartbeat:Connect(function(dt)
+				if os.clock() > ends or not root.Parent then
+					push:Disconnect()
+					return
+				end
+				root.CFrame += look * move.Step * dt
+			end)
+		end)
+		task.delay(1, function()
+			if changed.Connected then
+				changed:Disconnect()
+			end
+		end)
+	end)
+end
+
+player.CharacterAdded:Connect(function(character)
+	noJump(character)
+	stepIn(character)
+end)
 if player.Character then
 	task.spawn(noJump, player.Character)
+	stepIn(player.Character)
 end

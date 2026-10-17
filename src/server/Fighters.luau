@@ -3,6 +3,7 @@
 -- just carries attributes so clients can animate it and draw the HUD.
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 
@@ -94,6 +95,9 @@ local function setWalk(f: Fighter)
 			or f.State == "Stunned"
 		then 0
 		elseif f.Weaving then Config.WeaveWalkSpeed
+		elseif
+			(f.State == "Windup" or f.State == "Recovery") and Config.Moves[f.Model:GetAttribute("Action")]
+		then Config.Moves[f.Model:GetAttribute("Action")].MoveSpeed
 		elseif f.Guarding or busy then Config.GuardWalkSpeed
 		else Config.WalkSpeed
 	f.Humanoid.JumpHeight = 0
@@ -500,8 +504,11 @@ function Fighters.punch(f: Fighter, moveName: string)
 		* (if firedUp(f) then Config.FiredUpSpeed else 1)
 	local startup, recovery = move.Startup * slow, move.Recovery * slow
 	setState(f, "Windup", now + startup + recovery)
-	playAction(f, moveName)
+	-- set before playAction so clients reading the new ActionToken see this punch's length
 	f.Model:SetAttribute("ActionLength", startup)
+	playAction(f, moveName)
+	-- plant the feet now that Action is set
+	setWalk(f)
 	local token = f.ActionToken
 	task.delay(startup, function()
 		-- a hit during wind up interrupts the punch
@@ -509,6 +516,19 @@ function Fighters.punch(f: Fighter, moveName: string)
 			return
 		end
 		setState(f, "Recovery")
+		-- dummies get their step-in here, players push themselves on their own client (they own the physics)
+		if not f.Player then
+			local look = f.Root.CFrame.LookVector
+			local ends = os.clock() + 0.12
+			local push: RBXScriptConnection
+			push = RunService.Heartbeat:Connect(function(dt)
+				if os.clock() > ends or not f.Root.Parent then
+					push:Disconnect()
+					return
+				end
+				f.Root.CFrame += look * move.Step * dt
+			end)
+		end
 		resolveHit(f, moveName, counter)
 		task.delay(recovery, function()
 			if f.ActionToken == token and f.State == "Recovery" then

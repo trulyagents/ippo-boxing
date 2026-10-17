@@ -59,9 +59,42 @@ if RunService:IsStudio() then
 	end)
 end
 
-local CONTROLS =
-	"M1 jab  M2 cross  E hook  R uppercut  Q body  |  hold F guard (look down = low)  |  hold Space weave + A/D/W/S  |  T lock on (V swap side, scroll switch)"
-hint.Text = CONTROLS
+-- controls card: up for the first few seconds, then H toggles it
+local UserInputService = game:GetService("UserInputService")
+local controls = gui:WaitForChild("Controls") :: CanvasGroup
+local controlsOpen = true
+local CARD = TweenInfo.new(0.25, Enum.EasingStyle.Quad)
+local function showControls(open: boolean)
+	controlsOpen = open
+	if open then
+		controls.Visible = true
+	end
+	local t = TweenService:Create(controls, CARD, { GroupTransparency = if open then 0 else 1 })
+	t:Play()
+	if not open then
+		t.Completed:Once(function()
+			if not controlsOpen then
+				controls.Visible = false
+			end
+		end)
+	end
+end
+task.delay(8, function()
+	if controlsOpen then
+		showControls(false)
+	end
+end)
+UserInputService.InputBegan:Connect(function(input, processed)
+	if not processed and input.KeyCode == Enum.KeyCode.H then
+		showControls(not controlsOpen)
+	end
+end)
+
+-- the bottom line only says something when there's something to say
+local function idleHint(): string
+	return if controlsOpen then "" else "H - CONTROLS"
+end
+hint.Text = idleHint()
 
 local POP = TweenInfo.new(0.18, Enum.EasingStyle.Back)
 local FADE = TweenInfo.new(0.3)
@@ -280,7 +313,7 @@ RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, f
 		else
 			count.TextTransparency = 1
 			count.TextStrokeTransparency = 1
-			hint.Text = CONTROLS
+			hint.Text = idleHint()
 		end
 		-- the opponent you're locked on to, or whoever you last traded with
 		local other = lockedModel()

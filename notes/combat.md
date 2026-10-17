@@ -11,6 +11,7 @@ fighters
 moves (CombatConfig)
 - jab, cross, hook, uppercut, body. each has startup, recovery, damage, stamina cost, guard damage, range, hitstun
 - getting hit during wind up cancels your punch
+- you plant your feet to punch: walk speed while throwing = MoveSpeed per move (jab 6, cross/hook 2, body/uppercut 1). when it fires you slide forward Step for 0.12s (about jab 0.5, cross 1.2, body 1, hook 0.7, uppercut 0.8 studs). players push on their own client when State flips to Recovery, dummies on the server. impulses/velocity got eaten by the humanoid so it moves the root cframe
 - under 20 stamina you're gassed, punches 1.4x slower
 - under 20 the stamina bar throbs red. a punch you can't afford sends "Gassed" to just you (max every 0.6s): NO STAMINA callout + the bar flashes
 - input buffer 0.3s, a punch pressed at the end of a slip/punch still comes out
@@ -73,6 +74,8 @@ client
 - each fill, the health ghost and the dark lost chunk have an arrow Tip child riding on its end. the clip runs into the track point, the fill body is share * (1 - tip width), so a full bar lands exactly in the point. tip hides at 0 and copies the fill color
 - bar colors: health red, stamina orange (throbs red when gassed), guard cyan, courage purple (glows at 90+). health has the pale ghost and the dark lost-max end
 - opponent = just their name on a banner, top centre
+- panel is bigger (min 460 / max 880 px wide) with more gap between rows after feedback said it was too compact
+- controls card (StarterGui.BoxingHUD.Controls, cream card, Bangers) shows for 8s then hides, H toggles. the bottom hint is only state messages now (mash space, ko) or "H - CONTROLS". the old tiny one-line controls text is gone, people couldnt read it
 - callout pops through a UIScale since the text is TextScaled
 
 dummies
