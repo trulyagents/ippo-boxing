@@ -5,6 +5,8 @@
 return {
 	Idle = "rbxassetid://138260167411579",
 	Guard = "rbxassetid://90596097636849",
+	LowGuard = "rbxassetid://74985604077382",
+	Weave = "rbxassetid://103729062707961",
 	WalkForward = "rbxassetid://131348826657355",
 	WalkBack = "rbxassetid://97792164577747",
 	WalkLeft = "rbxassetid://81778306568182",

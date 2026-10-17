@@ -68,6 +68,19 @@ CombatConfig.CounterBonus = 1.6
 CombatConfig.SlipPunishBonus = 1.5 -- uppercut into a duck
 CombatConfig.InputBuffer = 0.3 -- a punch pressed this early still comes out
 
+-- guard height: high blocks head shots, low blocks body shots
+CombatConfig.GuardSwitchTime = 0.12 -- not blocking while the hands move between heights
+CombatConfig.LowGuardHeadBonus = 1.1 -- head shots on a low guard hit a bit harder
+CombatConfig.LowGuardPitch = -25 -- degrees, looking further down than this is a low guard
+
+-- weave mode (hold space)
+CombatConfig.WeaveWalkSpeed = 6
+CombatConfig.WeaveSlipCooldown = 0.45
+CombatConfig.SlipChainCost = 3 -- extra stamina per slip chained inside the window
+CombatConfig.SlipChainWindow = 1.5
+CombatConfig.BobSlipTime = 0.12 -- i-frames on a slip with the guard up
+CombatConfig.BobSlipCost = 6
+
 CombatConfig.HitCone = 0.45 -- dot product, about 63 degrees either side
 
 -- knockdowns

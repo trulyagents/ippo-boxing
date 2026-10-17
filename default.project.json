@@ -1,5 +1,8 @@
 {
   "name": "IppoBoxing",
+  "servePlaceIds": [
+    78626401443666
+  ],
   "tree": {
     "$className": "DataModel",
     "ReplicatedStorage": {

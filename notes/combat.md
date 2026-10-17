@@ -14,8 +14,13 @@ moves (CombatConfig)
 - input buffer 0.3s, a punch pressed at the end of a slip/punch still comes out
 
 defence
-- guard (F): blocks straights fully, hooks chip 40% through, body shots chip 60% and still drain stamina. guard meter breaks at 0 = 1.2s stun
-- slips (Space, +A/D left right, +S back, alone = duck): 0.35s. left/right dodge straights, duck dodges hooks, back dodges almost everything. uppercut punishes a duck
+- guard (F) has a height from camera pitch: looking down past -25 deg = low, else high. while locked on the mouse moves a pretend pitch (and tips the cam a bit)
+- high guard: blocks head shots (straights fully, hooks chip 40%). low guard: blocks body shots fully, half stamina drain. wrong height = "Open" hit, clean, head shots +10% on a low guard
+- switching heights takes 0.12s with no block, raising from nothing is instant
+- weave mode: hold space (walk 6). A/D slip left/right, W duck, S pull back. slips only work in weave mode for players, dummies skip that
+- slips 0.35s i-frames, 0.45s cooldown in weave mode, 10 stamina +3 per chained slip inside 1.5s. left/right dodge straights, duck dodges hooks, back dodges almost everything. uppercut punishes a duck. body shots only get dodged by back
+- guard bobbing: slip with F held = 0.12s i-frames, keeps the guard, 6 stamina, no counter window
+- sparring partner and bag guard high or low depending on where they got hit last
 - clean slip = 0.7s counter window, next punch x1.6
 
 knockdowns
@@ -23,13 +28,14 @@ knockdowns
 - 3rd knockdown or counted out = KO. Enter resets you
 
 client
+- LowGuard anim is g1's "low guard" (one pose, i added an end keyframe so it loops), Weave is g2's peek a boo stance bob
 - FighterAnimator: plays keyframed anims from ReplicatedStorage.BoxingAnims (bought game 2's set, renamed by role: Idle, Guard, Walk*, Jab, Cross, Hook, Uppercut, Body, Slip*, HitHead*, HitBody, Block*, Stunned, DownFall/Loop, KOFall/Loop). code poses are gone
 - each punch anim has an Impact attribute (when the hand is furthest out). track speed = Impact / startup so the anim lands when the server lands the hit, and it skips ahead by however late the attribute arrived
 - i animate my own character and the dummies. other players' tracks replicate from their own client, so i don't touch them
 - hit reactions come from Feel.reactions, played at 1.8x since their hit anims are a second long
 - walk anims blend by velocity in the fighter's facing space. the default Animate script gets disabled
 - published ids go in Shared.AnimIds (one line per role). empty = registered on the fly, studio only
-- all 26 published to my account through open cloud (assets api, assetType Animation, rbxmx file). they work in live servers now
+- all 28 published to my account through open cloud (assets api, assetType Animation, rbxmx file). they work in live servers now
 - OriginalIds attribute on AnimIds: any id listed there is someone else's and gets skipped. empty now
 - CombatInput: binds + lock-on (T, not Tab, roblox eats Tab)
 - CombatHUD: bars, callouts, ref count, sounds (ReplicatedStorage.BoxingSounds, made in studio), screen shake

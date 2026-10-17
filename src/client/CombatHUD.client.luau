@@ -171,6 +171,8 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, damage)
 				shout("COUNTER!", Color3.fromRGB(255, 90, 60))
 			elseif result == "GuardBreak" then
 				shout("GUARD BREAK!", Color3.fromRGB(110, 170, 255))
+			elseif result == "Open" then
+				shout("OPEN!", Color3.fromRGB(255, 200, 70), 60)
 			end
 		end
 	elseif kind == "Whiff" then

@@ -16,6 +16,13 @@ export type Fighter = {
 	Guard: number,
 	State: string, -- Idle, Windup, Recovery, Stunned, Down, KO
 	Guarding: boolean,
+	GuardHeight: string?, -- "High" or "Low" while guarding
+	GuardReadyAt: number, -- hands are still moving until this
+	Weaving: boolean,
+	SlipChain: number,
+	LastSlip: number,
+	Bobbing: boolean, -- current slip was done with the guard up
+	LastTaken: string?, -- "Head" or "Body", where the last punch at this fighter went
 	BusyUntil: number,
 	Slip: string?,
 	SlipUntil: number,
@@ -49,12 +56,15 @@ local function publish(f: Fighter)
 	m:SetAttribute("Guard", math.floor(f.Guard + 0.5))
 	m:SetAttribute("State", f.State)
 	m:SetAttribute("Guarding", f.Guarding)
+	m:SetAttribute("GuardHeight", f.GuardHeight)
+	m:SetAttribute("Weaving", f.Weaving)
 	m:SetAttribute("Knockdowns", f.Knockdowns)
 end
 
 local function setWalk(f: Fighter)
 	local busy = f.State ~= "Idle"
 	f.Humanoid.WalkSpeed = if f.State == "Down" or f.State == "KO" or f.State == "Stunned" then 0
+		elseif f.Weaving then Config.WeaveWalkSpeed
 		elseif f.Guarding or busy then Config.GuardWalkSpeed
 		else Config.WalkSpeed
 	f.Humanoid.JumpHeight = 0
@@ -69,7 +79,8 @@ function Fighters.register(model: Model, player: Player?): Fighter?
 	local f: Fighter = {
 		Model = model, Root = root, Humanoid = humanoid, Player = player,
 		Health = Config.MaxHealth, Stamina = Config.MaxStamina, Guard = Config.MaxGuard,
-		State = "Idle", Guarding = false, BusyUntil = 0,
+		State = "Idle", Guarding = false, GuardHeight = nil, GuardReadyAt = 0, BusyUntil = 0,
+		Weaving = false, SlipChain = 0, LastSlip = 0, Bobbing = false, LastTaken = nil,
 		Slip = nil, SlipUntil = 0, NextSlip = 0, CounterUntil = 0, LastHit = 0,
 		Knockdowns = 0, GetUpPresses = 0, DownToken = 0, ActionToken = 0, Opponent = nil,
 	}
@@ -98,7 +109,8 @@ end
 
 function Fighters.reset(f: Fighter)
 	f.Health, f.Stamina, f.Guard = Config.MaxHealth, Config.MaxStamina, Config.MaxGuard
-	f.State, f.Guarding, f.Slip, f.Knockdowns = "Idle", false, nil, 0
+	f.State, f.Guarding, f.GuardHeight, f.Slip, f.Knockdowns = "Idle", false, nil, nil, 0
+	f.Weaving = false
 	f.DownToken += 1
 	publish(f)
 	setWalk(f)
@@ -148,6 +160,8 @@ end
 local function knockDown(target: Fighter, attacker: Fighter)
 	target.Knockdowns += 1
 	target.Guarding = false
+	target.GuardHeight = nil
+	target.Weaving = false
 	target.Slip = nil
 	if target.Knockdowns >= Config.MaxKnockdowns then
 		setState(target, "KO")
@@ -210,6 +224,7 @@ local function resolveHit(attacker: Fighter, moveName: string, counter: boolean)
 	end
 	local now = os.clock()
 	target.LastHit = now
+	target.LastTaken = move.Target
 	attacker.Opponent = target.Model
 	target.Opponent = attacker.Model
 
@@ -218,8 +233,11 @@ local function resolveHit(attacker: Fighter, moveName: string, counter: boolean)
 		if move.BeatsSlip and move.BeatsSlip[target.Slip] then
 			counter = true
 		elseif move.DodgedBy[target.Slip] then
-			target.CounterUntil = now + Config.CounterWindow
-			target.Model:SetAttribute("CounterUntil", workspace:GetServerTimeNow() + Config.CounterWindow)
+			-- a slip with the guard up is safer but doesn't set up a counter
+			if not target.Bobbing then
+				target.CounterUntil = now + Config.CounterWindow
+				target.Model:SetAttribute("CounterUntil", workspace:GetServerTimeNow() + Config.CounterWindow)
+			end
 			broadcast("Slipped", target.Model, attacker.Model, moveName)
 			return
 		end
@@ -231,15 +249,28 @@ local function resolveHit(attacker: Fighter, moveName: string, counter: boolean)
 	end
 
 	local result = if counter then "Counter" else "Clean"
-	if target.Guarding and target.State ~= "Stunned" then
+	local covering = target.Guarding and target.State ~= "Stunned" and now >= target.GuardReadyAt
+	local bodyShot = move.Target == "Body"
+	if covering and (target.GuardHeight == "Low") ~= bodyShot then
+		-- guarding the wrong place, it lands clean
+		covering = false
+		if not counter then
+			result = "Open"
+		end
+		if not bodyShot then
+			damage *= Config.LowGuardHeadBonus
+		end
+	end
+	if covering then
 		target.Guard -= move.GuardDamage * (if counter then 1.5 else 1)
 		if target.Guard <= 0 then
 			target.Guard = 0
 			target.Guarding = false
+			target.GuardHeight = nil
 			result = "GuardBreak"
 			damage *= 0.5
 			stun(target, Config.GuardBreakStun)
-		elseif move.ThroughGuard > 0 then
+		elseif move.ThroughGuard > 0 and not bodyShot then
 			result = "Chip"
 			damage *= move.ThroughGuard
 		else
@@ -253,7 +284,7 @@ local function resolveHit(attacker: Fighter, moveName: string, counter: boolean)
 	end
 	target.Health -= damage
 
-	if result == "Clean" or result == "Counter" then
+	if result == "Clean" or result == "Counter" or result == "Open" then
 		stun(target, move.Hitstun * (if counter then 1.4 else 1))
 	end
 	broadcast("Hit", attacker.Model, target.Model, moveName, result, math.floor(damage + 0.5))
@@ -317,12 +348,33 @@ function Fighters.punch(f: Fighter, moveName: string)
 	end)
 end
 
-function Fighters.setGuard(f: Fighter, on: boolean)
-	if on and (f.State == "Down" or f.State == "KO" or f.State == "Stunned") then
+-- height is "High", "Low", or nil to drop the guard
+function Fighters.setGuard(f: Fighter, height: string?)
+	if height ~= nil and height ~= "High" and height ~= "Low" then
 		return
 	end
-	if f.Guarding ~= on then
-		f.Guarding = on
+	if height and (f.State == "Down" or f.State == "KO" or f.State == "Stunned") then
+		return
+	end
+	if f.GuardHeight == height then
+		return
+	end
+	-- raising the guard from nothing is instant, moving it between heights takes a moment
+	if height and f.GuardHeight then
+		f.GuardReadyAt = os.clock() + Config.GuardSwitchTime
+	end
+	f.GuardHeight = height
+	f.Guarding = height ~= nil
+	publish(f)
+	setWalk(f)
+end
+
+function Fighters.setWeave(f: Fighter, on: boolean)
+	if on and (f.State == "Down" or f.State == "KO") then
+		return
+	end
+	if f.Weaving ~= on then
+		f.Weaving = on
 		publish(f)
 		setWalk(f)
 	end
@@ -330,17 +382,32 @@ end
 
 function Fighters.slip(f: Fighter, direction: string)
 	local now = os.clock()
-	if not canAct(f) or now < f.NextSlip or f.Stamina < Config.SlipCost then
-		return
-	end
 	if direction ~= "Left" and direction ~= "Right" and direction ~= "Duck" and direction ~= "Back" then
 		return
 	end
-	f.Stamina -= Config.SlipCost
+	-- players slip out of weave mode, dummies don't bother with it
+	if f.Player and not f.Weaving then
+		return
+	end
+	if not canAct(f) or now < f.NextSlip then
+		return
+	end
+	local bob = f.Guarding
+	f.SlipChain = if now - f.LastSlip < Config.SlipChainWindow then f.SlipChain + 1 else 0
+	local cost = (if bob then Config.BobSlipCost else Config.SlipCost) + f.SlipChain * Config.SlipChainCost
+	if f.Stamina < cost then
+		return
+	end
+	f.Stamina -= cost
+	f.LastSlip = now
+	f.Bobbing = bob
 	f.Slip = direction
-	f.SlipUntil = now + Config.SlipTime
-	f.NextSlip = now + Config.SlipCooldown
-	f.Guarding = false
+	f.SlipUntil = now + (if bob then Config.BobSlipTime else Config.SlipTime)
+	f.NextSlip = now + (if f.Weaving then Config.WeaveSlipCooldown else Config.SlipCooldown)
+	if not bob then
+		f.Guarding = false
+		f.GuardHeight = nil
+	end
 	setState(f, "Recovery", now + Config.SlipTime)
 	playAction(f, "Slip" .. direction)
 	if direction == "Back" then

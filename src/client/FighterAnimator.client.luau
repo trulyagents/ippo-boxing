@@ -225,13 +225,21 @@ local function updateLoops(rig: Rig)
 	local state = model:GetAttribute("State")
 	local free = state ~= "Down" and state ~= "KO" and state ~= "Stunned"
 
-	local guard = load(rig, "Guard")
-	if guard then
-		local want = free and model:GetAttribute("Guarding") == true
-		if want and not guard.IsPlaying then
-			guard:Play(0.12)
-		elseif not want and guard.IsPlaying then
-			guard:Stop(0.15)
+	-- high guard, low guard and the weave bob are all held loops
+	local height = if free then model:GetAttribute("GuardHeight") else nil
+	local loops = {
+		Guard = height == "High",
+		LowGuard = height == "Low",
+		Weave = free and model:GetAttribute("Weaving") == true,
+	}
+	for role, want in loops do
+		local t = load(rig, role)
+		if t then
+			if want and not t.IsPlaying then
+				t:Play(0.12)
+			elseif not want and t.IsPlaying then
+				t:Stop(0.15)
+			end
 		end
 	end
 

@@ -93,8 +93,10 @@ action.OnServerEvent:Connect(function(player, kind, value)
 	end
 	if kind == "Punch" and typeof(value) == "string" and Config.Moves[value] then
 		Fighters.punch(f, value)
-	elseif kind == "Guard" and typeof(value) == "boolean" then
-		Fighters.setGuard(f, value)
+	elseif kind == "Guard" and (value == "High" or value == "Low" or value == false) then
+		Fighters.setGuard(f, if value == false then nil else value)
+	elseif kind == "Weave" and typeof(value) == "boolean" then
+		Fighters.setWeave(f, value)
 	elseif kind == "Slip" and typeof(value) == "string" then
 		Fighters.slip(f, value)
 	elseif kind == "GetUp" then

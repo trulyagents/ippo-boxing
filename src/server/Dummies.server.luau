@@ -85,9 +85,10 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 					local dirs = { "Left", "Right", "Duck" }
 					Fighters.slip(f, dirs[random:NextInteger(1, #dirs)])
 				elseif targetState == "Windup" and random:NextNumber() < 0.35 then
-					Fighters.setGuard(f, true)
+					-- guards where you hit it last, so switching levels opens it up
+					Fighters.setGuard(f, if f.LastTaken == "Body" then "Low" else "High")
 					task.delay(0.6, function()
-						Fighters.setGuard(f, false)
+						Fighters.setGuard(f, nil)
 					end)
 				elseif distance < 6 and os.clock() > nextPunch and not f.Guarding then
 					-- easy enough to learn on, it throws about one punch a second and a half
@@ -96,10 +97,11 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 				end
 			else
 				-- the bag just covers up when you get going
-				Fighters.setGuard(f, targetState == "Windup" and random:NextNumber() < 0.4)
+				local cover = targetState == "Windup" and random:NextNumber() < 0.4
+				Fighters.setGuard(f, if cover then (if f.LastTaken == "Body" then "Low" else "High") else nil)
 			end
 		else
-			Fighters.setGuard(f, false)
+			Fighters.setGuard(f, nil)
 		end
 	end
 end

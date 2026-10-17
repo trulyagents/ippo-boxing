@@ -239,7 +239,7 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result)
 			if involved then
 				fovKick(5)
 			end
-		elseif result == "Clean" then
+		elseif result == "Clean" or result == "Open" then
 			Feel.hitstop(if move == "Jab" then 0.03 else 0.055)
 			if involved and move ~= "Jab" then
 				fovKick(2.5)
