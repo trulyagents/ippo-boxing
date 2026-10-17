@@ -1,190 +1,280 @@
--- Procedural boxing poses for every R6 fighter, driven by the attributes the server sets.
--- Arms and torso only; the default walk still moves the legs.
--- These are starter animations until real keyframed ones are made.
+-- Plays the keyframed boxing anims (ReplicatedStorage.BoxingAnims) on fighters, driven by
+-- the attributes the server sets. Runs on my own character and on dummies. Other players
+-- animate their own characters and those tracks replicate to me, so I leave them alone.
 local CollectionService = game:GetService("CollectionService")
-local RunService = game:GetService("RunService")
+local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
+local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Feel = require(script.Parent:WaitForChild("Feel"))
 
-local rad = math.rad
+local player = Players.LocalPlayer
+local animFolder = ReplicatedStorage:WaitForChild("BoxingAnims")
 
-type Pose = { RS: CFrame, LS: CFrame, Root: CFrame, Neck: CFrame }
-
--- right shoulder: +z raises the arm forward, +y swings it in toward the chest
-local function right(raise: number, inward: number, pull: number?, drop: number?): CFrame
-	return CFrame.new(-(pull or 0), -(drop or 0), 0) * CFrame.Angles(0, rad(inward), 0) * CFrame.Angles(0, 0, rad(raise))
+-- published anims carry an AnimId attribute. without one, register the sequence so it
+-- still plays in studio
+local animations: { [string]: Animation } = {}
+local function animation(role: string): Animation?
+	if animations[role] then
+		return animations[role]
+	end
+	local ks = animFolder:FindFirstChild(role)
+	if not (ks and ks:IsA("KeyframeSequence")) then
+		return nil
+	end
+	local id = ks:GetAttribute("AnimId")
+	if typeof(id) ~= "string" then
+		local ok, temp = pcall(KeyframeSequenceProvider.RegisterKeyframeSequence, KeyframeSequenceProvider, ks)
+		if not ok then
+			warn("[FighterAnimator] no AnimId and can't register " .. role)
+			return nil
+		end
+		id = temp
+	end
+	local a = Instance.new("Animation")
+	a.AnimationId = id
+	animations[role] = a
+	return a
 end
--- left shoulder is mirrored
-local function left(raise: number, inward: number, pull: number?, drop: number?): CFrame
-	return CFrame.new(pull or 0, -(drop or 0), 0) * CFrame.Angles(0, rad(-inward), 0) * CFrame.Angles(0, 0, rad(-raise))
-end
--- root joint: z is up, so z rotation twists the body; x tilts forward/back, -y is forward
-local function body(twist: number, lean: number?, duck: number?, side: number?, step: number?): CFrame
-	return CFrame.new(side or 0, -(step or 0), -(duck or 0)) * CFrame.Angles(rad(lean or 0), 0, rad(twist))
-end
-local function head(tilt: number?, turn: number?): CFrame
-	return CFrame.Angles(rad(tilt or 0), 0, rad(turn or 0))
+
+local function impact(role: string): number
+	local ks = animFolder:FindFirstChild(role)
+	return ks and ks:GetAttribute("Impact") or 0.1
 end
 
-local STANCE: Pose = {
-	RS = right(118, 38, 0.35, 0.1), LS = left(112, 30, 0.1, 0),
-	Root = body(-12, -6), Neck = head(4, 8),
-}
-local GUARD: Pose = {
-	RS = right(140, 48, 0.55, 0), LS = left(140, 48, 0.55, 0),
-	Root = body(0, -10, 0.15), Neck = head(10),
-}
+-- track.Length is 0 until the anim has loaded, so read it off the keyframes
+local function length(role: string): number
+	local ks = animFolder:FindFirstChild(role)
+	local last = 0
+	if ks and ks:IsA("KeyframeSequence") then
+		for _, k in ks:GetKeyframes() do
+			last = math.max(last, (k :: Keyframe).Time)
+		end
+	end
+	return if last > 0 then last else 0.5
+end
 
--- the extended frame of each punch
-local PUNCH: { [string]: Pose } = {
-	Jab = { RS = right(116, 38, 0.4), LS = left(94, 4, -1.05), Root = body(-26, -10, 0, 0, 0.35), Neck = head(6, 16) },
-	Cross = { RS = right(94, 2, -1.25), LS = left(128, 46, 0.5), Root = body(34, -16, 0.1, 0, 0.55), Neck = head(8, -22) },
-	Hook = { RS = right(96, 84, -0.35), LS = left(128, 46, 0.5), Root = body(48, -10, 0.15, 0, 0.3), Neck = head(6, -28) },
-	Uppercut = { RS = right(158, 18, -0.45, -0.5), LS = left(128, 46, 0.5), Root = body(22, 12, 0.1, 0, 0.3), Neck = head(-12, -12) },
-	Body = { RS = right(62, 22, -1.0, 0.35), LS = left(128, 46, 0.5), Root = body(20, -24, 0.85, 0, 0.45), Neck = head(14, -12) },
+type Rig = {
+	Model: Model,
+	Animator: Animator,
+	Tracks: { [string]: AnimationTrack },
+	Speeds: { [AnimationTrack]: number },
+	Token: number?,
+	State: string?,
+	Reaction: number?,
 }
--- the chambered frame (pulled back) before the punch fires
-local CHAMBER: { [string]: Pose } = {
-	Jab = { RS = right(124, 40, 0.5), LS = left(108, 26, 0.35), Root = body(-8, -6), Neck = head(4, 8) },
-	Cross = { RS = right(124, 40, 0.5), LS = left(118, 36, 0.3), Root = body(-26, -8), Neck = head(4, 16) },
-	Hook = { RS = right(110, 20, 0.2), LS = left(126, 44, 0.45), Root = body(-30, -6), Neck = head(4, 16) },
-	Uppercut = { RS = right(70, 20, 0.2, 0.3), LS = left(126, 44, 0.45), Root = body(-12, -10, 0.6), Neck = head(6, 8) },
-	Body = { RS = right(100, 30, 0.3), LS = left(126, 44, 0.45), Root = body(-14, -10, 0.4), Neck = head(6, 8) },
-}
-local SLIP: { [string]: Pose } = {
-	Left = { RS = GUARD.RS, LS = GUARD.LS, Root = body(10, -14, 0.25, 0.9) * CFrame.Angles(0, rad(-18), 0), Neck = head(6) },
-	Right = { RS = GUARD.RS, LS = GUARD.LS, Root = body(-10, -14, 0.25, -0.9) * CFrame.Angles(0, rad(18), 0), Neck = head(6) },
-	Duck = { RS = GUARD.RS, LS = GUARD.LS, Root = body(0, -30, 1.3), Neck = head(18) },
-	Back = { RS = GUARD.RS, LS = GUARD.LS, Root = body(0, 14, 0.1), Neck = head(-6) },
-}
-local STUNNED: Pose = { RS = right(70, 10, 0, 0.2), LS = left(70, 10, 0, 0.2), Root = body(6, 16), Neck = head(-26, 10) }
-local DOWN: Pose = { RS = right(160, -10), LS = left(160, -10), Root = CFrame.new(0, 0, -2.6) * CFrame.Angles(rad(80), 0, 0), Neck = head(-10) }
-
-type Rig = { RS: Motor6D, LS: Motor6D, Root: Motor6D, Neck: Motor6D, Current: Pose, Model: Model }
 local rigs: { [Model]: Rig } = {}
 
+local function load(rig: Rig, role: string): AnimationTrack?
+	local t = rig.Tracks[role]
+	if t then
+		return t
+	end
+	local a = animation(role)
+	if not a then
+		return nil
+	end
+	t = rig.Animator:LoadAnimation(a)
+	rig.Tracks[role] = t
+	return t
+end
+
+local function play(rig: Rig, role: string, speed: number?, fade: number?): AnimationTrack?
+	local t = load(rig, role)
+	if not t then
+		return nil
+	end
+	rig.Speeds[t] = speed or 1
+	t:Play(fade or 0.08, 1, (speed or 1) * Feel.scale())
+	return t
+end
+
+local function stop(rig: Rig, role: string, fade: number?)
+	local t = rig.Tracks[role]
+	if t and t.IsPlaying then
+		t:Stop(fade or 0.15)
+	end
+end
+
+local function ownedByOtherPlayer(model: Model): boolean
+	local owner = Players:GetPlayerFromCharacter(model)
+	return owner ~= nil and owner ~= player
+end
+
 local function track(model: Instance)
-	if not model:IsA("Model") or rigs[model] then
+	if not model:IsA("Model") or rigs[model] or ownedByOtherPlayer(model) then
 		return
 	end
 	task.spawn(function()
-		local torso = model:WaitForChild("Torso", 10)
-		local root = model:WaitForChild("HumanoidRootPart", 10)
-		if not (torso and root) then
+		local humanoid = model:WaitForChild("Humanoid", 10)
+		if not (humanoid and humanoid:IsA("Humanoid")) then
 			return
 		end
-		local rs = torso:WaitForChild("Right Shoulder", 5)
-		local ls = torso:WaitForChild("Left Shoulder", 5)
-		local neck = torso:WaitForChild("Neck", 5)
-		local rj = root:WaitForChild("RootJoint", 5)
-		if not (rs and ls and neck and rj) then
-			return
+		-- the default walk/idle would fight the boxing anims
+		local animate = model:FindFirstChild("Animate")
+		if animate and animate:IsA("LocalScript") then
+			animate.Enabled = false
 		end
-		rigs[model] = {
-			RS = rs :: Motor6D, LS = ls :: Motor6D, Root = rj :: Motor6D, Neck = neck :: Motor6D,
-			Current = table.clone(STANCE), Model = model,
-		}
+		local animator = humanoid:FindFirstChildOfClass("Animator")
+		if not animator then
+			animator = Instance.new("Animator")
+			animator.Parent = humanoid
+		end
+		for _, t in (animator :: Animator):GetPlayingAnimationTracks() do
+			t:Stop(0)
+		end
+		local rig: Rig = { Model = model, Animator = animator :: Animator, Tracks = {}, Speeds = {} }
+		-- load everything up front so the first punch isn't late
+		for _, ks in animFolder:GetChildren() do
+			load(rig, ks.Name)
+		end
+		rig.Token = model:GetAttribute("ActionToken")
+		rigs[model] = rig
+		play(rig, "Idle")
 	end)
 end
 
-local function blend(a: Pose, b: Pose, t: number): Pose
-	return { RS = a.RS:Lerp(b.RS, t), LS = a.LS:Lerp(b.LS, t), Root = a.Root:Lerp(b.Root, t), Neck = a.Neck:Lerp(b.Neck, t) }
+local function onAction(rig: Rig)
+	local model = rig.Model
+	local action = model:GetAttribute("Action")
+	if typeof(action) ~= "string" then
+		return
+	end
+	local move = Config.Moves[action]
+	if move then
+		-- stretch the anim so its impact frame lands when the server says the punch lands
+		local startup = model:GetAttribute("ActionLength") or move.Startup
+		local speed = impact(action) / math.max(startup, 0.05)
+		local t = play(rig, action, speed, 0.05)
+		-- catch up on the time the attribute spent crossing the network
+		local late = workspace:GetServerTimeNow() - (model:GetAttribute("ActionStart") or 0)
+		if t and late > 0 and late < 0.3 then
+			t.TimePosition = late * speed
+		end
+		return
+	end
+	local dir = action:match("^Slip(%a+)")
+	if dir then
+		play(rig, "Slip" .. dir, length("Slip" .. dir) / (Config.SlipTime + 0.15), 0.05)
+	end
 end
 
-local function targetPose(model: Model, now: number): (Pose, number)
-	local state = model:GetAttribute("State")
+local function onState(rig: Rig, state: string?)
+	local was = rig.State
+	rig.State = state
+	if state == was then
+		return
+	end
+	if was == "Down" then
+		stop(rig, "DownFall")
+		stop(rig, "DownLoop", 0.3)
+	elseif was == "KO" then
+		stop(rig, "KOFall")
+		stop(rig, "KOLoop", 0.3)
+	elseif was == "Stunned" then
+		stop(rig, "Stunned", 0.2)
+	end
 	if state == "Down" or state == "KO" then
-		return DOWN, 8
+		local fall = play(rig, if state == "KO" then "KOFall" else "DownFall", 1, 0.05)
+		local loopRole = if state == "KO" then "KOLoop" else "DownLoop"
+		if fall then
+			fall.Stopped:Once(function()
+				if rig.State == state then
+					play(rig, loopRole, 1, 0.1)
+				end
+			end)
+		end
+	elseif state == "Stunned" then
+		play(rig, "Stunned", 1, 0.08)
 	end
-	if state == "Stunned" then
-		return STUNNED, 30
+end
+
+local function onReaction(rig: Rig)
+	local r = Feel.reactions[rig.Model]
+	if not r or r.Started == rig.Reaction then
+		return
 	end
-	local action = model:GetAttribute("Action")
-	local started = model:GetAttribute("ActionStart") or 0
-	local elapsed = now - started
-	if typeof(action) == "string" then
-		local punch = PUNCH[action]
-		if punch then
-			local startup = model:GetAttribute("ActionLength") or Config.Moves[action].Startup
-			local chamberEnd = startup * 0.55
-			if elapsed < chamberEnd then
-				return CHAMBER[action], 20
-			elseif elapsed < startup + 0.09 then
-				return punch, 70 -- snap out fast so it reads as a punch, not a push
-			elseif elapsed < startup + 0.34 then
-				return STANCE, 11 -- slower pull back sells the weight
+	rig.Reaction = r.Started
+	local role
+	if r.Result == "Blocked" or r.Result == "Chip" then
+		role = if r.Side > 0 then "BlockRight" else "BlockLeft"
+	elseif r.Move == "Body" then
+		role = "HitBody"
+	elseif r.Move == "Uppercut" then
+		role = "HitHeadTop"
+	else
+		role = if r.Side > 0 then "HitHeadRight" else "HitHeadLeft"
+	end
+	-- their reactions are a second long, the snap is at the start so play them quick
+	play(rig, role, if r.Result == "Counter" then 1.4 else 1.8, 0.03)
+end
+
+local WALKS = { "WalkForward", "WalkBack", "WalkLeft", "WalkRight" }
+local function updateLoops(rig: Rig)
+	local model = rig.Model
+	local state = model:GetAttribute("State")
+	local free = state ~= "Down" and state ~= "KO" and state ~= "Stunned"
+
+	local guard = load(rig, "Guard")
+	if guard then
+		local want = free and model:GetAttribute("Guarding") == true
+		if want and not guard.IsPlaying then
+			guard:Play(0.12)
+		elseif not want and guard.IsPlaying then
+			guard:Stop(0.15)
+		end
+	end
+
+	-- walk anims by which way the fighter is moving relative to where it faces
+	local root = model:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local v = if root then root.CFrame:VectorToObjectSpace(root.AssemblyLinearVelocity) else Vector3.zero
+	v = Vector3.new(v.X, 0, v.Z)
+	local moving = free and v.Magnitude > 1.5
+	local weights = { 0, 0, 0, 0 }
+	if moving then
+		local u = v.Unit
+		weights = { math.max(-u.Z, 0), math.max(u.Z, 0), math.max(-u.X, 0), math.max(u.X, 0) }
+	end
+	for i, role in WALKS do
+		local t = load(rig, role)
+		if t then
+			local w = weights[i]
+			if w > 0.05 then
+				if not t.IsPlaying then
+					t:Play(0.15, w)
+				else
+					t:AdjustWeight(w, 0.1)
+				end
+			elseif t.IsPlaying then
+				t:Stop(0.2)
 			end
 		end
-		local slipDir = action:match("^Slip(%a+)")
-		if slipDir and SLIP[slipDir] and elapsed < Config.SlipTime + 0.1 then
-			return SLIP[slipDir], 30
-		end
 	end
-	if model:GetAttribute("Guarding") then
-		return GUARD, 22
-	end
-	-- a little bounce on the toes so idle fighters don't look frozen
-	local bob = math.sin(now * 6 + (model:GetAttribute("ActionToken") or 0)) * 0.06
-	local idle = table.clone(STANCE)
-	idle.Root = idle.Root * CFrame.new(0, 0, bob)
-	return idle, 12
 end
 
--- what getting hit looks like, layered on whatever pose the fighter is in
-local REACT_TIME = 0.32
-local function reaction(model: Model): (CFrame, CFrame, CFrame)
-	local r = Feel.reactions[model]
-	if not r then
-		return CFrame.identity, CFrame.identity, CFrame.identity
-	end
-	local t = (os.clock() - r.Started) / REACT_TIME
-	if t >= 1 then
-		Feel.reactions[model] = nil
-		return CFrame.identity, CFrame.identity, CFrame.identity
-	end
-	-- sharp hit, slow recover
-	local k = (if t < 0.15 then t / 0.15 else 1 - (t - 0.15) / 0.85) ^ 1.4
-	k *= if r.Result == "Counter" then 1.6 elseif r.Result == "Blocked" or r.Result == "Chip" then 0.45 else 1
-	local side = r.Side
-	local neck, root, arms = CFrame.identity, CFrame.identity, CFrame.identity
-	if r.Result == "Blocked" or r.Result == "Chip" then
-		root = body(0, 10 * k, 0, 0, -0.35 * k)
-		-- gloves get knocked back toward the face (-x is back for the right arm, mirrored on the left)
-		arms = CFrame.new(-0.35 * k, 0, 0)
-	elseif r.Move == "Hook" then
-		neck = head(-8 * k, 40 * side * k)
-		root = body(22 * side * k, 6 * k, 0, 0.25 * side * k)
-	elseif r.Move == "Uppercut" then
-		neck = head(-50 * k, 6 * side * k)
-		root = body(0, 22 * k, 0, 0, -0.4 * k)
-	elseif r.Move == "Body" then
-		neck = head(18 * k)
-		root = body(0, -26 * k, 0.5 * k, 0, -0.15 * k)
-	else
-		neck = head(-30 * k, 12 * side * k)
-		root = body(6 * side * k, 14 * k, 0, 0, -0.3 * k)
-	end
-	return neck, root, arms
-end
-
-RunService.PreSimulation:Connect(function(dt)
-	local now = workspace:GetServerTimeNow()
+RunService.PreSimulation:Connect(function()
 	local scale = Feel.scale()
 	for model, rig in rigs do
 		if not model.Parent then
 			rigs[model] = nil
 			continue
 		end
-		local target, speed = targetPose(model, now)
-		local alpha = 1 - math.exp(-dt * speed * scale)
-		rig.Current = blend(rig.Current, target, alpha)
-		local neck, root, arms = reaction(model)
-		rig.RS.Transform = arms * rig.Current.RS
-		rig.LS.Transform = arms:Inverse() * rig.Current.LS
-		rig.Root.Transform = rig.Current.Root * root
-		rig.Neck.Transform = rig.Current.Neck * neck
+		local token = model:GetAttribute("ActionToken")
+		if token ~= rig.Token then
+			rig.Token = token
+			onAction(rig)
+		end
+		onState(rig, model:GetAttribute("State"))
+		onReaction(rig)
+		updateLoops(rig)
+		-- hitstop and slow-mo
+		for t, speed in rig.Speeds do
+			if t.IsPlaying then
+				t:AdjustSpeed(speed * scale)
+			end
+		end
 	end
 end)
 
