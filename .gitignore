@@ -14,3 +14,7 @@ wally.lock
 # os
 .DS_Store
 Thumbs.db
+
+# script output
+build/
+__pycache__/
