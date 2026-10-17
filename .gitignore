@@ -3,3 +3,4 @@
 *.rbxlx
 *.lock
 sourcemap.json
+.env
