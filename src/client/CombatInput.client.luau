@@ -134,7 +134,8 @@ RunService:BindToRenderStep("BoxingLockOn", Enum.RenderPriority.Camera.Value + 1
 	camera.CameraType = Enum.CameraType.Scriptable
 	local toTarget = (flat - root.Position).Unit
 	local rightVector = toTarget:Cross(Vector3.yAxis)
-	local eye = root.Position - toTarget * 9 + rightVector * 2.5 + Vector3.new(0, 3.2, 0)
+	-- far enough to the side that your own body doesn't hide the punches landing
+	local eye = root.Position - toTarget * 8.5 + rightVector * 4.5 + Vector3.new(0, 3.4, 0)
 	local focus = (root.Position + targetRoot.Position) / 2 + Vector3.new(0, 1.2, 0)
 	camera.CFrame = camera.CFrame:Lerp(CFrame.lookAt(eye, focus), 0.25)
 end)

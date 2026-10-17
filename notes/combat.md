@@ -32,3 +32,12 @@ dummies
 - Sparring Partner walks in, punches about every 1.1-2.2s, slips 30% / guards 35% when you wind up
 
 ring + dummies spawn points are in the place (workspace.Ring), not in src
+
+feel (all client side, server never slows down)
+- Feel module = shared hitstop / slowmo clock + hit reactions. animator multiplies its blend speed by Feel.scale()
+- ImpactFX: star + sparks + sweat + shockwave ring + white highlight flash at the contact point. gold on counters, blue on blocks
+- hitstop: jab 0.03, other clean hits 0.055, guard break 0.08, counter 0.09
+- counter you're in: slowmo 0.45s at 0.3x, black and white impact frame, fov kick
+- knockdown within 45 studs: slowmo 1.1s, strong impact frame, orbit camera cut on the fighter going down. KO = longer + desaturated
+- reactions: jab/cross head snaps back, hook whips sideways, uppercut throws the head up, body folds you over, blocks knock the gloves back
+- punches step forward with body weight and snap out at speed 70, pull back slower so they feel heavy

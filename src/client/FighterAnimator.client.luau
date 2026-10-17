@@ -6,6 +6,7 @@ local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
+local Feel = require(script.Parent:WaitForChild("Feel"))
 
 local rad = math.rad
 
@@ -19,9 +20,9 @@ end
 local function left(raise: number, inward: number, pull: number?, drop: number?): CFrame
 	return CFrame.new(pull or 0, -(drop or 0), 0) * CFrame.Angles(0, rad(-inward), 0) * CFrame.Angles(0, 0, rad(-raise))
 end
--- root joint: z is up, so z rotation twists the body; x tilts forward/back
-local function body(twist: number, lean: number?, duck: number?, side: number?): CFrame
-	return CFrame.new(side or 0, 0, -(duck or 0)) * CFrame.Angles(rad(lean or 0), 0, rad(twist))
+-- root joint: z is up, so z rotation twists the body; x tilts forward/back, -y is forward
+local function body(twist: number, lean: number?, duck: number?, side: number?, step: number?): CFrame
+	return CFrame.new(side or 0, -(step or 0), -(duck or 0)) * CFrame.Angles(rad(lean or 0), 0, rad(twist))
 end
 local function head(tilt: number?, turn: number?): CFrame
 	return CFrame.Angles(rad(tilt or 0), 0, rad(turn or 0))
@@ -38,11 +39,11 @@ local GUARD: Pose = {
 
 -- the extended frame of each punch
 local PUNCH: { [string]: Pose } = {
-	Jab = { RS = right(110, 35, 0.4), LS = left(92, 6, -0.9), Root = body(-22, -6), Neck = head(4, 14) },
-	Cross = { RS = right(92, 4, -1.1), LS = left(126, 44, 0.45), Root = body(26, -10), Neck = head(6, -18) },
-	Hook = { RS = right(92, 78, -0.3), LS = left(126, 44, 0.45), Root = body(38, -6), Neck = head(4, -22) },
-	Uppercut = { RS = right(150, 20, -0.4, -0.4), LS = left(126, 44, 0.45), Root = body(18, 8, 0.25), Neck = head(-8, -10) },
-	Body = { RS = right(60, 20, -0.9, 0.3), LS = left(126, 44, 0.45), Root = body(16, -18, 0.7), Neck = head(10, -10) },
+	Jab = { RS = right(116, 38, 0.4), LS = left(94, 4, -1.05), Root = body(-26, -10, 0, 0, 0.35), Neck = head(6, 16) },
+	Cross = { RS = right(94, 2, -1.25), LS = left(128, 46, 0.5), Root = body(34, -16, 0.1, 0, 0.55), Neck = head(8, -22) },
+	Hook = { RS = right(96, 84, -0.35), LS = left(128, 46, 0.5), Root = body(48, -10, 0.15, 0, 0.3), Neck = head(6, -28) },
+	Uppercut = { RS = right(158, 18, -0.45, -0.5), LS = left(128, 46, 0.5), Root = body(22, 12, 0.1, 0, 0.3), Neck = head(-12, -12) },
+	Body = { RS = right(62, 22, -1.0, 0.35), LS = left(128, 46, 0.5), Root = body(20, -24, 0.85, 0, 0.45), Neck = head(14, -12) },
 }
 -- the chambered frame (pulled back) before the punch fires
 local CHAMBER: { [string]: Pose } = {
@@ -109,11 +110,11 @@ local function targetPose(model: Model, now: number): (Pose, number)
 			local startup = model:GetAttribute("ActionLength") or Config.Moves[action].Startup
 			local chamberEnd = startup * 0.55
 			if elapsed < chamberEnd then
-				return CHAMBER[action], 18
-			elseif elapsed < startup + 0.1 then
-				return punch, 45 -- snap out fast
-			elseif elapsed < startup + 0.32 then
-				return STANCE, 14
+				return CHAMBER[action], 20
+			elseif elapsed < startup + 0.09 then
+				return punch, 70 -- snap out fast so it reads as a punch, not a push
+			elseif elapsed < startup + 0.34 then
+				return STANCE, 11 -- slower pull back sells the weight
 			end
 		end
 		local slipDir = action:match("^Slip(%a+)")
@@ -131,20 +132,59 @@ local function targetPose(model: Model, now: number): (Pose, number)
 	return idle, 12
 end
 
+-- what getting hit looks like, layered on whatever pose the fighter is in
+local REACT_TIME = 0.32
+local function reaction(model: Model): (CFrame, CFrame, CFrame)
+	local r = Feel.reactions[model]
+	if not r then
+		return CFrame.identity, CFrame.identity, CFrame.identity
+	end
+	local t = (os.clock() - r.Started) / REACT_TIME
+	if t >= 1 then
+		Feel.reactions[model] = nil
+		return CFrame.identity, CFrame.identity, CFrame.identity
+	end
+	-- sharp hit, slow recover
+	local k = (if t < 0.15 then t / 0.15 else 1 - (t - 0.15) / 0.85) ^ 1.4
+	k *= if r.Result == "Counter" then 1.6 elseif r.Result == "Blocked" or r.Result == "Chip" then 0.45 else 1
+	local side = r.Side
+	local neck, root, arms = CFrame.identity, CFrame.identity, CFrame.identity
+	if r.Result == "Blocked" or r.Result == "Chip" then
+		root = body(0, 10 * k, 0, 0, -0.35 * k)
+		-- gloves get knocked back toward the face (-x is back for the right arm, mirrored on the left)
+		arms = CFrame.new(-0.35 * k, 0, 0)
+	elseif r.Move == "Hook" then
+		neck = head(-8 * k, 40 * side * k)
+		root = body(22 * side * k, 6 * k, 0, 0.25 * side * k)
+	elseif r.Move == "Uppercut" then
+		neck = head(-50 * k, 6 * side * k)
+		root = body(0, 22 * k, 0, 0, -0.4 * k)
+	elseif r.Move == "Body" then
+		neck = head(18 * k)
+		root = body(0, -26 * k, 0.5 * k, 0, -0.15 * k)
+	else
+		neck = head(-30 * k, 12 * side * k)
+		root = body(6 * side * k, 14 * k, 0, 0, -0.3 * k)
+	end
+	return neck, root, arms
+end
+
 RunService.PreSimulation:Connect(function(dt)
 	local now = workspace:GetServerTimeNow()
+	local scale = Feel.scale()
 	for model, rig in rigs do
 		if not model.Parent then
 			rigs[model] = nil
 			continue
 		end
 		local target, speed = targetPose(model, now)
-		local alpha = 1 - math.exp(-dt * speed)
+		local alpha = 1 - math.exp(-dt * speed * scale)
 		rig.Current = blend(rig.Current, target, alpha)
-		rig.RS.Transform = rig.Current.RS
-		rig.LS.Transform = rig.Current.LS
-		rig.Root.Transform = rig.Current.Root
-		rig.Neck.Transform = rig.Current.Neck
+		local neck, root, arms = reaction(model)
+		rig.RS.Transform = arms * rig.Current.RS
+		rig.LS.Transform = arms:Inverse() * rig.Current.LS
+		rig.Root.Transform = rig.Current.Root * root
+		rig.Neck.Transform = rig.Current.Neck * neck
 	end
 end)
 
