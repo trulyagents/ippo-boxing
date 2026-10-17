@@ -135,9 +135,15 @@ local function setBars(model: Model)
 		ghostTip.Visible = ghost.Size.X.Scale > 0.003
 	end
 	local maxNow = model:GetAttribute("MaxHealthNow") or Config.MaxHealth
-	-- the dark lost chunk also covers the point so it reads as gone
+	-- the dark lost chunk sits at the end of the bar with its own point, like the fills
 	local lostShare = math.clamp(1 - maxNow / Config.MaxHealth, 0, 1)
-	lost.Size = UDim2.fromScale(if lostShare > 0 then lostShare * usable(ghost) + (1 - usable(ghost)) else 0, 1)
+	local room = usable(ghost)
+	lost.Position = UDim2.fromScale(room, 0)
+	lost.Size = UDim2.fromScale(lostShare * room, 1)
+	local lostTip = lost:FindFirstChild("Tip") :: ImageLabel?
+	if lostTip then
+		lostTip.Visible = lostShare > 0
+	end
 
 	local stamina = model:GetAttribute("Stamina") or Config.MaxStamina
 	setFill(fills.Stamina, stamina / Config.MaxStamina, 0.3)
