@@ -46,6 +46,7 @@ local function loadBoxer(player: Player)
 	player.Character = character
 	character.Parent = workspace
 	Gear.gloves(character)
+	Gear.trunks(character)
 	Fighters.register(character, player)
 	-- boxing never kills you, so dying means you fell off the map or reset
 	local humanoid = character:FindFirstChildOfClass("Humanoid")

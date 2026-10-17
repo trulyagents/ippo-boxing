@@ -44,7 +44,7 @@ feel (all client side, server never slows down)
 
 gear
 - gloves: ReplicatedStorage.BoxingGear.Glove, an ai-made mesh (studio mesh gen) sized to wrap the end of an R6 arm. Gear.gloves welds one on each arm, cuff toward the elbow, thumb toward the body. players and dummies both get them
-- trunks: real catalog pants, "J. Parker Red White & Gold Boxing Shorts" by Ro-Boxing Apparel (template 17137655469). dummies wear them, players keep their own clothes for now
+- trunks: real catalog pants, "J. Parker Red White & Gold Boxing Shorts" by Ro-Boxing Apparel (template 17137655469). everyone wears them, players and dummies
 - R6AnimRig in the ring wears both, for animating in the Animation Editor
 
 animations
