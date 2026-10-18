@@ -8,5 +8,5 @@ stats, unlocks and saving (step 6). numbers live in src/shared/Stats.luau
 - endurance and willpower only grow in fights (clean hits taken, getting up)
 - unlocks: peek-a-boo and 3 of the specials need stats, double jab is open. dummies skip the checks
 - saving is ProfileStore (copied from forgotten fates), stats go on the player as StatPower etc for a ui later
-- studio has no api access so nothing saves there, that's expected
+- studio saves to its own store (BoxersStudio) so testing never touches live data. needs api access on in game settings
 - not done yet: stats screen (build it in studio), server-timed rhythm minigames, spar before training counts, a training anim
