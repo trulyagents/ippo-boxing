@@ -154,5 +154,10 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
   - falls (tools/falls.py): g2's stood still 7 frames after the punch, drifted, then dropped a stud in 3 frames and ended half a stud under the floor. now a 2 frame hang, an accelerating drop landing on frame 14, a small bounce, and every frame lifted so nothing goes under the canvas. loops got the same lift
   - a knockdown plays in slow mo (Feel), so the fall runs longer than its 0.73s on screen. thats fine
   - stunned: g2 held one torso pose for a second, now it snaps in and sways like youre dazed, peek-a-boo has its own
-  - specials are new, keyframed in blender (tools/blender_author.py) since g2's popped 96-138 degrees at both ends and barely threw the punch: weave roll right/left (dip to one side, hook out the other, impact frame 9), lunge uppercut (sink, drive up, lands frame 12), step counter (slip left, step in behind a cross, frame 8). tools/specials.py blends their ends onto the stance idle
+  - specials are new since g2's popped 96-138 degrees at both ends and barely threw the punch. my first try set the arms by angle off the shoulder in blender and with the torso twisted every punch aimed across the body, looked broken
+  - now tools/compose.py builds them from poses that already look right: the arms and body at the impact frame of a good punch (peek-a-boo hook frame 6, my peek-a-boo uppercut, orthodox cross) plus my own torso dips, weaves and sinks, blended joint by joint. legs keep their world angle while the torso moves so a foot doesn't kick out
+  - a hook's contact frame is when the fist is in front of the chin, not when it's furthest from the body. g2's right hook is frame 6, left hook frame 5, by 7 they've swung past
+  - left roll is the right roll mirrored (g2's left hook flares the other arm out like a shrug), ends put back on the real idle
+  - impacts: rolls frame 9, lunge frame 12, step counter frame 8
+  - lesson: always look at the rendered key frames before calling an anim done, the audit only checks curves and feet
 

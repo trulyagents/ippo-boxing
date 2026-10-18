@@ -46,6 +46,7 @@ ROLES = {
     "PaBJab": ("game2", None, "Pab_JabHead", False, 3),
     "PaBCross": ("game2", None, "PaB_RightStraight", False, 3),
     "PaBHook": ("game2", None, "PaB_RightHook", False, 3),
+    "PaBHookLeft": ("game2", None, "PaB_LeftHook", False, 3),
     # specials
     "RollLeft": ("game2", None, "DempseyRoll2", False, 3),
     "RollRight": ("game2", None, "DempseyRoll1", False, 3),

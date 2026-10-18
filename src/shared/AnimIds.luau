@@ -59,9 +59,9 @@ return {
 	PaBBlockRight = "rbxassetid://100071338403870",
 	PaBStunned = "rbxassetid://125606427623625",
 
-	-- specials, made in blender from references (weave roll, gazelle style lunge, step counter)
-	RollLeft = "rbxassetid://112826785077709",
-	RollRight = "rbxassetid://72456852822093",
-	LungeUppercut = "rbxassetid://116444068468199",
-	StepCounter = "rbxassetid://97171959473767",
+	-- specials, built from the good punches' impact poses plus my own torso moves (tools/compose.py)
+	RollLeft = "rbxassetid://134478919120953",
+	RollRight = "rbxassetid://132474116325752",
+	LungeUppercut = "rbxassetid://118024885787561",
+	StepCounter = "rbxassetid://137959019456725",
 } :: { [string]: string }
