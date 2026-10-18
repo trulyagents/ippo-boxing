@@ -22,7 +22,7 @@ return {
 
 	SlipLeft = "rbxassetid://123554709180570",
 	SlipRight = "rbxassetid://110329219250331",
-	SlipDuck = "rbxassetid://115140695652613",
+	SlipDuck = "rbxassetid://90800663225650",
 	SlipBack = "rbxassetid://116691994517215",
 
 	HitHeadLeft = "rbxassetid://95737528979029",
@@ -40,7 +40,7 @@ return {
 
 	-- peek-a-boo stance
 	PaBIdle = "rbxassetid://136227323046006",
-	PaBGuard = "rbxassetid://117054686676853",
+	PaBGuard = "rbxassetid://73886140634591",
 	PaBWalkForward = "rbxassetid://107769646923286",
 	PaBWalkBack = "rbxassetid://102258030186308",
 	PaBWalkLeft = "rbxassetid://118988293879002",

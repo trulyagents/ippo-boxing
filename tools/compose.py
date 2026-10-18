@@ -162,7 +162,7 @@ def keyed_pose(lib, n, af, mv, floor=None):
         # (a foot hangs in the air when the leg is swung further from straight down than the other)
         for leg in mv.get("plant") or []:
             best = (abs(leg_low(pose, leg) - floor), 0)
-            for d in [x * 0.5 for x in range(-60, 61)]:
+            for d in [x * 0.5 for x in range(-120, 121)]:
                 trial = settle(swing_leg_world(pose, leg, d), floor)
                 err = abs(leg_low(trial, leg) - floor)
                 if err < best[0]:
@@ -272,6 +272,25 @@ PUNCHES = {
 }
 
 
+# peek-a-boo guard stood bolt upright with the legs together. the tyson references are a wide
+# crouched stance leaning in behind the gloves, so the whole loop gets that, keyed every 5 frames so
+# g2's breathing between keys survives
+CROUCH = dict(lean=-11, spread={"Right Leg": 9, "Left Leg": -9}, swing={"Right Leg": -10, "Left Leg": 10}, plant=["Right Leg", "Left Leg"])
+# every key crouched, the first and last too, or it would pop up straight at every loop
+PUNCHES["PaBGuard"] = [(f, "PaBGuard", f, CROUCH, "smooth") for f in [1] + list(range(6, 57, 5)) + [61]]
+# g2's duck barely dipped. tyson's ducks bend nearly flat under the punch with the knees bent
+PUNCHES["SlipDuck"] = [
+    (1, "SlipDuck", 1, {}, "linear"),
+    (4, "SlipDuck", 4, dict(lean=-20, swing={"Right Leg": -12, "Left Leg": 12}, spread={"Right Leg": 6, "Left Leg": -6}, plant=["Right Leg", "Left Leg"]), "smooth"),
+    (8, "SlipDuck", 8, dict(lean=-34, swing={"Right Leg": -12, "Left Leg": 12}, spread={"Right Leg": 10, "Left Leg": -10}, plant=["Right Leg", "Left Leg"]), "smooth"),
+    (12, "SlipDuck", 12, dict(lean=-16, swing={"Right Leg": -10, "Left Leg": 10}, plant=["Right Leg", "Left Leg"]), "smooth"),
+    (16, "SlipDuck", 16, {}, "smooth"),
+]
+
+
+LOOPS = {"PaBGuard"}
+
+
 S = [[-1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 SWAP = {"Right Arm": "Left Arm", "Left Arm": "Right Arm", "Right Leg": "Left Leg", "Left Leg": "Right Leg"}
 
@@ -308,6 +327,9 @@ def main():
     result = {"fps": FPS, "anims": {}}
     for name, keys in list(SPECIALS.items()) + list(PUNCHES.items()):
         frames = build(keys, lib)
+        if name in LOOPS:
+            # foot planting can land a hair differently at each end, so the seam gets an exact copy
+            frames[-1] = frames[0]
         result["anims"][name] = {"loop": False, "frames": to_json(frames), "key_frames": list(range(len(frames)))}
         print(f"{name}: {len(frames)} frames")
     # mirrored, then the ends put back on the real idle so it doesn't start on a flipped guard

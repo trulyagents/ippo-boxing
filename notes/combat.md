@@ -163,5 +163,6 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
   - compose.py now leans the torso from the hips (it pivoted at the torso's middle, which slid both feet back), swings legs around the world's left-right axis (the torso's own axis tilted them sideways), and settles every key so the lowest foot is on the floor. plant=[leg] nudges a leg until its foot touches too
   - reference pass on the specials (refs in my vault): weave roll now slides the whole body low to one side over a wide stance and comes up out the other side with the hook, step counter slips low off the line then steps in with the lead foot and brings the cross over the top. compose.py got slide (sideways body) and spread (legs out to the side)
   - punch reference pass: jab, cross and hooks already matched the charts. uppercuts and body shots (both stances) got their legs, a split stance load so the hips drop with both feet down, uppercuts rise at impact
+  - guards and slips pass: peek-a-boo guard now a wide crouch leaning in (it stood bolt upright), duck bends nearly flat under the punch. orthodox stance and side slips were fine. loops built in compose.py get an exact seam copy
   - lesson: always look at the rendered key frames before calling an anim done, the audit only checks curves and feet
 
