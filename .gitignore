@@ -18,3 +18,7 @@ Thumbs.db
 # script output
 build/
 __pycache__/
+
+# third party rig, no redistribution license
+models/anims/*.blend
+models/anims/*.blend1

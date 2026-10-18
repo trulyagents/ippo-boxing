@@ -48,6 +48,9 @@ return {
 	PaBJab = "rbxassetid://76377208281413",
 	PaBCross = "rbxassetid://105228448854320",
 	PaBHook = "rbxassetid://122340105759099",
+	-- made in blender on the r6 rig (models/anims), not from the bought games
+	PaBUppercut = "rbxassetid://113289111602703",
+	PaBBody = "rbxassetid://73021932379975",
 
 	-- specials
 	RollLeft = "rbxassetid://71108466352963",

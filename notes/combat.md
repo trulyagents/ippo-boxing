@@ -115,3 +115,12 @@ bought anims
 - they're R6 and play fine on our rig. their rig also keys face parts we don't have, those just get ignored
 - skipped junk (Automatic Save, tests, jump rope, mitts)
 - still need publishing from the Animation Editor before they work in a live server
+
+blender anims (first ones that aren't from the bought games)
+- peek-a-boo uppercut and body shot were keyframed in blender on aeresei's R6 IK + FK rig V2.22 (devforum), working file models/anims/PaBPunches.blend
+- that rig has no redistribution license and the repo is public, so the .blend is gitignored. the rig itself is cached by the animate-roblox-characters skill
+- the rig exports .rbxanim keyed by its own control names, useless for us. instead i sample the InternalArmature bones every frame in blender (json), then tools/parts_to_keyframes.py works out each R6 Motor6D Transform from where the parts end up, using the stock R6 C0/C1. blender +y forward / z up becomes roblox -z forward / y up
+- checked it: at the uppercut impact frame every part in roblox lands exactly where it is in blender
+- arms on the rig are FK from the shoulder (R6 arms are one block), legs are IK so the feet stay planted. dropping the hips more than a few hundredths sinks the R6 feet, so the crouch is all lean and twist
+- uppercut 21 frames, impact frame 9 (0.267). body shot 18 frames, impact frame 6 (0.167). Impact attributes set on the KeyframeSequences in BoxingAnims
+- gif previews in build/anim_preview

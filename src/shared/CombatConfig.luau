@@ -214,6 +214,8 @@ CombatConfig.Stances = {
 			Jab = "PaBJab",
 			Cross = "PaBCross",
 			Hook = "PaBHook",
+			Uppercut = "PaBUppercut",
+			Body = "PaBBody",
 		},
 		WalkBonus = -1,
 		GuardTaken = 0.8,
