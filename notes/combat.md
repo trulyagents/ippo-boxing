@@ -166,4 +166,4 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
   - guards and slips pass: peek-a-boo guard now a wide crouch leaning in (it stood bolt upright), duck bends nearly flat under the punch. orthodox stance and side slips were fine. loops built in compose.py get an exact seam copy
   - falls and hit reactions checked against real ko photos and a head snap shot, they already matched (flat on the back with limp arms and the head turned, head snaps about 46 degrees). refs for every move are in my vault under Pipelines/References
   - lesson: always look at the rendered key frames before calling an anim done, the audit only checks curves and feet
-
+  - weave roll is back on g2's original dempsey roll anims (my call after trying it), impacts 0.6 left / 0.5 right like before

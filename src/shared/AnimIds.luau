@@ -60,8 +60,8 @@ return {
 	PaBStunned = "rbxassetid://125606427623625",
 
 	-- specials, built from the good punches' impact poses plus my own torso moves (tools/compose.py)
-	RollLeft = "rbxassetid://113990476195742",
-	RollRight = "rbxassetid://122332615868216",
+	RollLeft = "rbxassetid://71108466352963",
+	RollRight = "rbxassetid://106184394013773",
 	LungeUppercut = "rbxassetid://110247453598111",
 	StepCounter = "rbxassetid://78317788834785",
 } :: { [string]: string }
