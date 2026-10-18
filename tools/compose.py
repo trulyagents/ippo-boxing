@@ -15,9 +15,10 @@ from retime import ease
 ROOT_C0 = JOINTS["Torso"][1]
 
 
-def torso_turn(lean=0.0, twist=0.0, side=0.0, drop=0.0):
+def torso_turn(lean=0.0, twist=0.0, side=0.0, drop=0.0, fwd=0.0, swing=None, lift=0.0, plant=None):
     """a torso move in roblox's world axes around the hips: lean - is forward, twist + turns left,
-    side + leans left, drop + sinks (studs)"""
+    side + leans left, drop + sinks, fwd + carries the body forward (studs). swing is handled in
+    build (per joint), it's accepted here so a key can carry it"""
     def rot(axis, deg):
         a = math.radians(deg)
         c, s = math.cos(a), math.sin(a)
@@ -28,7 +29,13 @@ def torso_turn(lean=0.0, twist=0.0, side=0.0, drop=0.0):
         return [[c, -s, 0, 0], [s, c, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 
     r = mul(mul(rot("y", twist), rot("x", lean)), rot("z", side))
-    r[1][3] = -drop
+    # pivot at the hips (a stud under the torso's centre), not the middle of the torso, or leaning
+    # forward swings the hips back and drags both feet behind
+    hip = [0.0, -1.0, 0.0]
+    for i in range(3):
+        r[i][3] = hip[i] - sum(r[i][k] * hip[k] for k in range(3))
+    r[1][3] -= drop
+    r[2][3] -= fwd
     c0r = [row[:3] + [0] for row in ROOT_C0[:3]] + [[0, 0, 0, 1]]
     return mul(mul(inv(c0r), r), c0r)
 
@@ -73,9 +80,98 @@ def blend(a, b, t):
     return out
 
 
+def swing_joint(joint, degrees):
+    """swing a limb forward (+) or back (-) from its hip or shoulder, around the torso's left-right
+    axis. used for the lunge stride and to push a punch further out"""
+    c0 = JOINTS[joint][1]
+    rot = [row[:3] + [0] for row in c0[:3]] + [[0, 0, 0, 1]]
+    a = math.radians(degrees)
+    rx = [[1, 0, 0, 0], [0, math.cos(a), -math.sin(a), 0], [0, math.sin(a), math.cos(a), 0], [0, 0, 0, 1]]
+    return mul(mul(inv(rot), rx), rot)
+
+
+def swing_leg_world(pose, leg, degrees):
+    """swing a leg forward (+) or back (-) around the world's left-right axis at its hip. the torso
+    is usually leaned and twisted, so swinging in its own axes tilted the legs out sideways"""
+    _, c0, c1 = JOINTS[leg]
+    w = part_worlds(pose)
+    hip = mul(w["Torso"], c0)
+    p = [hip[i][3] for i in range(3)]
+    a = math.radians(degrees)
+    rx = [[1, 0, 0, 0], [0, math.cos(a), -math.sin(a), 0], [0, math.sin(a), math.cos(a), 0], [0, 0, 0, 1]]
+    to, back = identity(), identity()
+    for i in range(3):
+        to[i][3], back[i][3] = p[i], -p[i]
+    want = mul(mul(mul(to, rx), back), w[leg])
+    out = dict(pose)
+    out[leg] = mul(mul(mul(inv(c0), inv(w["Torso"])), want), c1)
+    return out
+
+
+def leg_low(pose, leg):
+    w = part_worlds(pose)
+    m = w[leg]
+    return min(
+        m[1][0] * cx + m[1][1] * cy + m[1][2] * cz + m[1][3]
+        for cx in (-0.5, 0.5)
+        for cy in (-1.0, 1.0)
+        for cz in (-0.5, 0.5)
+    )
+
+
+def lowest_foot(pose):
+    """lowest corner of either leg block (roblox y)"""
+    w = part_worlds(pose)
+    low = 99.0
+    for leg in ("Right Leg", "Left Leg"):
+        m = w[leg]
+        for cx in (-0.5, 0.5):
+            for cy in (-1.0, 1.0):
+                for cz in (-0.5, 0.5):
+                    low = min(low, m[1][0] * cx + m[1][1] * cy + m[1][2] * cz + m[1][3])
+    return low
+
+
+def settle(pose, floor):
+    """move the whole body up or down so the lowest foot sits on the floor. hand set drops never
+    matched what the rigid R6 legs actually do, a split stance needs exactly its own drop"""
+    gap = lowest_foot(pose) - floor
+    out = dict(pose)
+    out["Torso"] = mul(torso_turn(drop=gap), pose["Torso"])
+    return out
+
+
+def keyed_pose(lib, n, af, mv, floor=None):
+    pose = with_torso(lib.pose(n, af), torso_turn(**{k: v for k, v in mv.items() if k != "drop"}))
+    for joint, deg in (mv.get("swing") or {}).items():
+        if joint.endswith("Leg"):
+            pose = swing_leg_world(pose, joint, deg)
+        else:
+            pose[joint] = mul(swing_joint(joint, deg), pose[joint])
+    if floor is not None and mv:
+        pose = settle(pose, floor)
+        # legs that should both stand: nudge each one's swing until its foot is on the floor too
+        # (a foot hangs in the air when the leg is swung further from straight down than the other)
+        for leg in mv.get("plant") or []:
+            best = (abs(leg_low(pose, leg) - floor), 0)
+            for d in [x * 0.5 for x in range(-60, 61)]:
+                trial = settle(swing_leg_world(pose, leg, d), floor)
+                err = abs(leg_low(trial, leg) - floor)
+                if err < best[0]:
+                    best = (err, d)
+            pose = settle(swing_leg_world(pose, leg, best[1]), floor)
+        # a key can still lift off on purpose (the trailing foot at contact)
+        if mv.get("lift"):
+            pose = dict(pose)
+            pose["Torso"] = mul(torso_turn(drop=-mv["lift"]), pose["Torso"])
+    return pose
+
+
 def build(keys, lib):
-    """keys: (frame, anim, anim frame, torso move dict, ease into this key)"""
-    poses = [(f, with_torso(lib.pose(n, af), torso_turn(**mv)), e) for f, n, af, mv, e in keys]
+    """keys: (frame, anim, anim frame, torso move dict, ease into this key). every key is settled so
+    its lowest foot stands where the first key's does"""
+    floor = lowest_foot(lib.pose(keys[0][1], keys[0][2]))
+    poses = [(f, keyed_pose(lib, n, af, mv, floor), e) for f, n, af, mv, e in keys]
     frames = []
     for (f0, p0, _), (f1, p1, e) in zip(poses, poses[1:]):
         for f in range(f0, f1):
@@ -94,12 +190,22 @@ SPECIALS = {
         (9, "PaBHook", 6, dict(lean=-6, side=-8, twist=6), "in"),
         (13, "PaBIdle", 1, {}, "smooth"),
     ],
-    # gazelle style: sink deep with the hand chambered low, then drive up through the uppercut
+    # lunge uppercut, from real references (patterson and tyson fight photos, inoue's airborne one,
+    # an illustrated side view sequence): sink into a long split stance with the front knee bent and
+    # the back leg stretched behind, torso low and forward, hand chambered. then spring forward off
+    # the back leg into one long diagonal, back leg trailing on the toe, uppercut out at head height.
+    # R6 legs are rigid, so the split itself is what drops the hips: about 2 * (1 - cos(angle)) studs
+    # per leg, the drop below matches it so the feet stay on the floor. the body leads forward, then
+    # the game's 2.4 stud push carries the fighter after contact
     "LungeUppercut": [
         (1, "PaBIdle", 1, {}, "linear"),
-        (6, "PaBUppercut", 5, dict(lean=-12, twist=-6, drop=0.08), "smooth"),
-        (12, "PaBUppercut", 9, dict(lean=4, twist=6), "in"),
-        (16, "PaBUppercut", 13, dict(lean=4, twist=8), "smooth"),
+        # an even split so both feet plant. tyson's side dip is in his upper body, a single R6 torso
+        # can't bend there without tilting the hips and lifting a foot, so only a little of it
+        (6, "PaBUppercut", 5, dict(lean=-30, side=3, twist=-10, swing={"Right Leg": -34, "Left Leg": 34}, plant=["Right Leg"]), "smooth"),
+        (9, "PaBUppercut", 7, dict(lean=-24, twist=2, fwd=0.7, swing={"Right Leg": -40, "Left Leg": 26}), "in"),
+        (12, "PaBUppercut", 9, dict(lean=-26, side=-4, twist=12, fwd=1.3, lift=0.12, swing={"Right Leg": -48, "Left Leg": 16, "Right Arm": -25}), "in"),
+        (14, "PaBUppercut", 10, dict(lean=-16, twist=12, fwd=0.6, swing={"Right Leg": -35, "Left Leg": 14, "Right Arm": -18}), "linear"),
+        (17, "PaBUppercut", 13, dict(lean=-8, twist=8, fwd=0.1, swing={"Right Leg": -15, "Left Leg": 8}), "smooth"),
         (22, "PaBIdle", 1, {}, "smooth"),
     ],
     # step counter: slip off to the left, then step in behind the cross. impact on frame 8
