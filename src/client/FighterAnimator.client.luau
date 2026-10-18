@@ -229,8 +229,8 @@ local function onReaction(rig: Rig)
 	else
 		role = if r.Side > 0 then "HitHeadRight" else "HitHeadLeft"
 	end
-	-- their reactions are a second long, the snap is at the start so play them quick
-	play(rig, role, if r.Result == "Counter" then 1.4 else 1.8, 0.03)
+	-- half a second at normal speed, a counter plays a bit slower so it lands heavier
+	play(rig, roleFor(rig.Model, role), if r.Result == "Counter" then 0.8 else 1, 0.03)
 end
 
 local WALKS = { "WalkForward", "WalkBack", "WalkLeft", "WalkRight" }

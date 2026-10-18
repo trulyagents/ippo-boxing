@@ -25,12 +25,12 @@ return {
 	SlipDuck = "rbxassetid://115140695652613",
 	SlipBack = "rbxassetid://116691994517215",
 
-	HitHeadLeft = "rbxassetid://129650507422320",
-	HitHeadRight = "rbxassetid://83013444830368",
-	HitHeadTop = "rbxassetid://104034134110725",
-	HitBody = "rbxassetid://70746184553496",
-	BlockLeft = "rbxassetid://97843350435928",
-	BlockRight = "rbxassetid://88373425819489",
+	HitHeadLeft = "rbxassetid://95737528979029",
+	HitHeadRight = "rbxassetid://117330054122626",
+	HitHeadTop = "rbxassetid://108503536991941",
+	HitBody = "rbxassetid://94807664517280",
+	BlockLeft = "rbxassetid://102563830343816",
+	BlockRight = "rbxassetid://123013324168698",
 	Stunned = "rbxassetid://77847472771541",
 
 	DownFall = "rbxassetid://87955555575889",
@@ -51,6 +51,12 @@ return {
 	-- made in blender on the r6 rig (models/anims), not from the bought games
 	PaBUppercut = "rbxassetid://113289111602703",
 	PaBBody = "rbxassetid://73021932379975",
+	PaBHitHeadLeft = "rbxassetid://95443444556297",
+	PaBHitHeadRight = "rbxassetid://76947056083034",
+	PaBHitHeadTop = "rbxassetid://124207011365437",
+	PaBHitBody = "rbxassetid://99779381260180",
+	PaBBlockLeft = "rbxassetid://81486267254632",
+	PaBBlockRight = "rbxassetid://100071338403870",
 
 	-- specials
 	RollLeft = "rbxassetid://71108466352963",

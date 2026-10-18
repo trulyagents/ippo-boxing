@@ -142,4 +142,10 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
   - jab snapped home in its very last frame, now it comes back over 3 frames
   - SlipRight ended 54 degrees off the idle and SlipBack started and ended 157 degrees off (it's an outboxer dash with the body turned), both popped. SlipRight's end blends into the stance idle now. SlipBack had both arms dropped and swung back the whole time, blending them up made them swing through the body, so it keeps g2's footwork but the arms hold the idle guard and ride the torso (retime.py GUARD_ARMS)
 - peek-a-boo jab Impact moved to 0.067, that's where its fist actually peaks
-- next tier: hit reactions and blocks (those run a second long and play at 1.8x, remake them shorter)
+- tier 3 done: hit reactions and blocks, remade with tools/reactions.py
+  - g2's reactions only key the joints they change and the stance idle shows through for the rest. head hits key the head once and hold it a whole second, body hit keys torso and legs, blocks key one arm. that's why they had to play at 1.8x
+  - each one is now 15 frames (0.5s) at normal speed: two frame snap to the hit pose, a touch of overshoot, then it settles. counters play at 0.8 so they land heavier
+  - head hits use g2's head pose at 80% and drag the torso 25% a frame late
+  - blocks start from the guard, not the idle (they only play with the guard up). g2's block swung the arm 35-57 degrees out to the side, which only fit g2's own guard and flung our arms around, so blocks are my own now: the glove pitches 22 degrees up and back toward the face around the shoulder
+  - peek-a-boo has its own copy of all six built on its idle and guard, mapped in its stance Anims. the animator picks the stance version for reactions too now (roleFor)
+  - previews: build a full body json by layering the reaction over the idle, import that into blender
