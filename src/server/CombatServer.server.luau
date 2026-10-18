@@ -7,6 +7,7 @@ local RunService = game:GetService("RunService")
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Fighters = require(script.Parent.Fighters)
 local Gear = require(script.Parent.Gear)
+local PlayerData = require(script.Parent.PlayerData)
 
 local remotes = ReplicatedStorage:FindFirstChild("BoxingRemotes") or Instance.new("Folder")
 remotes.Name = "BoxingRemotes"
@@ -35,6 +36,10 @@ local function spawnPoint(): CFrame
 end
 
 local function loadBoxer(player: Player)
+	local stats = PlayerData.stats(player)
+	if not stats then
+		return
+	end
 	local ok, description = pcall(function()
 		return Players:GetHumanoidDescriptionFromUserId(math.max(player.UserId, 1))
 	end)
@@ -55,7 +60,7 @@ local function loadBoxer(player: Player)
 	Gear.strip(character)
 	Gear.gloves(character)
 	Gear.trunks(character)
-	Fighters.register(character, player)
+	Fighters.register(character, player, stats)
 	-- boxing never kills you, so dying means you fell off the map or reset
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	if humanoid then
@@ -68,9 +73,14 @@ local function loadBoxer(player: Player)
 	end
 end
 
-Players.PlayerAdded:Connect(loadBoxer)
+local function join(player: Player)
+	if PlayerData.load(player) then
+		loadBoxer(player)
+	end
+end
+Players.PlayerAdded:Connect(join)
 for _, player in Players:GetPlayers() do
-	task.spawn(loadBoxer, player)
+	task.spawn(join, player)
 end
 
 -- token bucket per player so spamming the remote does nothing

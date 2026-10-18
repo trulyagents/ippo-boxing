@@ -6,6 +6,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
+local Stats = require(ReplicatedStorage.Shared.Stats)
+local PlayerData = require(script.Parent.PlayerData)
 
 export type Fighter = {
 	Model: Model,
@@ -47,6 +49,7 @@ export type Fighter = {
 	Stance: string,
 	NextSwitch: number,
 	SpecialReady: { [string]: number },
+	Stats: { [string]: number }, -- the saved stats for players, empty for dummies
 }
 
 local Fighters = {}
@@ -89,7 +92,11 @@ local function firedUp(f: Fighter): boolean
 end
 
 local function addCourage(f: Fighter, reason: string)
-	f.Courage = math.clamp(f.Courage + (Config.CourageGain[reason] or 0), 0, Config.MaxCourage)
+	local gain = Config.CourageGain[reason] or 0
+	if gain > 0 then
+		gain *= 1 + Stats.bonus(f.Stats, "Willpower")
+	end
+	f.Courage = math.clamp(f.Courage + gain, 0, Config.MaxCourage)
 end
 
 local function setWalk(f: Fighter)
@@ -112,7 +119,7 @@ local function setWalk(f: Fighter)
 	f.Humanoid.JumpPower = 0
 end
 
-function Fighters.register(model: Model, player: Player?): Fighter?
+function Fighters.register(model: Model, player: Player?, stats: { [string]: number }?): Fighter?
 	local root = model:FindFirstChild("HumanoidRootPart")
 	local humanoid = model:FindFirstChildOfClass("Humanoid")
 	if not (root and root:IsA("BasePart") and humanoid) then
@@ -158,6 +165,7 @@ function Fighters.register(model: Model, player: Player?): Fighter?
 		Stance = Config.Loadout[1],
 		NextSwitch = 0,
 		SpecialReady = {},
+		Stats = stats or {},
 	}
 	byModel[model] = f
 	-- Roblox health isn't used for boxing, keep the humanoid alive
@@ -302,6 +310,9 @@ function getUp(f: Fighter, secondWind: boolean?)
 	else
 		f.Health = math.min(Config.HealthAfterDown[math.min(f.Knockdowns, #Config.HealthAfterDown)], f.MaxHealthNow)
 		addCourage(f, "GotUp")
+		if f.Player then
+			PlayerData.add(f.Player, "Willpower", Stats.FightGain.Willpower)
+		end
 	end
 	setState(f, "Recovery", os.clock() + 0.6)
 	playAction(f, "GetUp")
@@ -400,7 +411,10 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		mult, hitstun, counterName = Config.PunishBonus, 1.2, "PUNISHED"
 	end
 	local counter = counterName ~= nil
-	local damage = move.Damage * mult
+	local damage = move.Damage
+		* mult
+		* (1 + Stats.bonus(attacker.Stats, "Power"))
+		* (1 - Stats.bonus(target.Stats, "Endurance"))
 
 	local result = if counter then "Counter" else "Clean"
 	local covering = target.Guarding and target.State ~= "Stunned" and now >= target.GuardReadyAt
@@ -419,7 +433,7 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		counterName = nil
 		target.Guard -= move.GuardDamage * (if counter then 1.5 else 1) * (if firedUp(target)
 			then Config.FiredUpGuard
-			else 1) * Config.Stances[target.Stance].GuardTaken
+			else 1) * Config.Stances[target.Stance].GuardTaken * (1 + Stats.bonus(attacker.Stats, "Technique"))
 		if target.Guard <= 0 then
 			target.Guard = 0
 			target.Guarding = false
@@ -452,6 +466,9 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		stun(target, move.Hitstun * hitstun)
 		addCourage(attacker, if result == "Counter" then "CounterLanded" else "CleanLanded")
 		addCourage(target, "CleanTaken")
+		if target.Player then
+			PlayerData.add(target.Player, "Endurance", Stats.FightGain.Endurance)
+		end
 		-- clean head shots stick for the rest of the fight
 		if not bodyShot then
 			target.MaxHealthNow =
@@ -478,7 +495,10 @@ local function throw(f: Fighter, moveName: string, counter: number?, onDone: (()
 	local now = os.clock()
 	local slow = (if f.Stamina < Config.GassedBelow then Config.GassedSlowdown else 1)
 		* (if firedUp(f) then Config.FiredUpSpeed else 1)
-	local startup = move.Startup * slow * (Config.Stances[f.Stance].StartupMult[moveName] or 1)
+	local startup = move.Startup
+		* slow
+		* (Config.Stances[f.Stance].StartupMult[moveName] or 1)
+		* (1 - Stats.bonus(f.Stats, "Speed"))
 	local recovery = move.Recovery * slow
 	setState(f, "Windup", now + startup + recovery)
 	-- set before playAction so clients reading the new ActionToken see this punch's length
@@ -566,7 +586,7 @@ function Fighters.punch(f: Fighter, moveName: string)
 	end
 	f.Whiffed = false
 	local counter = takeCounter(f)
-	f.Stamina -= move.Stamina
+	f.Stamina -= move.Stamina * (1 - Stats.bonus(f.Stats, "Stamina"))
 	throw(f, moveName, counter)
 end
 
@@ -574,7 +594,7 @@ end
 function Fighters.special(f: Fighter, slot: number)
 	local name = Config.Stances[f.Stance].Specials[slot]
 	local sp = name and Config.Specials[name]
-	if not sp or f.Guarding or not canAct(f) then
+	if not sp or f.Guarding or not canAct(f) or (f.Player and not Stats.unlocked(f.Stats, name)) then
 		return
 	end
 	local now = os.clock()
@@ -588,7 +608,7 @@ function Fighters.special(f: Fighter, slot: number)
 	buffered[f] = nil
 	f.Whiffed = false
 	local counter = takeCounter(f)
-	f.Stamina -= sp.Stamina
+	f.Stamina -= sp.Stamina * (1 - Stats.bonus(f.Stats, "Stamina"))
 	f.SpecialReady[name] = now + sp.Cooldown
 	f.Model:SetAttribute("Ready" .. name, workspace:GetServerTimeNow() + sp.Cooldown)
 	broadcast("Special", f.Model, name)
@@ -607,8 +627,20 @@ function Fighters.switchStance(f: Fighter)
 	if not canAct(f) or now < f.NextSwitch then
 		return
 	end
+	-- next stance in the loadout this fighter has unlocked, dummies have them all
 	local at = table.find(Config.Loadout, f.Stance) or 0
-	f.Stance = Config.Loadout[at % #Config.Loadout + 1]
+	local nextStance = f.Stance
+	for i = 1, #Config.Loadout - 1 do
+		local s = Config.Loadout[(at + i - 1) % #Config.Loadout + 1]
+		if not f.Player or Stats.unlocked(f.Stats, s) then
+			nextStance = s
+			break
+		end
+	end
+	if nextStance == f.Stance then
+		return
+	end
+	f.Stance = nextStance
 	f.NextSwitch = now + Config.StanceSwitchCooldown
 	f.Model:SetAttribute("StanceReady", workspace:GetServerTimeNow() + Config.StanceSwitchCooldown)
 	f.Guarding, f.GuardHeight = false, nil
