@@ -19,4 +19,7 @@ gym based on the kamogawa gym look (yellow walls, green mat floor, blue ring, re
 - roads sit at 3.3 (same as the gym floor), sidewalks 3.55. the baseplate (top 2.3) is just under it and shows through the empty lots
 - moving water lost its scripts on the pull so it's still water. skipped g2's korakuen hall (real name) and the doors folder
 - g1 spots: only the basketball court came through (Street.Spots.Basketball), its Area and Bubble zones removed, no scripts so it's just scenery. g1's ramen shop and skate park are packages, the place file only has empty models for them. the ramen kitchen props on their own looked bad so i took them out
-- empty lots left for later: two west of the gym, one south, the big one down at the bottom (where g2 had the hall)
+- filled the empty lots with copies of g2's 4 house types (Street.FillBuildings), back to back rows facing the roads. found the empty lots by checking each sidewalk Foundation slab for parts on top
+- the hall's lot was sunk 8 studs, raised it with a LotFill slab at 3.55 and made it a park (Street.Park): g2 grass, bushes, a path and streetlights down the middle
+- two small lots top left are still bare
+- walking out of the gym works, 60 fps in studio with the whole city. pathfinding can't get out of the ring because of the ropes, players can
