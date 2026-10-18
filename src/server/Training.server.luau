@@ -30,6 +30,15 @@ local function hook(model: Model, stat: string)
 	prompt.RequiresLineOfSight = false
 	prompt.Parent = part
 	prompt.Triggered:Connect(function(player)
+		-- don't trust the client was really at the equipment
+		local character = player.Character
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		if
+			not (root and root:IsA("BasePart"))
+			or (root.Position - part.Position).Magnitude > prompt.MaxActivationDistance + 4
+		then
+			return
+		end
 		local now = os.clock()
 		if now < (nextRep[player] or 0) then
 			return
