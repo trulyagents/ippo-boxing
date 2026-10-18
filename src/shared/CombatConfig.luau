@@ -222,6 +222,7 @@ CombatConfig.Stances = {
 			HitBody = "PaBHitBody",
 			BlockLeft = "PaBBlockLeft",
 			BlockRight = "PaBBlockRight",
+			Stunned = "PaBStunned",
 		},
 		WalkBonus = -1,
 		GuardTaken = 0.8,

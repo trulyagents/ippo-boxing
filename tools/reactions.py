@@ -15,6 +15,9 @@ from parts_to_keyframes import JOINTS, cframe_xml, identity, inv, mul
 FPS = 30
 # share of the hit pose on each frame: two frame snap, a touch of overshoot, then it settles
 ENVELOPE = [0.0, 0.62, 1.0, 1.08, 1.0, 0.86, 0.68, 0.5, 0.34, 0.2, 0.09, 0.0, -0.04, -0.02, 0.0]
+# stunned holds as long as the hitstun lasts (up to about a second), so it snaps in then sways
+# like you're dazed instead of freezing in one pose like g2's. the state ending fades it out
+STUN_ENVELOPE = [0.0, 0.6, 1.0] + [1.0 + 0.12 * math.sin(i * 2 * math.pi / 14) for i in range(1, 28)] + [1.0]
 TORSO_DRAG = 0.25  # head hits move the torso this much of the head, a frame late
 BLOCK_KNOCK = 22  # degrees a blocked punch knocks the glove up and back toward the face
 
@@ -37,6 +40,7 @@ REACTIONS = {
     # blocks only ever play with the guard up, so they start from the guard (see knock_back)
     "BlockLeft": (["Left Arm"], False, "Guard", 1.0),
     "BlockRight": (["Right Arm"], False, "Guard", 1.0),
+    "Stunned": (["Torso", "Right Leg", "Left Leg"], False, "Idle", 1.0),
 }
 STANCES = ["", "PaB"]
 
@@ -120,11 +124,12 @@ def main():
             if drag:
                 head = hits["Head"]
                 hits["Torso"] = scaled(from_quat(to_quat(head), [0, 0, 0]), TORSO_DRAG)
-            for f in range(len(ENVELOPE)):
+            env = STUN_ENVELOPE if name == "Stunned" else ENVELOPE
+            for f in range(len(env)):
                 pose = {}
                 for j, hit in hits.items():
                     # the torso drag lands a frame after the head
-                    e = ENVELOPE[max(0, f - 1)] if (drag and j == "Torso") else ENVELOPE[f]
+                    e = env[max(0, f - 1)] if (drag and j == "Torso") else env[f]
                     pose[j] = mul(scaled(hit, e), sample(idle[j], 0))
                 frames.append(pose)
             out_name = prefix + name

@@ -149,3 +149,10 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
   - blocks start from the guard, not the idle (they only play with the guard up). g2's block swung the arm 35-57 degrees out to the side, which only fit g2's own guard and flung our arms around, so blocks are my own now: the glove pitches 22 degrees up and back toward the face around the shoulder
   - peek-a-boo has its own copy of all six built on its idle and guard, mapped in its stance Anims. the animator picks the stance version for reactions too now (roleFor)
   - previews: build a full body json by layering the reaction over the idle, import that into blender
+- tier 4 done: knockdown and ko falls and loops, stunned, the three specials
+  - references i went off: the dempsey roll is a figure eight with the head, knees and waist bent, weight shifting side to side, the hook goes as the head comes out to that side. the gazelle punch sinks to load the legs then drives up and forward so the punch lands on the way up. ko falls should be sudden and speed up, no delay or hop first, head goes last
+  - falls (tools/falls.py): g2's stood still 7 frames after the punch, drifted, then dropped a stud in 3 frames and ended half a stud under the floor. now a 2 frame hang, an accelerating drop landing on frame 14, a small bounce, and every frame lifted so nothing goes under the canvas. loops got the same lift
+  - a knockdown plays in slow mo (Feel), so the fall runs longer than its 0.73s on screen. thats fine
+  - stunned: g2 held one torso pose for a second, now it snaps in and sways like youre dazed, peek-a-boo has its own
+  - specials are new, keyframed in blender (tools/blender_author.py) since g2's popped 96-138 degrees at both ends and barely threw the punch: weave roll right/left (dip to one side, hook out the other, impact frame 9), lunge uppercut (sink, drive up, lands frame 12), step counter (slip left, step in behind a cross, frame 8). tools/specials.py blends their ends onto the stance idle
+

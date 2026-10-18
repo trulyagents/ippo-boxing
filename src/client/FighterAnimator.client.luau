@@ -196,7 +196,7 @@ local function onState(rig: Rig, state: string?)
 		stop(rig, "KOFall")
 		stop(rig, "KOLoop", 0.3)
 	elseif was == "Stunned" then
-		stop(rig, "Stunned", 0.2)
+		stop(rig, roleFor(rig.Model, "Stunned"), 0.2)
 	end
 	if state == "Down" or state == "KO" then
 		local fall = play(rig, if state == "KO" then "KOFall" else "DownFall", 1, 0.05)
@@ -209,7 +209,7 @@ local function onState(rig: Rig, state: string?)
 			end)
 		end
 	elseif state == "Stunned" then
-		play(rig, "Stunned", 1, 0.08)
+		play(rig, roleFor(rig.Model, "Stunned"), 1, 0.08)
 	end
 end
 

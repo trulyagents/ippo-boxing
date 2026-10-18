@@ -31,12 +31,12 @@ return {
 	HitBody = "rbxassetid://94807664517280",
 	BlockLeft = "rbxassetid://102563830343816",
 	BlockRight = "rbxassetid://123013324168698",
-	Stunned = "rbxassetid://77847472771541",
+	Stunned = "rbxassetid://82784956855590",
 
-	DownFall = "rbxassetid://87955555575889",
-	DownLoop = "rbxassetid://122644516213347",
-	KOFall = "rbxassetid://97345833232763",
-	KOLoop = "rbxassetid://112639789123472",
+	DownFall = "rbxassetid://125416969645312",
+	DownLoop = "rbxassetid://119360513054677",
+	KOFall = "rbxassetid://72405842376521",
+	KOLoop = "rbxassetid://127872440092908",
 
 	-- peek-a-boo stance
 	PaBIdle = "rbxassetid://136227323046006",
@@ -57,10 +57,11 @@ return {
 	PaBHitBody = "rbxassetid://99779381260180",
 	PaBBlockLeft = "rbxassetid://81486267254632",
 	PaBBlockRight = "rbxassetid://100071338403870",
+	PaBStunned = "rbxassetid://125606427623625",
 
-	-- specials
-	RollLeft = "rbxassetid://71108466352963",
-	RollRight = "rbxassetid://106184394013773",
-	LungeUppercut = "rbxassetid://73929305979799",
-	StepCounter = "rbxassetid://72803702773425",
+	-- specials, made in blender from references (weave roll, gazelle style lunge, step counter)
+	RollLeft = "rbxassetid://112826785077709",
+	RollRight = "rbxassetid://72456852822093",
+	LungeUppercut = "rbxassetid://116444068468199",
+	StepCounter = "rbxassetid://97171959473767",
 } :: { [string]: string }
