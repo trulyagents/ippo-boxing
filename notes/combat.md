@@ -161,5 +161,6 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
   - impacts: rolls frame 9, lunge frame 12, step counter frame 8
   - lunge uppercut redone off real refs (patterson, tyson, inoue, an illustrated side view, links in my vault): long split stance load, drive forward into one diagonal with the back leg trailing on the toe. the body leads forward, the game's push carries it after contact
   - compose.py now leans the torso from the hips (it pivoted at the torso's middle, which slid both feet back), swings legs around the world's left-right axis (the torso's own axis tilted them sideways), and settles every key so the lowest foot is on the floor. plant=[leg] nudges a leg until its foot touches too
+  - reference pass on the specials (refs in my vault): weave roll now slides the whole body low to one side over a wide stance and comes up out the other side with the hook, step counter slips low off the line then steps in with the lead foot and brings the cross over the top. compose.py got slide (sideways body) and spread (legs out to the side)
   - lesson: always look at the rendered key frames before calling an anim done, the audit only checks curves and feet
 

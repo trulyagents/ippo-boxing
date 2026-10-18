@@ -15,7 +15,7 @@ from retime import ease
 ROOT_C0 = JOINTS["Torso"][1]
 
 
-def torso_turn(lean=0.0, twist=0.0, side=0.0, drop=0.0, fwd=0.0, swing=None, lift=0.0, plant=None):
+def torso_turn(lean=0.0, twist=0.0, side=0.0, drop=0.0, fwd=0.0, swing=None, lift=0.0, plant=None, slide=0.0, spread=None):
     """a torso move in roblox's world axes around the hips: lean - is forward, twist + turns left,
     side + leans left, drop + sinks, fwd + carries the body forward (studs). swing is handled in
     build (per joint), it's accepted here so a key can carry it"""
@@ -34,6 +34,7 @@ def torso_turn(lean=0.0, twist=0.0, side=0.0, drop=0.0, fwd=0.0, swing=None, lif
     hip = [0.0, -1.0, 0.0]
     for i in range(3):
         r[i][3] = hip[i] - sum(r[i][k] * hip[k] for k in range(3))
+    r[0][3] += slide
     r[1][3] -= drop
     r[2][3] -= fwd
     c0r = [row[:3] + [0] for row in ROOT_C0[:3]] + [[0, 0, 0, 1]]
@@ -90,15 +91,19 @@ def swing_joint(joint, degrees):
     return mul(mul(inv(rot), rx), rot)
 
 
-def swing_leg_world(pose, leg, degrees):
-    """swing a leg forward (+) or back (-) around the world's left-right axis at its hip. the torso
-    is usually leaned and twisted, so swinging in its own axes tilted the legs out sideways"""
+def swing_leg_world(pose, leg, degrees, axis="x"):
+    """swing a leg forward (+) or back (-) around the world's left-right axis at its hip, or with
+    axis "z" out to the side (+ moves the foot to the right). the torso is usually leaned and
+    twisted, so swinging in its own axes tilted the legs out sideways"""
     _, c0, c1 = JOINTS[leg]
     w = part_worlds(pose)
     hip = mul(w["Torso"], c0)
     p = [hip[i][3] for i in range(3)]
     a = math.radians(degrees)
-    rx = [[1, 0, 0, 0], [0, math.cos(a), -math.sin(a), 0], [0, math.sin(a), math.cos(a), 0], [0, 0, 0, 1]]
+    if axis == "z":
+        rx = [[math.cos(a), -math.sin(a), 0, 0], [math.sin(a), math.cos(a), 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    else:
+        rx = [[1, 0, 0, 0], [0, math.cos(a), -math.sin(a), 0], [0, math.sin(a), math.cos(a), 0], [0, 0, 0, 1]]
     to, back = identity(), identity()
     for i in range(3):
         to[i][3], back[i][3] = p[i], -p[i]
@@ -148,6 +153,9 @@ def keyed_pose(lib, n, af, mv, floor=None):
             pose = swing_leg_world(pose, joint, deg)
         else:
             pose[joint] = mul(swing_joint(joint, deg), pose[joint])
+    # legs out to the side, a wide stance drops the hips the same way a split does
+    for leg, deg in (mv.get("spread") or {}).items():
+        pose = swing_leg_world(pose, leg, deg, "z")
     if floor is not None and mv:
         pose = settle(pose, floor)
         # legs that should both stand: nudge each one's swing until its foot is on the floor too
@@ -181,13 +189,14 @@ def build(keys, lib):
 
 
 SPECIALS = {
-    # weave roll right: from the guard dip down and under to the left, then come up out the right
-    # side with the peek-a-boo hook. impact on frame 9
+    # weave roll right, off a front on dempsey roll workout shot and a wikihow step: the whole body
+    # shifts low to one side over that leg with the knees wide, head dropping under the punch line,
+    # then comes up out the other side with the weight over the other leg and the hook from there.
+    # slide moves the body sideways, spread widens the legs (which is what drops the hips on R6)
     "RollRight": [
         (1, "PaBIdle", 1, {}, "linear"),
-        (5, "PaBIdle", 1, dict(lean=-16, side=12, twist=-10, drop=0.06), "smooth"),
-        # frame 6 is where g2's hook is in front of the chin, by 7 it has swung on past
-        (9, "PaBHook", 6, dict(lean=-6, side=-8, twist=6), "in"),
+        (5, "PaBIdle", 1, dict(lean=-18, side=14, twist=-10, slide=-0.6, spread={"Right Leg": 18, "Left Leg": -8}, plant=["Right Leg"]), "smooth"),
+        (9, "PaBHook", 6, dict(lean=-8, side=-10, twist=6, slide=0.4, spread={"Right Leg": 6, "Left Leg": -16}), "in"),
         (13, "PaBIdle", 1, {}, "smooth"),
     ],
     # lunge uppercut, from real references (patterson and tyson fight photos, inoue's airborne one,
@@ -208,12 +217,14 @@ SPECIALS = {
         (17, "PaBUppercut", 13, dict(lean=-8, twist=8, fwd=0.1, swing={"Right Leg": -15, "Left Leg": 8}), "smooth"),
         (22, "PaBIdle", 1, {}, "smooth"),
     ],
-    # step counter: slip off to the left, then step in behind the cross. impact on frame 8
+    # step counter, off an old boxing manual's cross counter and a stepping cross counter photo: slip
+    # low and off the line, then step in with the lead foot and bring the cross over the top of
+    # their arm, rear heel up, leaning in with the head still off the centre line
     "StepCounter": [
         (1, "Idle", 1, {}, "linear"),
-        (4, "Idle", 1, dict(lean=-10, side=12, twist=-8, drop=0.04), "smooth"),
-        (8, "Cross", 7, dict(lean=-10, twist=4), "in"),
-        (11, "Cross", 8, dict(lean=-8, twist=4), "linear"),
+        (4, "Idle", 1, dict(lean=-14, side=12, twist=-10, slide=-0.3, swing={"Right Leg": -16, "Left Leg": 16}, spread={"Left Leg": -8}, plant=["Right Leg"]), "smooth"),
+        (8, "Cross", 7, dict(lean=-18, side=8, twist=6, fwd=0.6, swing={"Right Leg": -32, "Left Leg": 24, "Right Arm": 8}, plant=["Right Leg"]), "in"),
+        (11, "Cross", 8, dict(lean=-14, side=6, twist=6, fwd=0.5, swing={"Right Leg": -28, "Left Leg": 20, "Right Arm": 6}, plant=["Right Leg"]), "linear"),
         (18, "Idle", 1, {}, "smooth"),
     ],
 }
