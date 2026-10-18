@@ -3,16 +3,16 @@
 -- An empty one gets registered on the fly, which only plays in Studio. Any id listed in
 -- the OriginalIds attribute is someone else's and gets skipped the same way.
 return {
-	Idle = "rbxassetid://138260167411579",
-	Guard = "rbxassetid://90596097636849",
+	Idle = "rbxassetid://78797780707371",
+	Guard = "rbxassetid://121959437597638",
 	LowGuard = "rbxassetid://74985604077382",
 	Weave = "rbxassetid://103729062707961",
 	Gassed = "rbxassetid://127200357135694",
 	Hurt = "rbxassetid://132529103977923",
-	WalkForward = "rbxassetid://131348826657355",
-	WalkBack = "rbxassetid://97792164577747",
-	WalkLeft = "rbxassetid://81778306568182",
-	WalkRight = "rbxassetid://132837474921349",
+	WalkForward = "rbxassetid://136642203909858",
+	WalkBack = "rbxassetid://119239880734447",
+	WalkLeft = "rbxassetid://131192021226753",
+	WalkRight = "rbxassetid://105280436269746",
 
 	Jab = "rbxassetid://126434169379193",
 	Cross = "rbxassetid://95204103785804",
@@ -39,12 +39,12 @@ return {
 	KOLoop = "rbxassetid://112639789123472",
 
 	-- peek-a-boo stance
-	PaBIdle = "rbxassetid://126466644521029",
-	PaBGuard = "rbxassetid://101644303315641",
-	PaBWalkForward = "rbxassetid://99238164042022",
-	PaBWalkBack = "rbxassetid://128163728968577",
-	PaBWalkLeft = "rbxassetid://119026847749571",
-	PaBWalkRight = "rbxassetid://125818849011904",
+	PaBIdle = "rbxassetid://136227323046006",
+	PaBGuard = "rbxassetid://117054686676853",
+	PaBWalkForward = "rbxassetid://107769646923286",
+	PaBWalkBack = "rbxassetid://102258030186308",
+	PaBWalkLeft = "rbxassetid://118988293879002",
+	PaBWalkRight = "rbxassetid://70428063252302",
 	PaBJab = "rbxassetid://76377208281413",
 	PaBCross = "rbxassetid://105228448854320",
 	PaBHook = "rbxassetid://122340105759099",

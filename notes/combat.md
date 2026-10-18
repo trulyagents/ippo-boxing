@@ -124,3 +124,14 @@ blender anims (first ones that aren't from the bought games)
 - arms on the rig are FK from the shoulder (R6 arms are one block), legs are IK so the feet stay planted. dropping the hips more than a few hundredths sinks the R6 feet, so the crouch is all lean and twist
 - uppercut 21 frames, impact frame 9 (0.267). body shot 18 frames, impact frame 6 (0.167). Impact attributes set on the KeyframeSequences in BoxingAnims
 - gif previews in build/anim_preview
+
+polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
+- tools/keyframes_to_parts.py reads a KeyframeSequence and works out where each R6 part is every frame (same R6 C0/C1 maths as the exporter, round trip is exact). tools/blender_match_pose.py then poses the rig's controls to match and keys them at the original keyframe spots
+- imports need FK legs and head tracking off (blender_match_pose.set_import_mode), the bought anims pose legs and head directly and slide the arms forward from the shoulder, so shoulders get location too. imports land within 0.01 studs on idles and guards, walks within 0.12 between keys
+- polish_loop layers life on top: arm breathing that trails the torso a few frames, small sway and twist, head settling late, walks get a bounce per step and a counter twist. every offset is a whole number of cycles over the loop so it stays seamless, last key copies the first, curves are cyclic
+- no torso up/down bob on idles and guards. R6 legs have no knee, so the bob moved the feet into and off the floor. the bought idle already sinks the feet about 0.18
+- fixed a real hitch: WalkRight (both stances) jumped the left leg 0.21 studs at every loop
+- g2's peek-a-boo walks share the orthodox footwork, only the arms differ
+- all 12 pass the skill's final loop audit. polished files are in build/anims/polished, the _src actions in the blend are the untouched imports
+- next tiers: jab/cross/hook both stances + slips, then hit reactions and blocks (those run a second long and play at 1.8x, remake them shorter)
+

@@ -105,7 +105,8 @@ def build(name, anim, rest):
         keyframes += item("Keyframe", f'<float name="Time">{i / anim["fps"]:.6f}</float>', root)
     seq = item(
         "KeyframeSequence",
-        f'<bool name="Loop">false</bool><string name="Name">{name}</string><token name="Priority">3</token>',
+        f'<bool name="Loop">{"true" if anim.get("loop") else "false"}</bool><string name="Name">{name}</string>'
+        f'<token name="Priority">{anim.get("priority", 3)}</token>',
         keyframes,
     )
     return f'<roblox version="4">{seq}</roblox>'
@@ -128,4 +129,5 @@ def main():
     print("rest pose check (should be ~0):", round(float(worst), 6))
 
 
-main()
+if __name__ == "__main__":
+    main()
