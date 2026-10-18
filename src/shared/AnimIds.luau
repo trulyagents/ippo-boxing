@@ -17,8 +17,8 @@ return {
 	Jab = "rbxassetid://140008204799543",
 	Cross = "rbxassetid://114981067057611",
 	Hook = "rbxassetid://105095025823676",
-	Uppercut = "rbxassetid://102823493012435",
-	Body = "rbxassetid://107103161920799",
+	Uppercut = "rbxassetid://97886341600237",
+	Body = "rbxassetid://139433932241585",
 
 	SlipLeft = "rbxassetid://123554709180570",
 	SlipRight = "rbxassetid://110329219250331",
@@ -49,7 +49,7 @@ return {
 	PaBCross = "rbxassetid://126410129366507",
 	PaBHook = "rbxassetid://113725756323495",
 	-- made in blender on the r6 rig (models/anims), not from the bought games
-	PaBUppercut = "rbxassetid://113289111602703",
+	PaBUppercut = "rbxassetid://80422103123831",
 	PaBBody = "rbxassetid://73021932379975",
 	PaBHitHeadLeft = "rbxassetid://95443444556297",
 	PaBHitHeadRight = "rbxassetid://76947056083034",

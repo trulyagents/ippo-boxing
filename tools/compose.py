@@ -243,6 +243,35 @@ def mirror_roll(keys):
     return out
 
 
+# punches that were missing their legs. off the neilarey and heavybjj punch charts (uppercuts sit
+# down into the knees then drive the hips up) and evolve's level change body hook (wide, knees
+# bent, leaning in). same frames and timing as the anim they're built on, only the legs and torso
+# change: a split stance drops the hips with both feet down, then the uppercuts rise at impact
+PUNCHES = {
+    "Uppercut": [
+        (1, "Uppercut", 1, {}, "linear"),
+        (7, "Uppercut", 7, dict(lean=-12, side=6, twist=-6, swing={"Right Leg": -18, "Left Leg": 18}, plant=["Right Leg"]), "smooth"),
+        (10, "Uppercut", 10, dict(lean=2, twist=6, swing={"Right Leg": -8, "Left Leg": 8}), "in"),
+        (14, "Uppercut", 14, dict(swing={"Right Leg": -4, "Left Leg": 4}), "smooth"),
+        (22, "Uppercut", 22, {}, "smooth"),
+    ],
+    "Body": [
+        (1, "Body", 1, {}, "linear"),
+        (5, "Body", 5, dict(lean=-10, side=6, swing={"Right Leg": -18, "Left Leg": 18}, plant=["Right Leg", "Left Leg"]), "smooth"),
+        (7, "Body", 7, dict(lean=-16, side=8, swing={"Right Leg": -24, "Left Leg": 22}, plant=["Right Leg"]), "in"),
+        (10, "Body", 10, dict(lean=-10, swing={"Right Leg": -14, "Left Leg": 12}, plant=["Right Leg"]), "linear"),
+        (18, "Body", 18, {}, "smooth"),
+    ],
+    "PaBUppercut": [
+        (1, "PaBUppercut", 1, {}, "linear"),
+        (5, "PaBUppercut", 5, dict(lean=-6, swing={"Right Leg": -16, "Left Leg": 16}, plant=["Right Leg"]), "smooth"),
+        (9, "PaBUppercut", 9, dict(lean=2, swing={"Right Leg": -6, "Left Leg": 6}), "in"),
+        (13, "PaBUppercut", 13, dict(swing={"Right Leg": -3, "Left Leg": 3}), "smooth"),
+        (21, "PaBUppercut", 21, {}, "smooth"),
+    ],
+}
+
+
 S = [[-1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
 SWAP = {"Right Arm": "Left Arm", "Left Arm": "Right Arm", "Right Leg": "Left Leg", "Left Leg": "Right Leg"}
 
@@ -277,7 +306,7 @@ def to_json(frames):
 def main():
     lib = Library(sys.argv[1])
     result = {"fps": FPS, "anims": {}}
-    for name, keys in SPECIALS.items():
+    for name, keys in list(SPECIALS.items()) + list(PUNCHES.items()):
         frames = build(keys, lib)
         result["anims"][name] = {"loop": False, "frames": to_json(frames), "key_frames": list(range(len(frames)))}
         print(f"{name}: {len(frames)} frames")
