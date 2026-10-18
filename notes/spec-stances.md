@@ -43,7 +43,6 @@ step 5 of best-of-both. g2: one shared skill module the server and ui both read,
 - per-stance punch anims (only idle/walk/guard swap for now)
 - the other 10 styles g1 has
 
-## open questions
-- G for stance switch ok
-- Z / X for the two specials ok
-- start with these 4 stances, or fewer and polish them harder
+## decided
+- G switches stance, Z / X are the two specials
+- start with 2 stances (orthodox plus one) and polish them hard before adding more
