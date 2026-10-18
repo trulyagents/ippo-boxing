@@ -308,6 +308,10 @@ local function near(model: Model): boolean
 end
 
 fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName)
+	-- specials borrow the feel of the base punch they're like
+	if typeof(move) == "string" then
+		move = Config.feelOf(move)
+	end
 	local me = player.Character
 	if kind == "Hit" and typeof(a) == "Instance" and typeof(b) == "Instance" then
 		local attacker, target = a :: Model, b :: Model

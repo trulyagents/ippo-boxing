@@ -64,6 +64,15 @@ local function length(role: string): number
 	return if last > 0 then last else 0.5
 end
 
+-- which anim plays for a base role: the move's own Anim if it borrows one, then the
+-- fighter's stance version if the stance has one
+local function roleFor(model: Model, role: string): string
+	local move = Config.Moves[role]
+	local base = (move and move.Anim) or role
+	local stance = Config.Stances[model:GetAttribute("Stance") or ""]
+	return (stance and stance.Anims[base]) or base
+end
+
 type Rig = {
 	Model: Model,
 	Animator: Animator,
@@ -74,6 +83,7 @@ type Rig = {
 	Reaction: number?,
 	Hurt: boolean?,
 	Gassed: boolean?,
+	Stance: string?,
 }
 local rigs: { [Model]: Rig } = {}
 
@@ -141,8 +151,9 @@ local function track(model: Instance)
 			load(rig, ks.Name)
 		end
 		rig.Token = model:GetAttribute("ActionToken")
+		rig.Stance = model:GetAttribute("Stance")
 		rigs[model] = rig
-		play(rig, "Idle")
+		play(rig, roleFor(model, "Idle"))
 	end)
 end
 
@@ -156,8 +167,9 @@ local function onAction(rig: Rig)
 	if move then
 		-- stretch the anim so its impact frame lands when the server says the punch lands
 		local startup = model:GetAttribute("ActionLength") or move.Startup
-		local speed = impact(action) / math.max(startup, 0.05)
-		local t = play(rig, action, speed, 0.05)
+		local role = roleFor(model, action)
+		local speed = impact(role) / math.max(startup, 0.05)
+		local t = play(rig, role, speed, 0.05)
 		-- catch up on the time the attribute spent crossing the network
 		local late = workspace:GetServerTimeNow() - (model:GetAttribute("ActionStart") or 0)
 		if t and late > 0 and late < 0.3 then
@@ -222,6 +234,22 @@ local function onReaction(rig: Rig)
 end
 
 local WALKS = { "WalkForward", "WalkBack", "WalkLeft", "WalkRight" }
+
+-- new stance: drop every looped anim from the old one so the new set takes over
+local function onStance(rig: Rig)
+	local stance = rig.Model:GetAttribute("Stance")
+	if stance == rig.Stance then
+		return
+	end
+	local old = rig.Stance
+	rig.Stance = stance
+	for _, role in { "Idle", "Guard", "WalkForward", "WalkBack", "WalkLeft", "WalkRight" } do
+		local was = Config.Stances[old or ""]
+		stop(rig, (was and was.Anims[role]) or role, 0.25)
+	end
+	play(rig, roleFor(rig.Model, "Idle"), 1, 0.25)
+end
+
 local function updateLoops(rig: Rig)
 	local model = rig.Model
 	local state = model:GetAttribute("State")
@@ -235,7 +263,7 @@ local function updateLoops(rig: Rig)
 		Weave = free and model:GetAttribute("Weaving") == true,
 	}
 	for role, want in loops do
-		local t = load(rig, role)
+		local t = load(rig, roleFor(model, role))
 		if t then
 			if want and not t.IsPlaying then
 				t:Play(0.12)
@@ -256,7 +284,7 @@ local function updateLoops(rig: Rig)
 	rig.Gassed = if rig.Gassed then stamina < Config.GassedBelow + 10 else stamina < Config.GassedBelow
 	local hurt = free and rig.Hurt == true
 	local gassed = free and not hurt and rig.Gassed == true
-	local idle = load(rig, "Idle")
+	local idle = load(rig, roleFor(model, "Idle"))
 	if idle then
 		idle:AdjustWeight(if hurt or gassed then 0.001 else 1, 0.3)
 	end
@@ -282,7 +310,7 @@ local function updateLoops(rig: Rig)
 		weights = { math.max(-u.Z, 0), math.max(u.Z, 0), math.max(-u.X, 0), math.max(u.X, 0) }
 	end
 	for i, role in WALKS do
-		local t = load(rig, role)
+		local t = load(rig, roleFor(model, role))
 		if t then
 			local w = weights[i]
 			if w > 0.05 then
@@ -311,6 +339,7 @@ RunService.PreSimulation:Connect(function()
 			onAction(rig)
 		end
 		onState(rig, model:GetAttribute("State"))
+		onStance(rig)
 		onReaction(rig)
 		updateLoops(rig)
 		-- hitstop and slow-mo

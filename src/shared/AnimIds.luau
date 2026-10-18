@@ -37,4 +37,21 @@ return {
 	DownLoop = "rbxassetid://122644516213347",
 	KOFall = "rbxassetid://97345833232763",
 	KOLoop = "rbxassetid://112639789123472",
+
+	-- peek-a-boo stance
+	PaBIdle = "rbxassetid://126466644521029",
+	PaBGuard = "rbxassetid://101644303315641",
+	PaBWalkForward = "rbxassetid://99238164042022",
+	PaBWalkBack = "rbxassetid://128163728968577",
+	PaBWalkLeft = "rbxassetid://119026847749571",
+	PaBWalkRight = "rbxassetid://125818849011904",
+	PaBJab = "rbxassetid://76377208281413",
+	PaBCross = "rbxassetid://105228448854320",
+	PaBHook = "rbxassetid://122340105759099",
+
+	-- specials
+	RollLeft = "rbxassetid://71108466352963",
+	RollRight = "rbxassetid://106184394013773",
+	LungeUppercut = "rbxassetid://73929305979799",
+	StepCounter = "rbxassetid://72803702773425",
 } :: { [string]: string }

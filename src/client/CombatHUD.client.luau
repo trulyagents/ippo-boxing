@@ -197,6 +197,37 @@ local function setBars(model: Model)
 		else COURAGE_COLOR
 end
 
+-- stance box next to the panel: stance name, G cooldown, and the two specials with a dark
+-- sweep that drains as they come back
+local stanceBox = mine:WaitForChild("Stance") :: Frame
+local stanceText = stanceBox:WaitForChild("Banner"):WaitForChild("StanceText") :: TextLabel
+local switchFill = stanceBox:WaitForChild("SwitchBar"):WaitForChild("Fill") :: Frame
+local slots = { stanceBox:WaitForChild("Slot1") :: ImageLabel, stanceBox:WaitForChild("Slot2") :: ImageLabel }
+
+local function setStance(model: Model)
+	local stance = Config.Stances[model:GetAttribute("Stance") or ""]
+	if not stance then
+		return
+	end
+	stanceText.Text = stance.Name
+	local now = workspace:GetServerTimeNow()
+	local switchLeft = math.max(0, (model:GetAttribute("StanceReady") or 0) - now)
+	switchFill.Size = UDim2.fromScale(1 - switchLeft / Config.StanceSwitchCooldown, 1)
+	for i, slot in slots do
+		local name = stance.Specials[i]
+		local sp = Config.Specials[name];
+		(slot:FindFirstChild("NameText") :: TextLabel).Text = if sp then sp.Name else ""
+		local left = if sp then math.max(0, (model:GetAttribute("Ready" .. name) or 0) - now) else 0
+		local share = if sp then left / sp.Cooldown else 1
+		-- step counter only works out of a counter window, grey it out until one opens
+		if sp and sp.OnlyInCounter and share == 0 then
+			local counterUntil = model:GetAttribute("CounterUntil")
+			share = if typeof(counterUntil) == "number" and counterUntil > now then 0 else 0.999
+		end
+		(slot:FindFirstChild("Sweep") :: Frame).Size = UDim2.fromScale(1, share)
+	end
+end
+
 local shake = 0
 local function addShake(amount: number)
 	shake = math.max(shake, amount)
@@ -227,6 +258,10 @@ local function lockedModel(): Model?
 end
 
 fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName)
+	-- specials borrow the feel of the base punch they're like
+	if typeof(move) == "string" then
+		move = Config.feelOf(move)
+	end
 	local me = player.Character
 	if kind == "Hit" then
 		local attacker, target = a, b
@@ -291,6 +326,10 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName
 		end
 	elseif kind == "GetUp" and a == me then
 		shout("BACK UP!", Color3.fromRGB(255, 255, 255), 60)
+	elseif kind == "Special" and typeof(b) == "string" and Config.Specials[b] then
+		if a == me or a == lockedModel() then
+			shout(Config.Specials[b].Name .. "!", Color3.fromRGB(255, 140, 50), 70)
+		end
 	end
 end)
 
@@ -299,6 +338,7 @@ RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, f
 	local me = player.Character
 	if me then
 		setBars(me)
+		setStance(me)
 		local state = me:GetAttribute("State")
 		local downCount = me:GetAttribute("DownCount")
 		if state == "Down" and downCount then

@@ -36,6 +36,21 @@ ROLES = {
     "DownLoop": ("game2", None, "KnockDown_LoopBackward", True, 3),
     "KOFall": ("game2", None, "KnockOut_FallBackward", False, 3),
     "KOLoop": ("game2", None, "KnockOut_LoopBackward", True, 3),
+    # peek-a-boo stance
+    "PaBIdle": ("game2", None, "PeekABooIdle", True, 0),
+    "PaBGuard": ("game2", None, "PaB_BlockNormal", True, 2),
+    "PaBWalkForward": ("game2", None, "PaBMove_Forward", True, 1),
+    "PaBWalkBack": ("game2", None, "PaBMove_Backwards", True, 1),
+    "PaBWalkLeft": ("game2", None, "PaBMove_Left", True, 1),
+    "PaBWalkRight": ("game2", None, "PaBMove_Right", True, 1),
+    "PaBJab": ("game2", None, "Pab_JabHead", False, 3),
+    "PaBCross": ("game2", None, "PaB_RightStraight", False, 3),
+    "PaBHook": ("game2", None, "PaB_RightHook", False, 3),
+    # specials
+    "RollLeft": ("game2", None, "DempseyRoll2", False, 3),
+    "RollRight": ("game2", None, "DempseyRoll1", False, 3),
+    "LungeUppercut": ("game2", None, "GazellePunch", False, 3),
+    "StepCounter": ("game2", None, "JoltCounter_Hit", False, 3),
 }
 
 

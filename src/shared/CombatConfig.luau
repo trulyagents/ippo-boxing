@@ -16,6 +16,9 @@ export type Move = {
 	DodgedBy: { [string]: boolean }, -- slip directions that make it whiff
 	BeatsSlip: { [string]: boolean }?, -- slips it punishes instead
 	BodyDrain: number?, -- stamina it takes from the target
+	Anim: string?, -- anim role when it isn't named after the move
+	Special: boolean?, -- only thrown through a special slot, never the punch keys
+	Like: string?, -- base punch it hits like, for sounds, fx and reactions
 }
 
 local CombatConfig = {}
@@ -93,7 +96,161 @@ CombatConfig.Moves = {
 		DodgedBy = { Back = true },
 		BodyDrain = 14,
 	},
+	-- special hits, thrown by the specials below
+	StepCounter = {
+		Startup = 0.18,
+		MoveSpeed = 2,
+		Step = 22,
+		Recovery = 0.4,
+		Damage = 14,
+		Stamina = 0,
+		GuardDamage = 14,
+		Range = 9,
+		Target = "Head",
+		Hitstun = 0.5,
+		ThroughGuard = 0,
+		DodgedBy = { Left = true, Right = true, Back = true },
+		Like = "Cross",
+		Special = true,
+	},
+	QuickJab = {
+		Startup = 0.1,
+		MoveSpeed = 6,
+		Step = 4,
+		Recovery = 0.1,
+		Damage = 4,
+		Stamina = 0,
+		GuardDamage = 6,
+		Range = 6,
+		Target = "Head",
+		Hitstun = 0.22,
+		ThroughGuard = 0,
+		DodgedBy = { Left = true, Right = true, Back = true },
+		Anim = "Jab",
+		Like = "Jab",
+		Special = true,
+	},
+	RollLeft = {
+		Startup = 0.3,
+		MoveSpeed = 8,
+		Step = 6,
+		Recovery = 0.05,
+		Damage = 7,
+		Stamina = 0,
+		GuardDamage = 9,
+		Range = 5.5,
+		Target = "Head",
+		Hitstun = 0.35,
+		ThroughGuard = 0.4,
+		DodgedBy = { Duck = true, Back = true },
+		Like = "Hook",
+		Special = true,
+	},
+	RollRight = {
+		Startup = 0.3,
+		MoveSpeed = 8,
+		Step = 6,
+		Recovery = 0.05,
+		Damage = 7,
+		Stamina = 0,
+		GuardDamage = 9,
+		Range = 5.5,
+		Target = "Head",
+		Hitstun = 0.35,
+		ThroughGuard = 0.4,
+		DodgedBy = { Duck = true, Back = true },
+		Like = "Hook",
+		Special = true,
+	},
+	LungeUppercut = {
+		Startup = 0.38,
+		MoveSpeed = 0,
+		Step = 20,
+		Recovery = 0.8,
+		Damage = 22,
+		Stamina = 0,
+		GuardDamage = 12,
+		Range = 7,
+		Target = "Head",
+		Hitstun = 0.6,
+		ThroughGuard = 0,
+		DodgedBy = { Left = true, Right = true, Back = true },
+		BeatsSlip = { Duck = true },
+		Like = "Uppercut",
+		Special = true,
+	},
 } :: { [string]: Move }
+
+-- stances: each swaps idle, walk and guard anims (and some punches), plus a few numbers.
+-- Anims maps a base role to this stance's version, anything missing uses the base one
+export type Stance = {
+	Name: string, -- shown on the hud
+	Anims: { [string]: string },
+	WalkBonus: number,
+	GuardTaken: number, -- guard damage taken multiplier
+	SlipDiscount: number, -- stamina off every slip
+	StartupMult: { [string]: number },
+	Specials: { string }, -- Z and X
+}
+CombatConfig.Stances = {
+	Orthodox = {
+		Name = "ORTHODOX",
+		Anims = {},
+		WalkBonus = 0,
+		GuardTaken = 1,
+		SlipDiscount = 0,
+		StartupMult = {},
+		Specials = { "StepCounter", "DoubleJab" },
+	},
+	PeekABoo = {
+		Name = "PEEK-A-BOO",
+		Anims = {
+			Idle = "PaBIdle",
+			Guard = "PaBGuard",
+			WalkForward = "PaBWalkForward",
+			WalkBack = "PaBWalkBack",
+			WalkLeft = "PaBWalkLeft",
+			WalkRight = "PaBWalkRight",
+			Jab = "PaBJab",
+			Cross = "PaBCross",
+			Hook = "PaBHook",
+		},
+		WalkBonus = -1,
+		GuardTaken = 0.8,
+		SlipDiscount = 2,
+		StartupMult = { Hook = 0.85 },
+		Specials = { "WeaveRoll", "LungeUppercut" },
+	},
+} :: { [string]: Stance }
+CombatConfig.Loadout = { "Orthodox", "PeekABoo" } -- everyone gets this until unlocks exist
+CombatConfig.StanceSwitchTime = 0.4 -- can't punch or guard while switching
+CombatConfig.StanceSwitchCooldown = 4
+
+-- specials: a chain of special moves thrown back to back for one stamina cost
+export type Special = {
+	Name: string,
+	Chain: { string },
+	Stamina: number,
+	Cooldown: number,
+	OnlyInCounter: boolean?, -- needs an open counter window (after a clean slip or parry)
+}
+CombatConfig.Specials = {
+	StepCounter = { Name = "STEP COUNTER", Chain = { "StepCounter" }, Stamina = 12, Cooldown = 6, OnlyInCounter = true },
+	DoubleJab = { Name = "DOUBLE JAB", Chain = { "QuickJab", "QuickJab" }, Stamina = 8, Cooldown = 4 },
+	WeaveRoll = {
+		Name = "WEAVE ROLL",
+		Chain = { "RollRight", "RollLeft", "RollRight" },
+		Stamina = 30,
+		Cooldown = 10,
+	},
+	LungeUppercut = { Name = "LUNGE UPPERCUT", Chain = { "LungeUppercut" }, Stamina = 18, Cooldown = 8 },
+} :: { [string]: Special }
+
+-- the base punch a move counts as on the client (specials borrow the base ones' feel)
+function CombatConfig.feelOf(moveName: string): string
+	local move = CombatConfig.Moves[moveName]
+	return (move and move.Like) or moveName
+end
 
 CombatConfig.MaxHealth = 100
 CombatConfig.MaxStamina = 100

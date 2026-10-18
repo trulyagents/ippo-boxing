@@ -46,3 +46,18 @@ step 5 of best-of-both. g2: one shared skill module the server and ui both read,
 ## decided
 - G switches stance, Z / X are the two specials
 - start with 2 stances (orthodox plus one) and polish them hard before adding more
+- the two are orthodox and peek-a-boo, g2 has the most anims for peek-a-boo (idle, guard, 4 walks, jab, cross, hooks, the roll)
+
+## built (first pass)
+- stances and specials are tables in CombatConfig (Stances, Specials, Loadout), no separate Skills module yet, that comes with unlocks in step 6
+- orthodox: no changes. Z step counter (only out of a counter window, steps in 22, range 9), X double jab (two quick jabs)
+- peek-a-boo: guard damage taken x0.8, slips 2 cheaper, walk -1, hooks wind up x0.85. swaps idle, guard, walks, jab, cross, hook. Z weave roll (right, left, right off g2's dempsey roll anims, can walk 8 while rolling), X lunge uppercut (big, slow, beats a duck)
+- specials are a Chain of special-only moves (Special = true, the punch keys can't throw them), one stamina cost and a cooldown for the whole chain. a hit during wind up breaks the chain
+- special moves have Like = the base punch, so sounds, fx and hit reactions treat them like that punch (Config.feelOf)
+- stance box sits right of the hud panel: stance name on the brush banner, G cooldown bar, two cream tags with a dark sweep for the special cooldowns. step counter stays dark until a counter window is open
+- controls card got G and Z / X rows
+- tested in studio: switch, cooldown, walk speed, lunge, roll and double jab all land on the partner, no errors
+
+## still to tune
+- the roll and lunge impact times are guesses from the keyframes (0.6 / 0.5 / 0.4), check them by eye
+- numbers on every special are first guesses

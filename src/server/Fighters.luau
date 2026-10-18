@@ -15,7 +15,7 @@ export type Fighter = {
 	Health: number,
 	Stamina: number,
 	Guard: number,
-	State: string, -- Idle, Windup, Recovery, Stunned, Down, KO
+	State: string, -- Idle, Windup, Recovery, Stunned, Switching, Down, KO
 	Guarding: boolean,
 	GuardHeight: string?, -- "High" or "Low" while guarding
 	GuardReadyAt: number, -- hands are still moving until this
@@ -44,6 +44,9 @@ export type Fighter = {
 	DownToken: number,
 	ActionToken: number,
 	Opponent: Model?,
+	Stance: string,
+	NextSwitch: number,
+	SpecialReady: { [string]: number },
 }
 
 local Fighters = {}
@@ -78,6 +81,7 @@ local function publish(f: Fighter)
 	m:SetAttribute("Knockdowns", f.Knockdowns)
 	m:SetAttribute("MaxHealthNow", math.floor(f.MaxHealthNow + 0.5))
 	m:SetAttribute("Courage", math.floor(f.Courage + 0.5))
+	m:SetAttribute("Stance", f.Stance)
 end
 
 local function firedUp(f: Fighter): boolean
@@ -100,6 +104,10 @@ local function setWalk(f: Fighter)
 		then Config.Moves[f.Model:GetAttribute("Action")].MoveSpeed
 		elseif f.Guarding or busy then Config.GuardWalkSpeed
 		else Config.WalkSpeed
+	-- stances tweak how fast you move, but never wake up a planted fighter
+	if f.Humanoid.WalkSpeed > 0 then
+		f.Humanoid.WalkSpeed = math.max(1, f.Humanoid.WalkSpeed + Config.Stances[f.Stance].WalkBonus)
+	end
 	f.Humanoid.JumpHeight = 0
 	f.Humanoid.JumpPower = 0
 end
@@ -147,6 +155,9 @@ function Fighters.register(model: Model, player: Player?): Fighter?
 		DownToken = 0,
 		ActionToken = 0,
 		Opponent = nil,
+		Stance = Config.Loadout[1],
+		NextSwitch = 0,
+		SpecialReady = {},
 	}
 	byModel[model] = f
 	-- Roblox health isn't used for boxing, keep the humanoid alive
@@ -408,7 +419,7 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		counterName = nil
 		target.Guard -= move.GuardDamage * (if counter then 1.5 else 1) * (if firedUp(target)
 			then Config.FiredUpGuard
-			else 1)
+			else 1) * Config.Stances[target.Stance].GuardTaken
 		if target.Guard <= 0 then
 			target.Guard = 0
 			target.Guarding = false
@@ -460,9 +471,72 @@ end
 
 local buffered: { [Fighter]: number } = setmetatable({}, { __mode = "k" }) :: any
 
+-- winds up and lands one move. onDone runs at the end of recovery instead of going back to
+-- Idle, that's how specials chain hits. a hit during wind up breaks the chain
+local function throw(f: Fighter, moveName: string, counter: number?, onDone: (() -> ())?)
+	local move = Config.Moves[moveName]
+	local now = os.clock()
+	local slow = (if f.Stamina < Config.GassedBelow then Config.GassedSlowdown else 1)
+		* (if firedUp(f) then Config.FiredUpSpeed else 1)
+	local startup = move.Startup * slow * (Config.Stances[f.Stance].StartupMult[moveName] or 1)
+	local recovery = move.Recovery * slow
+	setState(f, "Windup", now + startup + recovery)
+	-- set before playAction so clients reading the new ActionToken see this punch's length
+	f.Model:SetAttribute("ActionLength", startup)
+	playAction(f, moveName)
+	-- plant the feet now that Action is set
+	setWalk(f)
+	local token = f.ActionToken
+	task.delay(startup, function()
+		if f.ActionToken ~= token or f.State ~= "Windup" then
+			return
+		end
+		setState(f, "Recovery")
+		-- dummies get their step-in here, players push themselves on their own client (they own the physics)
+		if not f.Player then
+			local look = f.Root.CFrame.LookVector
+			local ends = os.clock() + 0.12
+			local push: RBXScriptConnection
+			push = RunService.Heartbeat:Connect(function(dt)
+				if os.clock() > ends or not f.Root.Parent then
+					push:Disconnect()
+					return
+				end
+				f.Root.CFrame += look * move.Step * dt
+			end)
+		end
+		resolveHit(f, moveName, counter)
+		task.delay(recovery, function()
+			if f.ActionToken == token and f.State == "Recovery" then
+				if onDone then
+					onDone()
+				else
+					setState(f, "Idle")
+				end
+			end
+		end)
+	end)
+end
+
+-- the open counter window gets spent on whatever you throw next
+local function takeCounter(f: Fighter): number?
+	local counter = if os.clock() < f.CounterUntil then f.CounterMult else nil
+	f.CounterUntil = 0
+	f.Model:SetAttribute("CounterUntil", nil)
+	return counter
+end
+
+local function tellGassed(f: Fighter)
+	-- otherwise the punch just silently doesn't come out
+	if os.clock() - f.GassedToldAt > 0.6 then
+		f.GassedToldAt = os.clock()
+		tell(f, "Gassed")
+	end
+end
+
 function Fighters.punch(f: Fighter, moveName: string)
 	local move = Config.Moves[moveName]
-	if not move or f.Guarding then
+	if not move or move.Special or f.Guarding then
 		return
 	end
 	if not canAct(f) then
@@ -487,54 +561,62 @@ function Fighters.punch(f: Fighter, moveName: string)
 	end
 	buffered[f] = nil
 	if f.Stamina < move.Stamina then
-		-- otherwise the punch just silently doesn't come out
-		if os.clock() - f.GassedToldAt > 0.6 then
-			f.GassedToldAt = os.clock()
-			tell(f, "Gassed")
-		end
+		tellGassed(f)
+		return
+	end
+	f.Whiffed = false
+	local counter = takeCounter(f)
+	f.Stamina -= move.Stamina
+	throw(f, moveName, counter)
+end
+
+-- slot 1 is Z, slot 2 is X. which special that is depends on your stance
+function Fighters.special(f: Fighter, slot: number)
+	local name = Config.Stances[f.Stance].Specials[slot]
+	local sp = name and Config.Specials[name]
+	if not sp or f.Guarding or not canAct(f) then
 		return
 	end
 	local now = os.clock()
-	local counter = if now < f.CounterUntil then f.CounterMult else nil
-	f.CounterUntil = 0
+	if now < (f.SpecialReady[name] or 0) or (sp.OnlyInCounter and now >= f.CounterUntil) then
+		return
+	end
+	if f.Stamina < sp.Stamina then
+		tellGassed(f)
+		return
+	end
+	buffered[f] = nil
 	f.Whiffed = false
-	f.Model:SetAttribute("CounterUntil", nil)
-	f.Stamina -= move.Stamina
-	local slow = (if f.Stamina < Config.GassedBelow then Config.GassedSlowdown else 1)
-		* (if firedUp(f) then Config.FiredUpSpeed else 1)
-	local startup, recovery = move.Startup * slow, move.Recovery * slow
-	setState(f, "Windup", now + startup + recovery)
-	-- set before playAction so clients reading the new ActionToken see this punch's length
-	f.Model:SetAttribute("ActionLength", startup)
-	playAction(f, moveName)
-	-- plant the feet now that Action is set
-	setWalk(f)
-	local token = f.ActionToken
-	task.delay(startup, function()
-		-- a hit during wind up interrupts the punch
-		if f.ActionToken ~= token or f.State ~= "Windup" then
-			return
+	local counter = takeCounter(f)
+	f.Stamina -= sp.Stamina
+	f.SpecialReady[name] = now + sp.Cooldown
+	f.Model:SetAttribute("Ready" .. name, workspace:GetServerTimeNow() + sp.Cooldown)
+	broadcast("Special", f.Model, name)
+	local i = 0
+	local function nextHit()
+		i += 1
+		-- only the first hit cashes in the counter window
+		throw(f, sp.Chain[i], if i == 1 then counter else nil, if i < #sp.Chain then nextHit else nil)
+	end
+	nextHit()
+end
+
+-- G cycles through your loadout. a short beat where you can't punch or guard, then a cooldown
+function Fighters.switchStance(f: Fighter)
+	local now = os.clock()
+	if not canAct(f) or now < f.NextSwitch then
+		return
+	end
+	local at = table.find(Config.Loadout, f.Stance) or 0
+	f.Stance = Config.Loadout[at % #Config.Loadout + 1]
+	f.NextSwitch = now + Config.StanceSwitchCooldown
+	f.Model:SetAttribute("StanceReady", workspace:GetServerTimeNow() + Config.StanceSwitchCooldown)
+	f.Guarding, f.GuardHeight = false, nil
+	setState(f, "Switching", now + Config.StanceSwitchTime)
+	task.delay(Config.StanceSwitchTime, function()
+		if f.State == "Switching" then
+			setState(f, "Idle")
 		end
-		setState(f, "Recovery")
-		-- dummies get their step-in here, players push themselves on their own client (they own the physics)
-		if not f.Player then
-			local look = f.Root.CFrame.LookVector
-			local ends = os.clock() + 0.12
-			local push: RBXScriptConnection
-			push = RunService.Heartbeat:Connect(function(dt)
-				if os.clock() > ends or not f.Root.Parent then
-					push:Disconnect()
-					return
-				end
-				f.Root.CFrame += look * move.Step * dt
-			end)
-		end
-		resolveHit(f, moveName, counter)
-		task.delay(recovery, function()
-			if f.ActionToken == token and f.State == "Recovery" then
-				setState(f, "Idle")
-			end
-		end)
 	end)
 end
 
@@ -544,7 +626,7 @@ function Fighters.setGuard(f: Fighter, height: string?, canParry: boolean?)
 	if height ~= nil and height ~= "High" and height ~= "Low" then
 		return
 	end
-	if height and (f.State == "Down" or f.State == "KO" or f.State == "Stunned") then
+	if height and (f.State == "Down" or f.State == "KO" or f.State == "Stunned" or f.State == "Switching") then
 		return
 	end
 	if f.GuardHeight == height then
@@ -591,7 +673,12 @@ function Fighters.slip(f: Fighter, direction: string)
 	end
 	local bob = f.Guarding
 	f.SlipChain = if now - f.LastSlip < Config.SlipChainWindow then f.SlipChain + 1 else 0
-	local cost = (if bob then Config.BobSlipCost else Config.SlipCost) + f.SlipChain * Config.SlipChainCost
+	local cost = math.max(
+		0,
+		(if bob then Config.BobSlipCost else Config.SlipCost)
+			+ f.SlipChain * Config.SlipChainCost
+			- Config.Stances[f.Stance].SlipDiscount
+	)
 	if f.Stamina < cost then
 		return
 	end

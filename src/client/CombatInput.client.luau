@@ -91,6 +91,12 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		LockOn.toggle()
 	elseif input.KeyCode == Enum.KeyCode.V then
 		LockOn.swapShoulder()
+	elseif input.KeyCode == Enum.KeyCode.G then
+		action:FireServer("Stance")
+	elseif input.KeyCode == Enum.KeyCode.Z then
+		action:FireServer("Special", 1)
+	elseif input.KeyCode == Enum.KeyCode.X then
+		action:FireServer("Special", 2)
 	elseif input.KeyCode == Enum.KeyCode.Return and state == "KO" then
 		action:FireServer("Reset")
 	end
