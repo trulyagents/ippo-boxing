@@ -165,7 +165,8 @@ def tip():
     img.paste(grain, (0, 0), mask)
     img.save(os.path.join(OUT, "tip.png"))
 
-for f in (panel, banner, tag, track, fill):
-    f()
-tip()
-print("done")
+if __name__ == "__main__":
+    for f in (panel, banner, tag, track, fill):
+        f()
+    tip()
+    print("done")
