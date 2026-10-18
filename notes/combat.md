@@ -133,5 +133,13 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
 - fixed a real hitch: WalkRight (both stances) jumped the left leg 0.21 studs at every loop
 - g2's peek-a-boo walks share the orthodox footwork, only the arms differ
 - all 12 pass the skill's final loop audit. polished files are in build/anims/polished, the _src actions in the blend are the untouched imports
-- next tiers: jab/cross/hook both stances + slips, then hit reactions and blocks (those run a second long and play at 1.8x, remake them shorter)
-
+- tier 2 done: jab, cross, hook both stances + the 4 slips
+- fast one-shots import with a key on every frame (sparse keys drifted up to 0.7 studs on punches). the bought punches also push the head off the neck, so the head gets location in the import
+- what was wrong and what changed (tools/retime.py, works on the importer json):
+  - hooks landed early: Impact was 0.15 but the fist only reaches full extension on frame 7, Impact is now 0.2
+  - cross and hook hung at full reach for about 6 frames, cut down to 1 beat, then an eased pull back
+  - strikes moved at an even speed, now they speed up into contact (cross peaks about 120 studs/s right before impact)
+  - jab snapped home in its very last frame, now it comes back over 3 frames
+  - SlipRight ended 54 degrees off the idle and SlipBack started and ended 157 degrees off (it's an outboxer dash with the body turned), both popped. their ends blend into the stance idle now
+- peek-a-boo jab Impact moved to 0.067, that's where its fist actually peaks
+- next tier: hit reactions and blocks (those run a second long and play at 1.8x, remake them shorter)

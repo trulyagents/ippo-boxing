@@ -19,10 +19,10 @@ PARTS = ["Torso", "Head", "Right Arm", "Left Arm", "Right Leg", "Left Leg"]
 # control, part it drives, solve rotation, solve location, weight of the part's position error.
 # imports run with the legs in FK and head tracking off (set_import_mode), since the bought anims
 # pose legs and head directly. the bought anims also slide the arms forward from the shoulder,
-# so shoulders get location too
+# so shoulders get location too. punches also push the head forward off the neck, so the head does too
 CHAIN = [
     ("LowerTorso-FK", "Torso", True, True, 2.0),
-    ("Head", "Head", True, False, 0.0),
+    ("Head", "Head", True, True, 2.0),
     ("RightShoulder", "Right Arm", True, True, 2.0),
     ("LeftShoulder", "Left Arm", True, True, 2.0),
     ("RightUpperLeg", "Right Leg", True, True, 2.0),
@@ -145,7 +145,7 @@ def solve_control(arm, internal, ctrl, part, target, use_rot, use_loc, pos_weigh
     return sum(x * x for x in err) ** 0.5
 
 
-def import_anim(json_path, name, action_name=None, rest=None):
+def import_anim(json_path, name, action_name=None, rest=None, every_frame=False):
     arm, internal = _arm()
     data = json.load(open(json_path))["anims"][name]
     set_import_mode(True)
@@ -158,7 +158,9 @@ def import_anim(json_path, name, action_name=None, rest=None):
     # start every import from the rig's neutral pose so leftovers don't leak in
     _reset(arm)
     worst = 0.0
-    for kf in data["key_frames"]:
+    # fast one-shots (punches, slips) drift between sparse keys, so those get a key on every frame
+    key_frames = list(range(len(data["frames"]))) if every_frame else data["key_frames"]
+    for kf in key_frames:
         frame = kf + 1
         bpy.context.scene.frame_set(frame)
         delta = data["frames"][kf]
@@ -174,7 +176,7 @@ def import_anim(json_path, name, action_name=None, rest=None):
         for k in fc.keyframe_points:
             k.interpolation = "BEZIER"
             k.handle_left_type = k.handle_right_type = "AUTO_CLAMPED"
-    return {"action": action.name, "keys": [k + 1 for k in data["key_frames"]], "worst_error": round(worst, 4)}
+    return {"action": action.name, "keys": [k + 1 for k in key_frames], "worst_error": round(worst, 4)}
 
 
 def check(json_path, name, rest=None):
@@ -193,7 +195,7 @@ def check(json_path, name, rest=None):
     return worst
 
 
-def import_checked(json_path, name, action_name=None):
+def import_checked(json_path, name, action_name=None, every_frame=False):
     """import, then report the worst position (studs) and rotation (degrees) miss over every frame"""
     action_name = action_name or name + "_src"
     old = bpy.data.actions.get(action_name)
@@ -201,7 +203,7 @@ def import_checked(json_path, name, action_name=None):
         bpy.data.actions.remove(old)
     set_import_mode(True)
     rest = rest_parts()
-    import_anim(json_path, name, action_name, rest)
+    import_anim(json_path, name, action_name, rest, every_frame)
     arm, internal = _arm()
     data = json.load(open(json_path))["anims"][name]
     pos, rot = 0.0, 0.0
