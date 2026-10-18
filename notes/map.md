@@ -7,6 +7,8 @@ gym based on the kamogawa gym look (yellow walls, green mat floor, blue ring, re
 - lives in workspace.Map (Gym, GymRing). place only, not in git (build/ is ignored)
 - ring centre at 0,0. ring base sits on the gym floor (3.3), canvas top 6.3. it came in sunk 2 studs into the floor, raised it and the FighterSpawns with it
 - the ground (Baseplate top) is 2.3, where the front facade ends. the ring room is the street-level floor. the building has a basement down to -18.7 that sat in a slope in g2's map, it's hidden under the baseplate now. floors above at 12.3, 21.3, 30.3, 39.3
+- levelled the props: tables, mat and the ring's bell table were floating 0.5-0.9 over the floor, the outdoor shed 1.2 over the ground. all dropped to sit on it. lockers, glove cubby, boxes, moped were already fine. jump ropes hang off a wall bar, bag frames are planted 0.9 into the floor on purpose
+- the stairwell down to the basement opened onto the baseplate. covered it with Gym.BasementCover (a clone of the floor part) at 3.3, the up flights start from it
 - moving it: wrap the children in a Model and PivotTo once. moving every part on its own double-moves anything welded (ropes, bags)
 - sign renamed to 黒山ボクシングジム (kuroyama boxing gym), original name, no ippo names
 - my old ring's parts are in ServerStorage.OldRingBackup. workspace.Ring only holds FighterSpawns now. BagSpot, R6AnimRig and SpawnLocation got lifted onto the gym floor
