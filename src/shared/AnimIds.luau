@@ -23,7 +23,7 @@ return {
 	SlipLeft = "rbxassetid://123554709180570",
 	SlipRight = "rbxassetid://110329219250331",
 	SlipDuck = "rbxassetid://115140695652613",
-	SlipBack = "rbxassetid://87536074860163",
+	SlipBack = "rbxassetid://116691994517215",
 
 	HitHeadLeft = "rbxassetid://129650507422320",
 	HitHeadRight = "rbxassetid://83013444830368",

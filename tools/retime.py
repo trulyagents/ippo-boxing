@@ -9,6 +9,7 @@ pull back), "linear" is plain. source frames can be fractional, parts get slerpe
 import json, math, sys
 
 from keyframes_to_parts import from_quat, lerp_cf, slerp, to_quat
+from parts_to_keyframes import inv, mul
 
 PARTS = ["HumanoidRootPart", "Torso", "Head", "Right Arm", "Left Arm", "Right Leg", "Left Leg"]
 
@@ -20,7 +21,10 @@ PUNCH = {
 }
 PUNCH["PaBJab"], PUNCH["PaBCross"], PUNCH["PaBHook"] = PUNCH["Jab"], PUNCH["Cross"], PUNCH["Hook"]
 # slips keep their timing, but fade in from and back out to the idle pose over this many frames
-SLIP_BLEND = {"SlipLeft": (0, 0), "SlipRight": (0, 6), "SlipDuck": (0, 0), "SlipBack": (3, 6)}
+SLIP_BLEND = {"SlipLeft": (0, 0), "SlipRight": (0, 6), "SlipDuck": (0, 0), "SlipBack": (0, 2)}
+# g2's back slip is an outboxer dash with both arms dropped and swung back. keep its footwork and
+# torso, but hold the hands up in guard the whole way (blending them up swung them through the body)
+GUARD_ARMS = {"SlipBack"}
 
 
 def ease(kind, u):
@@ -66,6 +70,18 @@ def blend_ends(frames, idle, lead, tail):
     return out
 
 
+def guard_arms(frames, idle):
+    """arms keep the idle's guard relative to the torso, so they ride along with it"""
+    out = []
+    for f in frames:
+        g = dict(f)
+        carry = mul(f["Torso"], inv(idle["Torso"]))
+        for arm in ("Right Arm", "Left Arm"):
+            g[arm] = mul(carry, idle[arm])
+        out.append(g)
+    return out
+
+
 def main():
     src = json.load(open(sys.argv[1]))["anims"]
     idles = json.load(open(sys.argv[2]))["anims"]
@@ -81,6 +97,8 @@ def main():
             frames = blend_ends(frames, idle, 0, 1)
         elif name in SLIP_BLEND:
             lead, tail = SLIP_BLEND[name]
+            if name in GUARD_ARMS:
+                frames = guard_arms(frames, idle)
             frames = blend_ends(frames, idle, lead, tail)
         result["anims"][name] = {
             "loop": False,

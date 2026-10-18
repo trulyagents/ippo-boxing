@@ -140,6 +140,6 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
   - cross and hook hung at full reach for about 6 frames, cut down to 1 beat, then an eased pull back
   - strikes moved at an even speed, now they speed up into contact (cross peaks about 120 studs/s right before impact)
   - jab snapped home in its very last frame, now it comes back over 3 frames
-  - SlipRight ended 54 degrees off the idle and SlipBack started and ended 157 degrees off (it's an outboxer dash with the body turned), both popped. their ends blend into the stance idle now
+  - SlipRight ended 54 degrees off the idle and SlipBack started and ended 157 degrees off (it's an outboxer dash with the body turned), both popped. SlipRight's end blends into the stance idle now. SlipBack had both arms dropped and swung back the whole time, blending them up made them swing through the body, so it keeps g2's footwork but the arms hold the idle guard and ride the torso (retime.py GUARD_ARMS)
 - peek-a-boo jab Impact moved to 0.067, that's where its fist actually peaks
 - next tier: hit reactions and blocks (those run a second long and play at 1.8x, remake them shorter)
