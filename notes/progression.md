@@ -23,11 +23,11 @@ stats, unlocks and saving (step 6). numbers live in src/shared/Stats.luau
 
 ## drills
 - every station has its own minigame, all graded on the server (Stats.Drills):
-  - heavy bag, Charge: hold space or click, let go in the gold (1s held, perfect +-0.12, good +-0.3). 5 reps
+  - heavy bag, Charge: hold space or click, let go in the gold (1s held, perfect +-0.08, good +-0.2). 5 reps
   - bag work, Combo: notes slide in with M1/M2/E on them, throw that punch on the beat, wrong key is a miss. 10 beats
   - jump rope, Rhythm: press on the beat, skips go from 0.6s apart down to 0.36s. 16 beats
-  - mitts, Reaction: the mitt flashes at a random moment (server sends the cue live), hit it under 0.3s for perfect, 0.5 for good. early presses do nothing, slow ones miss. 8 reps
-- the client only sends Hit (with the punch for combos), Down and Up for the charge. the server takes the player's ping off, more than 3 presses a rep counts nothing
+  - mitts, Reaction: the mitt flashes at a random moment (server sends the cue live), hit it under 0.25s for perfect, 0.38 for good. early presses do nothing, slow ones miss. 8 reps
+- the client only sends Hit (with the punch for combos), Down and Up for the charge. beats are perfect within 0.07s, good within 0.15. the server takes the player's ping off, more than 3 presses a rep counts nothing
 - gain is 2 for a perfect run, scaled by score, to one decimal
 - a drill puts you in fight mode and stands you square in front of the equipment, no walking till it's done
 - landed reps throw the punch anim and swing the bag on its rope

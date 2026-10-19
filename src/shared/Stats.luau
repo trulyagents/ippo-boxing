@@ -54,16 +54,16 @@ Stats.Drills = {
 -- the input for each combo key, shown on the note
 Stats.ComboInputs = { Jab = "M1", Cross = "M2", Hook = "E" }
 Stats.ChargeTarget = 1 -- seconds held for a perfect charge
-Stats.ChargePerfect = 0.12 -- either side of the target
-Stats.ChargeGood = 0.3
+Stats.ChargePerfect = 0.08 -- either side of the target
+Stats.ChargeGood = 0.2
 Stats.ChargeMax = 2 -- the meter's full length, holding past it is a miss
-Stats.ReactPerfect = 0.3 -- reaction time after the flash
-Stats.ReactGood = 0.5
+Stats.ReactPerfect = 0.25 -- reaction time after the flash
+Stats.ReactGood = 0.38
 Stats.ReactWindow = 0.9 -- how long the mitt stays up
 Stats.ReactDelay = { 0.8, 2.2 } -- random wait before each flash
 Stats.DrillLeadIn = 1.5 -- seconds before the first beat
-Stats.DrillPerfect = 0.1 -- seconds either side of a beat
-Stats.DrillGood = 0.22
+Stats.DrillPerfect = 0.07 -- seconds either side of a beat
+Stats.DrillGood = 0.15
 Stats.DrillGain = 2 -- for a perfect session, scales down with accuracy
 Stats.DrillCooldown = 2
 Stats.DrillStandOff = 3.2 -- how far from the bag or mitts you get stood for a drill
@@ -133,7 +133,7 @@ function Stats.unlocked(stats: { [string]: number }, unlock: string): boolean
 end
 
 assert(
-	Stats.grade(-0.05) == "Perfect" and Stats.grade(0.2) == "Good" and Stats.grade(0.3) == "Miss",
+	Stats.grade(-0.05) == "Perfect" and Stats.grade(0.12) == "Good" and Stats.grade(0.2) == "Miss",
 	"drill grading is off"
 )
 assert(
@@ -141,7 +141,7 @@ assert(
 	"beat times are off"
 )
 assert(
-	Stats.chargeGrade(1.05) == "Perfect" and Stats.chargeGrade(0.75) == "Good" and Stats.chargeGrade(2.5) == "Miss",
+	Stats.chargeGrade(1.05) == "Perfect" and Stats.chargeGrade(0.85) == "Good" and Stats.chargeGrade(0.7) == "Miss",
 	"charge grading is off"
 )
 assert(Stats.reactGrade(0.25) == "Perfect" and Stats.reactGrade(0.6) == "Miss", "reaction grading is off")
