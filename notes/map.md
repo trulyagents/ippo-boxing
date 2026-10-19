@@ -13,7 +13,7 @@ gym based on the kamogawa gym look (yellow walls, green mat floor, blue ring, re
 - sign renamed to 黒山ボクシングジム (kuroyama boxing gym), original name, no ippo names
 - my old ring's parts are in ServerStorage.OldRingBackup. workspace.Ring only holds FighterSpawns now. BagSpot, R6AnimRig and SpawnLocation got lifted onto the gym floor
 - the ring has g2's match values (RoundTime, KoLimit, RedBoxerName...) and JoinPads, unused for now, maybe useful for matches later. g2 also has an ArenaRing for real fights
-- lighting: daytime, clocktime 15.2, brightness 2.6, warm ambient, atmosphere haze, GymGrade color correction, GymBloom, GymSunRays. Lighting.Technology can't be set from scripts, set it to Future by hand
+- lighting: daytime, clocktime 15.2, brightness 2.6, warm ambient, atmosphere haze, GymGrade color correction, GymSunRays. both blooms (Bloom, GymBloom) are off, they made skin and ropes glow. Lighting.Technology can't be set from scripts, set it to Future by hand
 - outside is g2's city, in workspace.Map.Street: City (roads, sidewalks, poles), Lights, StaticBuildings(+Base), PropBuildings (the far skyscrapers), Grass, Water, Store. same uploads trick (tools/pull_model.py then publish_model.py)
 - g2's city lines up with the gym by moving it (194.25, 2.3, -65.94), no rotation. worked that out by matching parts in the gym against g2's original gym
 - roads sit at 3.3 (same as the gym floor), sidewalks 3.55. the baseplate (top 2.3) is just under it and shows through the empty lots
