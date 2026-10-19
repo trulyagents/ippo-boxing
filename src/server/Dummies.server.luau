@@ -1,4 +1,4 @@
--- Two practice opponents in the ring: a bag that only covers up, and a sparring
+-- Two practice opponents: a bag by the ring that only covers up, and a sparring
 -- partner that throws back, guards and slips.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -110,12 +110,6 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 		if model:GetAttribute("TestFreeze") then
 			continue
 		end
-		-- a real match is on, go stand in the neutral corner out of the way
-		if ring:GetAttribute("MatchOn") and f.State ~= "KO" and f.State ~= "Down" then
-			Fighters.setGuard(f, nil)
-			f.Humanoid:MoveTo(home.Position)
-			continue
-		end
 		local target, distance = nearestPlayer(f)
 		if f.State == "KO" then
 			task.wait(3)
@@ -179,11 +173,14 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 	end
 end
 
--- the bag stands outside the ring by the steps, the partner waits in the far corner
+-- the bag stands outside the ring by the steps, the partner spars upstairs so the ring stays free for matches
 local bagModel, bag =
 	makeDummy("Punching Bag Dummy", spawns:WaitForChild("BagSpot") :: BasePart, Color3.fromRGB(120, 120, 125))
-local sparModel, spar =
-	makeDummy("Sparring Partner", spawns:WaitForChild("PartnerCorner") :: BasePart, Color3.fromRGB(170, 35, 40))
+local sparModel, spar = makeDummy(
+	"Sparring Partner",
+	workspace:WaitForChild("Map"):WaitForChild("Gym"):WaitForChild("SparSpot") :: BasePart,
+	Color3.fromRGB(170, 35, 40)
+)
 if bag then
 	task.spawn(brain, bagModel, bag, false)
 end
