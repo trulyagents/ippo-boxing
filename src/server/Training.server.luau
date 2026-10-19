@@ -4,6 +4,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
+local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Stats = require(ReplicatedStorage.Shared.Stats)
 local Fighters = require(script.Parent.Fighters)
 local PlayerData = require(script.Parent.PlayerData)
@@ -65,6 +66,7 @@ local function finish(player: Player, s: Session)
 	training:FireClient(player, "Done", gain)
 	local f = Fighters.get(player.Character)
 	if f then
+		f.Humanoid.AutoRotate = true
 		Fighters.freeze(f, 0)
 	end
 end
@@ -97,9 +99,19 @@ local function begin(player: Player, stat: string, part: BasePart)
 	sessions[player] = s
 	local length = Stats.DrillLeadIn + s.Times[#s.Times] + Stats.DrillGood + 0.3
 	nextDrill[player] = now + length + Stats.DrillCooldown
-	-- stand still and don't throw real punches while drilling
+	-- stand still and don't throw real punches while drilling. on the bags and mitts you get
+	-- stood a punch away facing them, the jump rope just keeps you where you are
 	Fighters.freeze(f, length)
-	training:FireClient(player, "Start", stat, s.Start, s.Times)
+	local stand = f.Root.CFrame
+	local flat = (f.Root.Position - part.Position) * Vector3.new(1, 0, 1)
+	if Stats.Drills[stat].Punches and flat.Magnitude > 0.1 then
+		local at = Vector3.new(part.Position.X, f.Root.Position.Y, part.Position.Z) + flat.Unit * Stats.DrillStandOff
+		stand = CFrame.lookAt(at, Vector3.new(part.Position.X, at.Y, part.Position.Z))
+	end
+	f.Humanoid.WalkSpeed = 0
+	f.Humanoid.AutoRotate = false
+	-- the client owns its character, so it does the move into place
+	training:FireClient(player, "Start", stat, s.Start, s.Times, stand)
 	task.delay(length, finish, player, s)
 end
 
@@ -137,6 +149,14 @@ training.OnServerEvent:Connect(function(player, kind)
 	local f = Fighters.get(player.Character)
 	if punches and f and grade ~= "Miss" then
 		Fighters.show(f, punches[(best - 1) % #punches + 1])
+		-- bags hang on a rope and swing for real, the mitts are just a target
+		local push = Stats.DrillPush[grade]
+		local away = (s.Part.Position - f.Root.Position) * Vector3.new(1, 0, 1)
+		if push and not s.Part.Anchored and away.Magnitude > 0.1 then
+			task.delay(Config.Moves[punches[(best - 1) % #punches + 1]].Startup, function()
+				s.Part:ApplyImpulse(away.Unit * push * s.Part.AssemblyMass)
+			end)
+		end
 	end
 end)
 
@@ -152,6 +172,10 @@ local function hook(model: Model, stat: string)
 	prompt.MaxActivationDistance = 6
 	prompt.RequiresLineOfSight = false
 	prompt.Parent = part
+	-- the server swings the bags, so it has to own them
+	if part:CanSetNetworkOwnership() then
+		part:SetNetworkOwner(nil)
+	end
 	prompt.Triggered:Connect(function(player)
 		begin(player, stat, part)
 	end)

@@ -78,8 +78,13 @@ local function press()
 	TweenService:Create(ringScale, POP, { Scale = 1 }):Play()
 end
 
-remote.OnClientEvent:Connect(function(kind, a, b, c)
+remote.OnClientEvent:Connect(function(kind, a, b, c, stand)
 	if kind == "Start" and typeof(a) == "string" and typeof(b) == "number" and typeof(c) == "table" then
+		-- stood a punch away from the bag or mitts, facing them
+		local character = player.Character
+		if character and typeof(stand) == "CFrame" then
+			character:PivotTo(stand)
+		end
 		for _, m in marks do
 			m:Destroy()
 		end

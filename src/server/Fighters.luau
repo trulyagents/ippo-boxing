@@ -803,6 +803,7 @@ function Fighters.freeze(f: Fighter, seconds: number)
 	f.BusyUntil = os.clock() + seconds
 	f.Guarding, f.GuardHeight, f.Weaving = false, nil, false
 	publish(f)
+	setWalk(f)
 end
 
 -- just the punch animation, no hit. for training on the bags and mitts

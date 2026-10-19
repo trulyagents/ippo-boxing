@@ -35,6 +35,8 @@ Stats.DrillPerfect = 0.1 -- seconds either side of a beat
 Stats.DrillGood = 0.22
 Stats.DrillGain = 2 -- for a perfect session, scales down with accuracy
 Stats.DrillCooldown = 2
+Stats.DrillStandOff = 3.2 -- how far from the bag or mitts you get stood for a drill
+Stats.DrillPush = { Perfect = 7, Good = 4 } -- studs per second a landed drill punch swings the bag
 -- endurance and willpower only grow by fighting
 Stats.FightGain = { Endurance = 0.1, Willpower = 1 } -- per clean hit taken, per get up
 -- land this many clean hits (on anyone, dummies count) and training counts for this long after
