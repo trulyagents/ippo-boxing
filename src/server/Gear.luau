@@ -18,9 +18,22 @@ local PARTS = {
 		Offset = CFrame.new(0.5, -0.6, -0.18) * CFrame.Angles(0, 0, -0.35),
 		Lace = false,
 	},
-	{ Name = "Base", Size = Vector3.new(1.06, 0.42, 1.06), Offset = CFrame.new(0, -0.1, 0), Lace = false },
-	{ Name = "Band_Upper", Size = Vector3.new(1.09, 0.08, 1.09), Offset = CFrame.new(0, 0.05, 0), Lace = true },
-	{ Name = "Band_Down", Size = Vector3.new(1.09, 0.08, 1.09), Offset = CFrame.new(0, -0.2, 0), Lace = true },
+	-- the cuff and its bands are square blocks, round ones let the corners of the blocky arm poke through
+	{ Name = "Base", Size = Vector3.new(1.08, 0.42, 1.08), Offset = CFrame.new(0, -0.1, 0), Lace = false, Box = true },
+	{
+		Name = "Band_Upper",
+		Size = Vector3.new(1.1, 0.08, 1.1),
+		Offset = CFrame.new(0, 0.05, 0),
+		Lace = true,
+		Box = true,
+	},
+	{
+		Name = "Band_Down",
+		Size = Vector3.new(1.1, 0.08, 1.1),
+		Offset = CFrame.new(0, -0.2, 0),
+		Lace = true,
+		Box = true,
+	},
 }
 Gear.Leather = Color3.fromRGB(150, 18, 18)
 Gear.Lace = Color3.fromRGB(235, 235, 228)
@@ -50,7 +63,8 @@ function Gear.gloves(model: Model)
 			if not (source and source:IsA("BasePart")) then
 				continue
 			end
-			local p = source:Clone()
+			local p: BasePart = if info.Box then Instance.new("Part") else source:Clone()
+			p.Name = info.Name
 			p.Size = info.Size
 			p.Color = if info.Lace then Gear.Lace else Gear.Leather
 			p.Material = Enum.Material.SmoothPlastic
