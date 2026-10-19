@@ -18,7 +18,9 @@ local CareerServer = {}
 -- time, step n+1 is finishing quest n, so the drop between two steps is where new players quit
 local AnalyticsService = game:GetService("AnalyticsService")
 local function funnel(player: Player, step: number, name: string)
-	pcall(AnalyticsService.LogOnboardingFunnelStepEvent, AnalyticsService, player, step, name)
+	pcall(function()
+		AnalyticsService:LogOnboardingFunnelStepEvent(player, step, name)
+	end)
 end
 
 function CareerServer.joined(player: Player)
