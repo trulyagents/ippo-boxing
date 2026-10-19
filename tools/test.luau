@@ -4,6 +4,7 @@
 local Stats = require("../src/shared/Stats")
 local Career = require("../src/shared/Career")
 local Config = require("../src/shared/CombatConfig")
+local Daily = require("../src/shared/Daily")
 
 local failed = 0
 local function check(ok: boolean, what: string)
@@ -86,6 +87,17 @@ end
 for _, pick in { "Hydrate", "Treatment", "PepTalk" } do
 	check(Config.Match.Corner[pick] ~= nil, "corner pick " .. pick .. " is configured")
 end
+
+-- daily streak: a week of logins in a row climbs to the cap, a gap starts over
+local streak, last = 0, 0
+for day = 100, 110 do
+	local n = Daily.next(last, streak, day)
+	check(n == day - 99, "streak day " .. day .. " is " .. (day - 99))
+	streak, last = n or streak, day
+	check(Daily.next(last, streak, day) == nil, "logging in twice on day " .. day .. " gives nothing")
+end
+check(Daily.next(last, streak, last + 2) == 1, "two days off starts over")
+check(Daily.reward(streak) == Daily.MaxDay * Daily.PerDay, "long streak reward is capped")
 
 print(if failed == 0 then "all checks passed" else failed .. " checks failed")
 if failed > 0 then

@@ -1,6 +1,7 @@
 --!strict
--- The card that pops when training opens up a new stance or special (StarterGui.UnlockCard,
--- built in studio). The server sends Fx "Unlocked" with the name.
+-- The card that pops when training opens up a new stance or special, and the daily streak
+-- reward (StarterGui.UnlockCard, built in studio). The server sends Fx "Unlocked" with the name,
+-- or Fx "Daily" with the streak day, the stat, how much, and what tomorrow pays.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -31,25 +32,23 @@ local function text(name: string): TextLabel
 	return card:WaitForChild(name) :: TextLabel
 end
 
--- unlocks can land together (one stat gain opens two things), show them one after another
-local queue: { string } = {}
+-- unlocks can land together (one stat gain opens two things), show them one after another.
+-- each entry is the four lines of the card
+type Card = { Kind: string, Title: string, Blurb: string, Hint: string }
+local queue: { Card } = {}
 local showing = false
 
 local function showNext()
-	local name = table.remove(queue, 1)
-	if not name then
+	local card = table.remove(queue, 1)
+	if not card then
 		showing = false
 		return
 	end
 	showing = true
-	local stance = Config.Stances[name]
-	local special = Config.Specials[name]
-	text("Kind").Text = if stance then "NEW STYLE UNLOCKED" else "NEW SPECIAL UNLOCKED"
-	text("Title").Text = if stance then stance.Name elseif special then special.Name else string.upper(name)
-	text("Blurb").Text = BLURBS[name] or ""
-	text("Hint").Text = if stance
-		then (if UserInputService.TouchEnabled then "MENU - STYLES TO EQUIP IT" else "M - STYLES TO EQUIP IT")
-		else "READY ON ITS STANCE'S SPECIAL BUTTON"
+	text("Kind").Text = card.Kind
+	text("Title").Text = card.Title
+	text("Blurb").Text = card.Blurb
+	text("Hint").Text = card.Hint
 	scale.Scale = 0
 	root.Visible = true
 	TweenService:Create(scale, POP, { Scale = 1 }):Play()
@@ -62,12 +61,31 @@ local function showNext()
 	end)
 end
 
-fx.OnClientEvent:Connect(function(kind, name)
-	if kind ~= "Unlocked" or typeof(name) ~= "string" then
-		return
-	end
-	table.insert(queue, name)
+local function push(card: Card)
+	table.insert(queue, card)
 	if not showing then
 		showNext()
+	end
+end
+
+fx.OnClientEvent:Connect(function(kind, a, b, c, d)
+	if kind == "Unlocked" and typeof(a) == "string" then
+		local stance = Config.Stances[a]
+		local special = Config.Specials[a]
+		push({
+			Kind = if stance then "NEW STYLE UNLOCKED" else "NEW SPECIAL UNLOCKED",
+			Title = if stance then stance.Name elseif special then special.Name else string.upper(a),
+			Blurb = BLURBS[a] or "",
+			Hint = if stance
+				then (if UserInputService.TouchEnabled then "MENU - STYLES TO EQUIP IT" else "M - STYLES TO EQUIP IT")
+				else "READY ON ITS STANCE'S SPECIAL BUTTON",
+		})
+	elseif kind == "Daily" and typeof(a) == "number" and typeof(b) == "string" then
+		push({
+			Kind = "DAY " .. a .. " STREAK",
+			Title = "+" .. tostring(c) .. " " .. string.upper(b),
+			Blurb = "YOUR WEAKEST STAT GETS THE WORK",
+			Hint = "COME BACK TOMORROW FOR +" .. tostring(d) .. ". MISS A DAY AND IT STARTS OVER",
+		})
 	end
 end)

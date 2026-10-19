@@ -10,6 +10,7 @@ local RunService = game:GetService("RunService")
 local Remotes = require(script.Parent.Remotes)
 local PlayerData = require(script.Parent.PlayerData)
 local Career = require(script.Parent.Career)
+local Leaderboard = require(script.Parent.Leaderboard)
 
 local OWNERS: { [number]: boolean } = {
 	[1696717053] = true, -- trulyagents
@@ -39,6 +40,7 @@ Remotes.Cheat.OnServerEvent:Connect(function(player, command, a, b)
 		if data then
 			data.RankPoints = math.max(0, data.RankPoints + math.floor(a :: number))
 			Career.show(player)
+			Leaderboard.record(player, data.RankPoints)
 		end
 	end
 end)

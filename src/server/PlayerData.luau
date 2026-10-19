@@ -17,6 +17,7 @@ local template = {
 	Record = { Wins = 0, Losses = 0, Draws = 0, KOs = 0 },
 	RankPoints = 0,
 	Stance = "Orthodox", -- what you spawn in, your last pick
+	Daily = { Last = 0, Streak = 0 }, -- Last is the UTC day number of the last login that counted
 	Quest = { Step = 1, Count = 0 },
 }
 export type Data = typeof(template)

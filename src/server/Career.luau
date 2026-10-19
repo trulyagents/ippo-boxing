@@ -5,7 +5,10 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Career = require(ReplicatedStorage.Shared.Career)
+local Daily = require(ReplicatedStorage.Shared.Daily)
+local Stats = require(ReplicatedStorage.Shared.Stats)
 local PlayerData = require(script.Parent.PlayerData)
+local Leaderboard = require(script.Parent.Leaderboard)
 
 local fx = require(script.Parent.Remotes).Fx
 local function tell(player: Player, text: string)
@@ -25,8 +28,36 @@ end
 
 function CareerServer.joined(player: Player)
 	local data = PlayerData.data(player)
-	if data and data.Quest.Step == 1 and data.Quest.Count == 0 then
+	if not data then
+		return
+	end
+	if data.Quest.Step == 1 and data.Quest.Count == 0 then
 		funnel(player, 1, "Joined")
+	end
+	-- the daily streak: first login of the (utc) day pays out on your weakest stat
+	local today = Daily.today(os.time())
+	local streak = Daily.next(data.Daily.Last, data.Daily.Streak, today)
+	if streak then
+		data.Daily.Last, data.Daily.Streak = today, streak
+		local weakest, lowest = Stats.Names[1], math.huge
+		for _, name in Stats.Names do
+			local v = data.Stats[name] or 0
+			if v < lowest then
+				weakest, lowest = name, v
+			end
+		end
+		local amount = Daily.reward(streak)
+		PlayerData.add(player, weakest, amount)
+		-- a beat late so the client's listening by then
+		task.delay(4, function()
+			if player.Parent then
+				fx:FireClient(player, "Daily", streak, weakest, amount, Daily.reward(streak + 1))
+			end
+		end)
+	end
+	player:SetAttribute("DailyStreak", data.Daily.Streak)
+	if data.RankPoints > 0 then
+		Leaderboard.record(player, data.RankPoints)
 	end
 end
 
@@ -119,6 +150,7 @@ function CareerServer.matchResult(player: Player, result: string, ko: boolean): 
 		end
 	end
 	PlayerData.save(player)
+	Leaderboard.record(player, data.RankPoints)
 	local after = Career.rankOf(data.RankPoints)
 	if after ~= before then
 		task.delay(2, function()
