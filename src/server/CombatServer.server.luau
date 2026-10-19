@@ -89,6 +89,7 @@ end
 
 local function join(player: Player)
 	if PlayerData.load(player) then
+		Career.joined(player)
 		Career.show(player)
 		loadBoxer(player)
 	end

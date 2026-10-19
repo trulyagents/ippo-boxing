@@ -13,7 +13,7 @@ i work on this from my home pc and my laptop. code goes through github, the plac
 ## every session
 1. `git pull`
 2. open "Ippo Project" in studio from the cloud (Recent / My Experiences), not a local file
-3. `rojo serve` in this folder, connect in the rojo plugin. check the plugin says IppoBoxing, not MyGame (that's home invasion)
+3. `rojo serve` in this folder, connect in the rojo plugin. check the plugin says SecondWindBoxing, not MyGame (that's home invasion)
 4. work. commit + push code. in studio ctrl+s saves the place to roblox, do that before leaving
 5. if i changed a gui in studio: right click it > Save / Export > Save to File (xml .rbxmx) over the copy in `ui/`, then commit
 

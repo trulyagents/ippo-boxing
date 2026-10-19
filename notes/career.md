@@ -11,3 +11,4 @@ fight record, rank and quests. lists in src/shared/Career.luau, saving in src/se
 - not done: daily quests, rewards past stats (money, gear), a rank badge over heads
 - saving: profilestore autosaves every 5 min, saves on leave and on shutdown, and has the session lock. a match result also saves right away (PlayerData.save after matchResult), so a server crash can't eat a win
 - the saved table has Version = 1. new fields just go in the template (Reconcile fills them in). renaming or reshaping one means bumping Version and migrating old saves in PlayerData.load
+- the onboarding funnel (creator hub > analytics > funnels): step 1 "Joined" for a brand new player, step n+1 when quest n is done. the drop between two steps shows where new players quit. Career.joined + the quest completion in Career.event

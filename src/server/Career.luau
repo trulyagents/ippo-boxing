@@ -14,6 +14,20 @@ end
 
 local CareerServer = {}
 
+-- the new player funnel in the creator hub (Analytics > Funnels): step 1 is joining for the first
+-- time, step n+1 is finishing quest n, so the drop between two steps is where new players quit
+local AnalyticsService = game:GetService("AnalyticsService")
+local function funnel(player: Player, step: number, name: string)
+	pcall(AnalyticsService.LogOnboardingFunnelStepEvent, AnalyticsService, player, step, name)
+end
+
+function CareerServer.joined(player: Player)
+	local data = PlayerData.data(player)
+	if data and data.Quest.Step == 1 and data.Quest.Count == 0 then
+		funnel(player, 1, "Joined")
+	end
+end
+
 function CareerServer.show(player: Player)
 	local data = PlayerData.data(player)
 	if not data then
@@ -62,6 +76,7 @@ function CareerServer.event(player: Player, event: string, detail: string?)
 	end
 	data.Quest.Count += 1
 	if data.Quest.Count >= quest.Need then
+		funnel(player, data.Quest.Step + 1, "Quest " .. data.Quest.Step .. ": " .. quest.Text)
 		data.Quest.Step += 1
 		data.Quest.Count = 0
 		PlayerData.add(player, quest.Reward.Stat, quest.Reward.Amount)
