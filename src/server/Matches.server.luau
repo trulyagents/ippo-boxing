@@ -160,6 +160,7 @@ local function runMatch(red: Pad, blue: Pad)
 			Losses = player:GetAttribute("Losses") or 0,
 			Draws = player:GetAttribute("Draws") or 0,
 			KOs = player:GetAttribute("KOs") or 0,
+			VIP = player:GetAttribute("VIP") == true,
 		}
 	end
 	for i, f in fighters do

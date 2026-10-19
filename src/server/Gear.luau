@@ -38,7 +38,8 @@ local PARTS: { { Name: string, Size: Vector3, Offset: CFrame, Lace: boolean, Box
 Gear.Leather = Color3.fromRGB(150, 18, 18)
 Gear.Lace = Color3.fromRGB(235, 235, 228)
 
-function Gear.gloves(model: Model)
+-- leather defaults to red, the shop's Glove Colors pass picks others
+function Gear.gloves(model: Model, leather: Color3?)
 	local gear = ReplicatedStorage:FindFirstChild("BoxingGear")
 	local meshes = gear and gear:FindFirstChild("GloveParts")
 	if not meshes then
@@ -66,7 +67,7 @@ function Gear.gloves(model: Model)
 			local p: BasePart = if info.Box then Instance.new("Part") else source:Clone()
 			p.Name = info.Name
 			p.Size = info.Size
-			p.Color = if info.Lace then Gear.Lace else Gear.Leather
+			p.Color = if info.Lace then Gear.Lace else (leather or Gear.Leather)
 			p.Material = Enum.Material.SmoothPlastic
 			p.Anchored = false
 			p.Massless = true

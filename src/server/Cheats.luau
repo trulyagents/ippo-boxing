@@ -5,12 +5,16 @@
 --   Cheat:FireServer("SkipPhase")              end the ring's intro, round or break now
 --   Cheat:FireServer("Stat", "Power", 25)      set a stat
 --   Cheat:FireServer("RankPoints", 100)        add rank points (negative takes them away)
+--   Cheat:FireServer("Pass", "VIP")             act as if you own a pass (this session only)
+--   Cheat:FireServer("Receipt", "StatRespec", "id")  run a product receipt through the real handler
 local RunService = game:GetService("RunService")
 
 local Remotes = require(script.Parent.Remotes)
 local PlayerData = require(script.Parent.PlayerData)
 local Career = require(script.Parent.Career)
 local Leaderboard = require(script.Parent.Leaderboard)
+local Shop = require(script.Parent.Shop)
+local ShopData = require(game:GetService("ReplicatedStorage").Shared.Shop)
 
 local OWNERS: { [number]: boolean } = {
 	[1696717053] = true, -- trulyagents
@@ -35,6 +39,13 @@ Remotes.Cheat.OnServerEvent:Connect(function(player, command, a, b)
 		end
 	elseif command == "Stat" and typeof(a) == "string" and finite(b) then
 		PlayerData.set(player, a, b :: number)
+	elseif command == "Receipt" and typeof(a) == "string" and typeof(b) == "string" and RunService:IsStudio() then
+		local id = ShopData.Products[a]
+		if id then
+			print("[Cheats] receipt", a, b, Shop.receipt({ PlayerId = player.UserId, ProductId = id, PurchaseId = b }))
+		end
+	elseif command == "Pass" and typeof(a) == "string" then
+		Shop.grant(player, a)
 	elseif command == "RankPoints" and finite(a) then
 		local data = PlayerData.data(player)
 		if data then

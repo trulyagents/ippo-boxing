@@ -6,10 +6,11 @@
 --   Fx          server -> client, hits, shouts, match screens
 --   Training    both ways, drill inputs and cues (Training)
 --   CornerPick  both ways, the pick between rounds (Corner)
+--   Shop        client -> server, glove color and respec points (Shop)
 --   Cheat       client -> server, QA commands, Studio and the owner only (Cheats)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local NAMES = { "Action", "Fx", "Training", "CornerPick", "Cheat" }
+local NAMES = { "Action", "Fx", "Training", "CornerPick", "Cheat", "Shop" }
 
 local folder = ReplicatedStorage:FindFirstChild("BoxingRemotes") or Instance.new("Folder")
 folder.Name = "BoxingRemotes"
@@ -28,4 +29,5 @@ return {
 	Training = remotes.Training,
 	CornerPick = remotes.CornerPick,
 	Cheat = remotes.Cheat,
+	Shop = remotes.Shop,
 }

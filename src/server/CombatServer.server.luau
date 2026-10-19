@@ -9,6 +9,7 @@ local Fighters = require(script.Parent.Fighters)
 local Gear = require(script.Parent.Gear)
 local PlayerData = require(script.Parent.PlayerData)
 local Career = require(script.Parent.Career)
+local Shop = require(script.Parent.Shop)
 
 local Remotes = require(script.Parent.Remotes)
 require(script.Parent.Cheats) -- QA commands, Studio and the owner only
@@ -65,7 +66,7 @@ local function loadBoxer(player: Player)
 	player.Character = character
 	character.Parent = workspace
 	Gear.strip(character)
-	Gear.gloves(character)
+	Gear.gloves(character, Shop.gloveColor(player))
 	Gear.trunks(character)
 	local f = Fighters.register(character, player, stats)
 	-- back in the stance you last picked
@@ -89,6 +90,7 @@ end
 
 local function join(player: Player)
 	if PlayerData.load(player) then
+		Shop.joined(player)
 		Career.joined(player)
 		Career.show(player)
 		loadBoxer(player)

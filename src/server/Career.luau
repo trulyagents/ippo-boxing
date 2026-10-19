@@ -9,6 +9,8 @@ local Daily = require(ReplicatedStorage.Shared.Daily)
 local Stats = require(ReplicatedStorage.Shared.Stats)
 local PlayerData = require(script.Parent.PlayerData)
 local Leaderboard = require(script.Parent.Leaderboard)
+local Shop = require(script.Parent.Shop)
+local ShopData = require(ReplicatedStorage.Shared.Shop)
 
 local fx = require(script.Parent.Remotes).Fx
 local function tell(player: Player, text: string)
@@ -46,12 +48,12 @@ function CareerServer.joined(player: Player)
 				weakest, lowest = name, v
 			end
 		end
-		local amount = Daily.reward(streak)
+		local amount = Daily.reward(streak) + (if Shop.owns(player, "VIP") then ShopData.VIPDailyBonus else 0)
 		PlayerData.add(player, weakest, amount)
 		-- a beat late so the client's listening by then
 		task.delay(4, function()
 			if player.Parent then
-				fx:FireClient(player, "Daily", streak, weakest, amount, Daily.reward(streak + 1))
+				fx:FireClient(player, "Daily", streak, weakest, amount, amount - Daily.reward(streak) + Daily.reward(streak + 1))
 			end
 		end)
 	end

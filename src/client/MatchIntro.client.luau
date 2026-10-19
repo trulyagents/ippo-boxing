@@ -46,7 +46,10 @@ local function fill(card: ImageLabel, info: any)
 			end
 		end)
 	end
-	(card:WaitForChild("Name") :: TextLabel).Text = string.upper(tostring(info.Name or "?"));
+	local nameLabel = card:WaitForChild("Name") :: TextLabel
+	nameLabel.Text = string.upper(tostring(info.Name or "?"))
+	-- VIPs show in gold
+	nameLabel.TextColor3 = if info.VIP == true then Color3.fromRGB(196, 140, 20) else Color3.fromRGB(14, 13, 12);
 	(card:WaitForChild("Rank") :: TextLabel).Text = tostring(info.Rank or "ROOKIE");
 	(card:WaitForChild("Record") :: TextLabel).Text = string.format(
 		"%d - %d - %d   %d KO",

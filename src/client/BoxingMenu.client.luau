@@ -22,6 +22,7 @@ local pages: { [string]: Frame } = {
 	Stats = sheet:WaitForChild("StatsPage") :: Frame,
 	Styles = sheet:WaitForChild("StylesPage") :: Frame,
 	Record = sheet:WaitForChild("RecordPage") :: Frame,
+	Shop = sheet:WaitForChild("ShopPage") :: Frame,
 }
 local tracker = gui:WaitForChild("QuestTracker") :: TextLabel
 local radar = pages.Stats:WaitForChild("Radar")
@@ -164,6 +165,7 @@ local function drawStyles()
 	end
 end
 
+local drawShop: () -> ()
 local tab = "Stats"
 
 local function num(key: string): number
@@ -230,6 +232,110 @@ for _, key in { "QuestStep", "QuestCount", "RankPoints", "Wins", "Losses", "Draw
 	end)
 end
 
+-- the shop: buy buttons open roblox's own prompt, the server checks ownership for everything
+local MarketplaceService = game:GetService("MarketplaceService")
+local ShopData = require(ReplicatedStorage.Shared.Shop)
+local shopRemote = ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Shop") :: RemoteEvent
+local shopPage = pages.Shop
+local prices: { [string]: number } = {}
+-- prices come from roblox so a price change on the website shows up without an update
+task.spawn(function()
+	for name, id in ShopData.Passes do
+		local ok, info = pcall(function()
+			return MarketplaceService:GetProductInfo(id, Enum.InfoType.GamePass)
+		end)
+		if ok and info then
+			prices[name] = info.PriceInRobux
+		end
+	end
+	for name, id in ShopData.Products do
+		local ok, info = pcall(function()
+			return MarketplaceService:GetProductInfo(id, Enum.InfoType.Product)
+		end)
+		if ok and info then
+			prices[name] = info.PriceInRobux
+		end
+	end
+end)
+
+local function buyText(card: Instance): TextLabel
+	return card:WaitForChild("Buy"):WaitForChild("Text") :: TextLabel
+end
+
+drawShop = function()
+	for name in ShopData.Passes do
+		local card = shopPage:WaitForChild(name)
+		local own = player:GetAttribute(name) == true
+		buyText(card).Text = if own then "OWNED" elseif prices[name] then "R$ " .. tostring(prices[name]) else "BUY"
+	end
+	local respec = shopPage:WaitForChild("StatRespec")
+	buyText(respec).Text = if prices.StatRespec then "R$ " .. tostring(prices.StatRespec) else "BUY"
+	local pool = (player:GetAttribute("StatPool") :: number?) or 0;
+	(respec:WaitForChild("Pool") :: TextLabel).Text = if pool > 0
+		then string.format("%.1f POINTS TO SPEND ON THE STATS TAB", pool)
+		else ""
+	local current = player:GetAttribute("Glove") or "Red"
+	for _, swatch in shopPage:WaitForChild("GloveColors"):WaitForChild("Swatches"):GetChildren() do
+		local ring = swatch:FindFirstChild("Picked")
+		if ring and ring:IsA("UIStroke") then
+			ring.Thickness = if swatch.Name == current then 4 else 1
+		end
+	end
+end
+
+for name, id in ShopData.Passes do
+	(shopPage:WaitForChild(name):WaitForChild("Buy") :: TextButton).Activated:Connect(function()
+		if player:GetAttribute(name) ~= true then
+			MarketplaceService:PromptGamePassPurchase(player, id)
+		end
+	end)
+end
+(shopPage:WaitForChild("StatRespec"):WaitForChild("Buy") :: TextButton).Activated:Connect(function()
+	MarketplaceService:PromptProductPurchase(player, ShopData.Products.StatRespec)
+end)
+-- red is free, the rest need the pass (no pass: tapping a color offers it)
+for _, swatch in shopPage:WaitForChild("GloveColors"):WaitForChild("Swatches"):GetChildren() do
+	if swatch:IsA("TextButton") then
+		swatch.Activated:Connect(function()
+			if swatch.Name == "Red" or player:GetAttribute("GloveColors") == true then
+				shopRemote:FireServer("Glove", swatch.Name)
+			else
+				MarketplaceService:PromptGamePassPurchase(player, ShopData.Passes.GloveColors)
+			end
+		end)
+	end
+end
+
+-- respec points: a + on each stat row while there are points to spend
+for _, name in Stats.Names do
+	local row = rows:FindFirstChild(name)
+	local plus = row and row:FindFirstChild("Plus")
+	if plus and plus:IsA("TextButton") then
+		plus.Activated:Connect(function()
+			shopRemote:FireServer("Spend", name)
+		end)
+	end
+end
+local function drawPlus()
+	local pool = (player:GetAttribute("StatPool") :: number?) or 0
+	for _, name in Stats.Names do
+		local row = rows:FindFirstChild(name)
+		local plus = row and row:FindFirstChild("Plus")
+		if plus and plus:IsA("GuiObject") then
+			plus.Visible = pool > 0
+		end
+	end
+end
+drawPlus()
+for _, attr in { "StatPool", "Glove", "GloveColors", "KOEffect", "VIP" } do
+	player:GetAttributeChangedSignal(attr):Connect(function()
+		drawPlus()
+		if tab == "Shop" then
+			drawShop()
+		end
+	end)
+end
+
 local function showTab(name: string)
 	tab = name
 	for n, page in pages do
@@ -242,6 +348,8 @@ local function showTab(name: string)
 		drawStats()
 	elseif name == "Styles" then
 		drawStyles()
+	elseif name == "Shop" then
+		drawShop()
 	else
 		drawRecord()
 	end

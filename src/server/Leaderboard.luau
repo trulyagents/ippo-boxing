@@ -9,6 +9,8 @@ local RunService = game:GetService("RunService")
 local UserService = game:GetService("UserService")
 
 local Career = require(ReplicatedStorage.Shared.Career)
+local ShopData = require(ReplicatedStorage.Shared.Shop)
+local MarketplaceService = game:GetService("MarketplaceService")
 
 local SHOWN = 10
 local REFRESH = 120
@@ -34,6 +36,21 @@ local function lookUp(ids: { number })
 			names[info.Id] = info.DisplayName
 		end
 	end
+end
+
+-- VIPs get a gold name. works for people who aren't in the server, cached like the names
+local vips: { [number]: boolean } = {}
+local function isVIP(id: number): boolean
+	if vips[id] == nil then
+		local ok, has = pcall(function()
+			return MarketplaceService:UserOwnsGamePassAsync(id, ShopData.Passes.VIP)
+		end)
+		if not ok then
+			return false
+		end
+		vips[id] = has == true
+	end
+	return vips[id]
 end
 
 local board = workspace:WaitForChild("Map"):WaitForChild("Gym"):WaitForChild("RankBoard")
@@ -66,7 +83,11 @@ local function refresh()
 		row.LayoutOrder = i
 		row.Visible = true;
 		(row:WaitForChild("Place") :: TextLabel).Text = "#" .. i;
-		(row:WaitForChild("Name") :: TextLabel).Text = string.upper(names[ids[i]] or "?");
+		local nameLabel = row:WaitForChild("Name") :: TextLabel
+		nameLabel.Text = string.upper(names[ids[i]] or "?")
+		if isVIP(ids[i]) then
+			nameLabel.TextColor3 = Color3.fromRGB(196, 140, 20)
+		end;
 		(row:WaitForChild("Rank") :: TextLabel).Text = (Career.rankOf(e.value));
 		(row:WaitForChild("Points") :: TextLabel).Text = tostring(e.value)
 		row.Parent = list

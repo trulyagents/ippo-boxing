@@ -286,6 +286,28 @@ local function play(name: string, at: Instance?, pitch: number?)
 	end)
 end
 
+-- the KO Effect pass: a comic burst over whoever got knocked out by a pass owner
+local burstTemplate = ReplicatedStorage:WaitForChild("BoxingGear"):WaitForChild("KOBurst") :: BillboardGui
+local function koBurst(target: Instance?, attacker: Instance?)
+	local owner = attacker and Players:GetPlayerFromCharacter(attacker)
+	local head = target and target:FindFirstChild("Head")
+	if not (owner and owner:GetAttribute("KOEffect") and head) then
+		return
+	end
+	local b = burstTemplate:Clone()
+	local scale = b:WaitForChild("Burst"):WaitForChild("UIScale") :: UIScale
+	scale.Scale = 0
+	b.Adornee = head
+	b.Parent = gui
+	TweenService:Create(scale, TweenInfo.new(0.35, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { Scale = 1 }):Play()
+	task.delay(2.2, function()
+		TweenService:Create(scale, TweenInfo.new(0.25), { Scale = 0 }):Play()
+		task.delay(0.3, function()
+			b:Destroy()
+		end)
+	end)
+end
+
 local function lockedModel(): Model?
 	local name = player:GetAttribute("LockTarget")
 	local found = name and workspace:FindFirstChild(name)
@@ -357,6 +379,7 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName
 		shout("DOWN!", Color3.fromRGB(255, 60, 60), 110)
 		addShake(if a == me then 2 else 0.8)
 	elseif kind == "KO" then
+		koBurst(a, b)
 		play("Thud", a)
 		play("Bell", a)
 		play("Cheer", a, 1.05)
