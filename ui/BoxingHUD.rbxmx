@@ -853,8 +853,311 @@
 					</Item>
 				</Item>
 			</Item>
+			<Item class="Frame" referent="RBX00054">
+				<Properties>
+					<Vector2 name="AnchorPoint"><X>0</X><Y>1</Y></Vector2>
+					<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+					<float name="BackgroundTransparency">1</float>
+					<int name="BorderSizePixel">1</int>
+					<bool name="ClipsDescendants">false</bool>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Stance</string>
+					<UDim2 name="Position"><XS>1.0099999904632568</XS><XO>0</XO><YS>0.9200000166893005</YS><YO>0</YO></UDim2>
+					<float name="Rotation">0</float>
+					<UDim2 name="Size"><XS>0.41999998688697815</XS><XO>0</XO><YS>0.7799999713897705</YS><YO>0</YO></UDim2>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="ImageLabel" referent="RBX00055">
+					<Properties>
+						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+						<float name="BackgroundTransparency">1</float>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<Content name="Image"><url>rbxassetid://123593145684113</url></Content>
+						<Color3 name="ImageColor3"><R>1</R><G>1</G><B>1</B></Color3>
+						<float name="ImageTransparency">0</float>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">Banner</string>
+						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+						<float name="Rotation">0</float>
+						<token name="ScaleType">0</token>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.30000001192092896</YS><YO>0</YO></UDim2>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">2</int>
+					</Properties>
+					<Item class="TextLabel" referent="RBX00056">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+							<float name="BackgroundTransparency">1</float>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">StanceText</string>
+							<UDim2 name="Position"><XS>0.05999999865889549</XS><XO>0</XO><YS>0.07999999821186066</YS><YO>0</YO></UDim2>
+							<float name="Rotation">-2</float>
+							<UDim2 name="Size"><XS>0.8600000143051147</XS><XO>0</XO><YS>0.8399999737739563</YS><YO>0</YO></UDim2>
+							<string name="Text">ORTHODOX</string>
+							<Color3 name="TextColor3"><R>0.929411768913269</R><G>0.8941176533699036</G><B>0.8117647171020508</B></Color3>
+							<bool name="TextScaled">true</bool>
+							<float name="TextSize">8</float>
+							<Color3 name="TextStrokeColor3"><R>0</R><G>0</G><B>0</B></Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextXAlignment">0</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">3</int>
+						</Properties>
+						<Item class="UITextSizeConstraint" referent="RBX00057">
+							<Properties>
+								<int name="MaxTextSize">60</int>
+								<int name="MinTextSize">1</int>
+								<string name="Name">UITextSizeConstraint</string>
+							</Properties>
+						</Item>
+					</Item>
+				</Item>
+				<Item class="TextLabel" referent="RBX00058">
+					<Properties>
+						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+						<float name="BackgroundTransparency">1</float>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">Key</string>
+						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0.3199999928474426</YS><YO>0</YO></UDim2>
+						<float name="Rotation">0</float>
+						<UDim2 name="Size"><XS>0.14000000059604645</XS><XO>0</XO><YS>0.14000000059604645</YS><YO>0</YO></UDim2>
+						<string name="Text">G</string>
+						<Color3 name="TextColor3"><R>0.9294120073318481</R><G>0.8941180109977722</G><B>0.8117650151252747</B></Color3>
+						<bool name="TextScaled">true</bool>
+						<float name="TextSize">8</float>
+						<Color3 name="TextStrokeColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+						<float name="TextStrokeTransparency">0</float>
+						<float name="TextTransparency">0</float>
+						<token name="TextXAlignment">2</token>
+						<token name="TextYAlignment">1</token>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+				</Item>
+				<Item class="Frame" referent="RBX00059">
+					<Properties>
+						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+						<Color3 name="BackgroundColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+						<float name="BackgroundTransparency">0</float>
+						<int name="BorderSizePixel">0</int>
+						<bool name="ClipsDescendants">false</bool>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">SwitchBar</string>
+						<UDim2 name="Position"><XS>0.1599999964237213</XS><XO>0</XO><YS>0.36000001430511475</YS><YO>0</YO></UDim2>
+						<float name="Rotation">0</float>
+						<UDim2 name="Size"><XS>0.8399999737739563</XS><XO>0</XO><YS>0.05999999865889549</YS><YO>0</YO></UDim2>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="Frame" referent="RBX00060">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.9294120073318481</R><G>0.8941180109977722</G><B>0.8117650151252747</B></Color3>
+							<float name="BackgroundTransparency">0</float>
+							<int name="BorderSizePixel">0</int>
+							<bool name="ClipsDescendants">false</bool>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Fill</string>
+							<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>1</YS><YO>0</YO></UDim2>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="ImageLabel" referent="RBX00061">
+					<Properties>
+						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+						<float name="BackgroundTransparency">1</float>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">true</bool>
+						<Content name="Image"><url>rbxassetid://83131085331194</url></Content>
+						<Color3 name="ImageColor3"><R>1</R><G>1</G><B>1</B></Color3>
+						<float name="ImageTransparency">0</float>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">Slot1</string>
+						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0.5</YS><YO>0</YO></UDim2>
+						<float name="Rotation">0</float>
+						<token name="ScaleType">0</token>
+						<UDim2 name="Size"><XS>0.47999998927116394</XS><XO>0</XO><YS>0.47999998927116394</YS><YO>0</YO></UDim2>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="TextLabel" referent="RBX00062">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+							<float name="BackgroundTransparency">1</float>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Key</string>
+							<UDim2 name="Position"><XS>0.05999999865889549</XS><XO>0</XO><YS>0.05999999865889549</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>0.30000001192092896</XS><XO>0</XO><YS>0.4000000059604645</YS><YO>0</YO></UDim2>
+							<string name="Text">Z</string>
+							<Color3 name="TextColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<bool name="TextScaled">true</bool>
+							<float name="TextSize">8</float>
+							<Color3 name="TextStrokeColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextXAlignment">2</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+					</Item>
+					<Item class="TextLabel" referent="RBX00063">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+							<float name="BackgroundTransparency">1</float>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">NameText</string>
+							<UDim2 name="Position"><XS>0.05999999865889549</XS><XO>0</XO><YS>0.5</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>0.8799999952316284</XS><XO>0</XO><YS>0.4000000059604645</YS><YO>0</YO></UDim2>
+							<string name="Text">STEP COUNTER</string>
+							<Color3 name="TextColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<bool name="TextScaled">true</bool>
+							<float name="TextSize">8</float>
+							<Color3 name="TextStrokeColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextXAlignment">0</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+					</Item>
+					<Item class="Frame" referent="RBX00064">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>1</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<float name="BackgroundTransparency">0.44999998807907104</float>
+							<int name="BorderSizePixel">0</int>
+							<bool name="ClipsDescendants">false</bool>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Sweep</string>
+							<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>1</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">3</int>
+						</Properties>
+					</Item>
+				</Item>
+				<Item class="ImageLabel" referent="RBX00065">
+					<Properties>
+						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+						<float name="BackgroundTransparency">1</float>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">true</bool>
+						<Content name="Image"><url>rbxassetid://83131085331194</url></Content>
+						<Color3 name="ImageColor3"><R>1</R><G>1</G><B>1</B></Color3>
+						<float name="ImageTransparency">0</float>
+						<int name="LayoutOrder">0</int>
+						<string name="Name">Slot2</string>
+						<UDim2 name="Position"><XS>0.5</XS><XO>0</XO><YS>0.5</YS><YO>0</YO></UDim2>
+						<float name="Rotation">0</float>
+						<token name="ScaleType">0</token>
+						<UDim2 name="Size"><XS>0.47999998927116394</XS><XO>0</XO><YS>0.47999998927116394</YS><YO>0</YO></UDim2>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="TextLabel" referent="RBX00066">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+							<float name="BackgroundTransparency">1</float>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Key</string>
+							<UDim2 name="Position"><XS>0.05999999865889549</XS><XO>0</XO><YS>0.05999999865889549</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>0.30000001192092896</XS><XO>0</XO><YS>0.4000000059604645</YS><YO>0</YO></UDim2>
+							<string name="Text">X</string>
+							<Color3 name="TextColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<bool name="TextScaled">true</bool>
+							<float name="TextSize">8</float>
+							<Color3 name="TextStrokeColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextXAlignment">2</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+					</Item>
+					<Item class="TextLabel" referent="RBX00067">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+							<float name="BackgroundTransparency">1</float>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">NameText</string>
+							<UDim2 name="Position"><XS>0.05999999865889549</XS><XO>0</XO><YS>0.5</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>0.8799999952316284</XS><XO>0</XO><YS>0.4000000059604645</YS><YO>0</YO></UDim2>
+							<string name="Text">DOUBLE JAB</string>
+							<Color3 name="TextColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<bool name="TextScaled">true</bool>
+							<float name="TextSize">8</float>
+							<Color3 name="TextStrokeColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextXAlignment">0</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+					</Item>
+					<Item class="Frame" referent="RBX00068">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>1</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.0784313753247261</R><G>0.07058823853731155</G><B>0.062745101749897</B></Color3>
+							<float name="BackgroundTransparency">0.44999998807907104</float>
+							<int name="BorderSizePixel">0</int>
+							<bool name="ClipsDescendants">false</bool>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Sweep</string>
+							<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>1</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">3</int>
+						</Properties>
+					</Item>
+				</Item>
+			</Item>
 		</Item>
-		<Item class="ImageLabel" referent="RBX00054">
+		<Item class="ImageLabel" referent="RBX00069">
 			<Properties>
 				<Vector2 name="AnchorPoint"><X>0.5</X><Y>0</Y></Vector2>
 				<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -873,7 +1176,7 @@
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="UIAspectRatioConstraint" referent="RBX00055">
+			<Item class="UIAspectRatioConstraint" referent="RBX00070">
 				<Properties>
 					<float name="AspectRatio">6.25</float>
 					<token name="AspectType">0</token>
@@ -881,14 +1184,14 @@
 					<string name="Name">UIAspectRatioConstraint</string>
 				</Properties>
 			</Item>
-			<Item class="UISizeConstraint" referent="RBX00056">
+			<Item class="UISizeConstraint" referent="RBX00071">
 				<Properties>
 					<Vector2 name="MaxSize"><X>520</X><Y>INF</Y></Vector2>
 					<Vector2 name="MinSize"><X>240</X><Y>0</Y></Vector2>
 					<string name="Name">UISizeConstraint</string>
 				</Properties>
 			</Item>
-			<Item class="TextLabel" referent="RBX00057">
+			<Item class="TextLabel" referent="RBX00072">
 				<Properties>
 					<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 					<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -913,7 +1216,7 @@
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">2</int>
 				</Properties>
-				<Item class="UITextSizeConstraint" referent="RBX00058">
+				<Item class="UITextSizeConstraint" referent="RBX00073">
 					<Properties>
 						<int name="MaxTextSize">48</int>
 						<int name="MinTextSize">1</int>
@@ -922,7 +1225,7 @@
 				</Item>
 			</Item>
 		</Item>
-		<Item class="TextLabel" referent="RBX00059">
+		<Item class="TextLabel" referent="RBX00074">
 			<Properties>
 				<Vector2 name="AnchorPoint"><X>0.5</X><Y>0.5</Y></Vector2>
 				<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -947,21 +1250,21 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="UITextSizeConstraint" referent="RBX00060">
+			<Item class="UITextSizeConstraint" referent="RBX00075">
 				<Properties>
 					<int name="MaxTextSize">100</int>
 					<int name="MinTextSize">1</int>
 					<string name="Name">UITextSizeConstraint</string>
 				</Properties>
 			</Item>
-			<Item class="UIScale" referent="RBX00061">
+			<Item class="UIScale" referent="RBX00076">
 				<Properties>
 					<string name="Name">UIScale</string>
 					<float name="Scale">1</float>
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextLabel" referent="RBX00062">
+		<Item class="TextLabel" referent="RBX00077">
 			<Properties>
 				<Vector2 name="AnchorPoint"><X>0.5</X><Y>0.5</Y></Vector2>
 				<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -986,7 +1289,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="UITextSizeConstraint" referent="RBX00063">
+			<Item class="UITextSizeConstraint" referent="RBX00078">
 				<Properties>
 					<int name="MaxTextSize">100</int>
 					<int name="MinTextSize">1</int>
@@ -994,7 +1297,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextLabel" referent="RBX00064">
+		<Item class="TextLabel" referent="RBX00079">
 			<Properties>
 				<Vector2 name="AnchorPoint"><X>0.5</X><Y>1</Y></Vector2>
 				<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1019,7 +1322,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="UITextSizeConstraint" referent="RBX00065">
+			<Item class="UITextSizeConstraint" referent="RBX00080">
 				<Properties>
 					<int name="MaxTextSize">30</int>
 					<int name="MinTextSize">14</int>
@@ -1027,7 +1330,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextLabel" referent="RBX00066">
+		<Item class="TextLabel" referent="RBX00081">
 			<Properties>
 				<Vector2 name="AnchorPoint"><X>0.5</X><Y>0.5</Y></Vector2>
 				<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1052,7 +1355,7 @@
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="UITextSizeConstraint" referent="RBX00067">
+			<Item class="UITextSizeConstraint" referent="RBX00082">
 				<Properties>
 					<int name="MaxTextSize">28</int>
 					<int name="MinTextSize">1</int>
@@ -1060,7 +1363,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="TextButton" referent="RBX00068">
+		<Item class="TextButton" referent="RBX00083">
 			<Properties>
 				<Vector2 name="AnchorPoint"><X>1</X><Y>1</Y></Vector2>
 				<bool name="AutoButtonColor">true</bool>
@@ -1086,20 +1389,20 @@
 				<bool name="Visible">false</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="UICorner" referent="RBX00069">
+			<Item class="UICorner" referent="RBX00084">
 				<Properties>
 					<UDim name="CornerRadius"><S>0.20000000298023224</S><O>0</O></UDim>
 					<string name="Name">UICorner</string>
 				</Properties>
 			</Item>
-			<Item class="UITextSizeConstraint" referent="RBX00070">
+			<Item class="UITextSizeConstraint" referent="RBX00085">
 				<Properties>
 					<int name="MaxTextSize">15</int>
 					<int name="MinTextSize">1</int>
 					<string name="Name">UITextSizeConstraint</string>
 				</Properties>
 			</Item>
-			<Item class="UIPadding" referent="RBX00071">
+			<Item class="UIPadding" referent="RBX00086">
 				<Properties>
 					<string name="Name">UIPadding</string>
 					<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -1109,7 +1412,7 @@
 				</Properties>
 			</Item>
 		</Item>
-		<Item class="CanvasGroup" referent="RBX00072">
+		<Item class="CanvasGroup" referent="RBX00087">
 			<Properties>
 				<Vector2 name="AnchorPoint"><X>1</X><Y>0.5</Y></Vector2>
 				<Color3 name="BackgroundColor3"><R>0.929411768913269</R><G>0.8941176533699036</G><B>0.8117647171020508</B></Color3>
@@ -1121,26 +1424,26 @@
 				<string name="Name">Controls</string>
 				<UDim2 name="Position"><XS>0.9850000143051147</XS><XO>0</XO><YS>0.47999998927116394</YS><YO>0</YO></UDim2>
 				<float name="Rotation">-1.5</float>
-				<UDim2 name="Size"><XS>0.2199999988079071</XS><XO>0</XO><YS>0.5</YS><YO>0</YO></UDim2>
+				<UDim2 name="Size"><XS>0.2199999988079071</XS><XO>0</XO><YS>0.6000000238418579</YS><YO>0</YO></UDim2>
 				<bool name="Visible">true</bool>
 				<int name="ZIndex">1</int>
 			</Properties>
-			<Item class="UIAspectRatioConstraint" referent="RBX00073">
+			<Item class="UIAspectRatioConstraint" referent="RBX00088">
 				<Properties>
-					<float name="AspectRatio">0.7799999713897705</float>
+					<float name="AspectRatio">0.6499999761581421</float>
 					<token name="AspectType">0</token>
 					<token name="DominantAxis">0</token>
 					<string name="Name">UIAspectRatioConstraint</string>
 				</Properties>
 			</Item>
-			<Item class="UISizeConstraint" referent="RBX00074">
+			<Item class="UISizeConstraint" referent="RBX00089">
 				<Properties>
 					<Vector2 name="MaxSize"><X>360</X><Y>INF</Y></Vector2>
 					<Vector2 name="MinSize"><X>240</X><Y>0</Y></Vector2>
 					<string name="Name">UISizeConstraint</string>
 				</Properties>
 			</Item>
-			<Item class="UIStroke" referent="RBX00075">
+			<Item class="UIStroke" referent="RBX00090">
 				<Properties>
 					<token name="ApplyStrokeMode">1</token>
 					<Color3 name="Color"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1151,7 +1454,7 @@
 					<int name="ZIndex">1</int>
 				</Properties>
 			</Item>
-			<Item class="ImageLabel" referent="RBX00076">
+			<Item class="ImageLabel" referent="RBX00091">
 				<Properties>
 					<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 					<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1163,14 +1466,14 @@
 					<float name="ImageTransparency">0</float>
 					<int name="LayoutOrder">0</int>
 					<string name="Name">Title</string>
-					<UDim2 name="Position"><XS>0.03999999910593033</XS><XO>0</XO><YS>0.02500000037252903</YS><YO>0</YO></UDim2>
+					<UDim2 name="Position"><XS>0.03999999910593033</XS><XO>0</XO><YS>0.02083333395421505</YS><YO>0</YO></UDim2>
 					<float name="Rotation">0</float>
 					<token name="ScaleType">0</token>
-					<UDim2 name="Size"><XS>0.9200000166893005</XS><XO>0</XO><YS>0.12999999523162842</YS><YO>0</YO></UDim2>
+					<UDim2 name="Size"><XS>0.9200000166893005</XS><XO>0</XO><YS>0.10833332687616348</YS><YO>0</YO></UDim2>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="TextLabel" referent="RBX00077">
+				<Item class="TextLabel" referent="RBX00092">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1195,7 +1498,7 @@
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="UITextSizeConstraint" referent="RBX00078">
+					<Item class="UITextSizeConstraint" referent="RBX00093">
 						<Properties>
 							<int name="MaxTextSize">40</int>
 							<int name="MinTextSize">1</int>
@@ -1204,7 +1507,7 @@
 					</Item>
 				</Item>
 			</Item>
-			<Item class="Frame" referent="RBX00079">
+			<Item class="Frame" referent="RBX00094">
 				<Properties>
 					<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 					<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1213,13 +1516,13 @@
 					<bool name="ClipsDescendants">false</bool>
 					<int name="LayoutOrder">0</int>
 					<string name="Name">List</string>
-					<UDim2 name="Position"><XS>0.07000000029802322</XS><XO>0</XO><YS>0.18000000715255737</YS><YO>0</YO></UDim2>
+					<UDim2 name="Position"><XS>0.07000000029802322</XS><XO>0</XO><YS>0.15000000596046448</YS><YO>0</YO></UDim2>
 					<float name="Rotation">0</float>
-					<UDim2 name="Size"><XS>0.8600000143051147</XS><XO>0</XO><YS>0.7900000214576721</YS><YO>0</YO></UDim2>
+					<UDim2 name="Size"><XS>0.8600000143051147</XS><XO>0</XO><YS>0.8299999833106995</YS><YO>0</YO></UDim2>
 					<bool name="Visible">true</bool>
 					<int name="ZIndex">1</int>
 				</Properties>
-				<Item class="UIListLayout" referent="RBX00080">
+				<Item class="UIListLayout" referent="RBX00095">
 					<Properties>
 						<token name="FillDirection">1</token>
 						<token name="HorizontalAlignment">1</token>
@@ -1229,7 +1532,7 @@
 						<token name="VerticalAlignment">1</token>
 					</Properties>
 				</Item>
-				<Item class="Frame" referent="RBX00081">
+				<Item class="Frame" referent="RBX00096">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1240,11 +1543,11 @@
 						<string name="Name">Line1</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00082">
+					<Item class="TextLabel" referent="RBX00097">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1269,14 +1572,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00083">
+						<Item class="UITextSizeConstraint" referent="RBX00098">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00084">
+						<Item class="UIPadding" referent="RBX00099">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -1286,7 +1589,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00085">
+					<Item class="TextLabel" referent="RBX00100">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1311,7 +1614,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00086">
+						<Item class="UITextSizeConstraint" referent="RBX00101">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -1320,7 +1623,7 @@
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX00087">
+				<Item class="Frame" referent="RBX00102">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1331,11 +1634,11 @@
 						<string name="Name">Line2</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00088">
+					<Item class="TextLabel" referent="RBX00103">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1360,14 +1663,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00089">
+						<Item class="UITextSizeConstraint" referent="RBX00104">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00090">
+						<Item class="UIPadding" referent="RBX00105">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -1377,7 +1680,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00091">
+					<Item class="TextLabel" referent="RBX00106">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1402,7 +1705,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00092">
+						<Item class="UITextSizeConstraint" referent="RBX00107">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -1411,7 +1714,7 @@
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX00093">
+				<Item class="Frame" referent="RBX00108">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1422,11 +1725,11 @@
 						<string name="Name">Line3</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00094">
+					<Item class="TextLabel" referent="RBX00109">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1451,14 +1754,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00095">
+						<Item class="UITextSizeConstraint" referent="RBX00110">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00096">
+						<Item class="UIPadding" referent="RBX00111">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -1468,7 +1771,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00097">
+					<Item class="TextLabel" referent="RBX00112">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1493,7 +1796,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00098">
+						<Item class="UITextSizeConstraint" referent="RBX00113">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -1502,7 +1805,7 @@
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX00099">
+				<Item class="Frame" referent="RBX00114">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1513,11 +1816,11 @@
 						<string name="Name">Line4</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00100">
+					<Item class="TextLabel" referent="RBX00115">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1542,14 +1845,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00101">
+						<Item class="UITextSizeConstraint" referent="RBX00116">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00102">
+						<Item class="UIPadding" referent="RBX00117">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -1559,7 +1862,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00103">
+					<Item class="TextLabel" referent="RBX00118">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1584,7 +1887,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00104">
+						<Item class="UITextSizeConstraint" referent="RBX00119">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -1593,7 +1896,7 @@
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX00105">
+				<Item class="Frame" referent="RBX00120">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1604,11 +1907,11 @@
 						<string name="Name">Line5</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00106">
+					<Item class="TextLabel" referent="RBX00121">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1633,14 +1936,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00107">
+						<Item class="UITextSizeConstraint" referent="RBX00122">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00108">
+						<Item class="UIPadding" referent="RBX00123">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -1650,7 +1953,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00109">
+					<Item class="TextLabel" referent="RBX00124">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1675,7 +1978,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00110">
+						<Item class="UITextSizeConstraint" referent="RBX00125">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -1684,7 +1987,7 @@
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX00111">
+				<Item class="Frame" referent="RBX00126">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1695,11 +1998,11 @@
 						<string name="Name">Line6</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00112">
+					<Item class="TextLabel" referent="RBX00127">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1724,14 +2027,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00113">
+						<Item class="UITextSizeConstraint" referent="RBX00128">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00114">
+						<Item class="UIPadding" referent="RBX00129">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -1741,7 +2044,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00115">
+					<Item class="TextLabel" referent="RBX00130">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1766,7 +2069,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00116">
+						<Item class="UITextSizeConstraint" referent="RBX00131">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -1775,7 +2078,7 @@
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX00117">
+				<Item class="Frame" referent="RBX00132">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1786,11 +2089,11 @@
 						<string name="Name">Line7</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00118">
+					<Item class="TextLabel" referent="RBX00133">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1815,14 +2118,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00119">
+						<Item class="UITextSizeConstraint" referent="RBX00134">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00120">
+						<Item class="UIPadding" referent="RBX00135">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -1832,7 +2135,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00121">
+					<Item class="TextLabel" referent="RBX00136">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1857,7 +2160,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00122">
+						<Item class="UITextSizeConstraint" referent="RBX00137">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -1866,7 +2169,7 @@
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX00123">
+				<Item class="Frame" referent="RBX00138">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1877,11 +2180,11 @@
 						<string name="Name">Line8</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00124">
+					<Item class="TextLabel" referent="RBX00139">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1906,14 +2209,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00125">
+						<Item class="UITextSizeConstraint" referent="RBX00140">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00126">
+						<Item class="UIPadding" referent="RBX00141">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -1923,7 +2226,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00127">
+					<Item class="TextLabel" referent="RBX00142">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1948,7 +2251,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00128">
+						<Item class="UITextSizeConstraint" referent="RBX00143">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -1957,7 +2260,7 @@
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX00129">
+				<Item class="Frame" referent="RBX00144">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -1968,11 +2271,11 @@
 						<string name="Name">Line9</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00130">
+					<Item class="TextLabel" referent="RBX00145">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -1997,14 +2300,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00131">
+						<Item class="UITextSizeConstraint" referent="RBX00146">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00132">
+						<Item class="UIPadding" referent="RBX00147">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -2014,7 +2317,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00133">
+					<Item class="TextLabel" referent="RBX00148">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -2039,7 +2342,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00134">
+						<Item class="UITextSizeConstraint" referent="RBX00149">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -2048,22 +2351,22 @@
 						</Item>
 					</Item>
 				</Item>
-				<Item class="Frame" referent="RBX00135">
+				<Item class="Frame" referent="RBX00150">
 					<Properties>
 						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
 						<float name="BackgroundTransparency">1</float>
 						<int name="BorderSizePixel">1</int>
 						<bool name="ClipsDescendants">false</bool>
-						<int name="LayoutOrder">10</int>
-						<string name="Name">Line10</string>
+						<int name="LayoutOrder">12</int>
+						<string name="Name">Line12</string>
 						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
 						<float name="Rotation">0</float>
-						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.08799999952316284</YS><YO>0</YO></UDim2>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
 						<bool name="Visible">true</bool>
 						<int name="ZIndex">1</int>
 					</Properties>
-					<Item class="TextLabel" referent="RBX00136">
+					<Item class="TextLabel" referent="RBX00151">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
@@ -2088,14 +2391,14 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00137">
+						<Item class="UITextSizeConstraint" referent="RBX00152">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
 								<string name="Name">UITextSizeConstraint</string>
 							</Properties>
 						</Item>
-						<Item class="UIPadding" referent="RBX00138">
+						<Item class="UIPadding" referent="RBX00153">
 							<Properties>
 								<string name="Name">UIPadding</string>
 								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
@@ -2105,7 +2408,7 @@
 							</Properties>
 						</Item>
 					</Item>
-					<Item class="TextLabel" referent="RBX00139">
+					<Item class="TextLabel" referent="RBX00154">
 						<Properties>
 							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
 							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
@@ -2130,7 +2433,7 @@
 							<bool name="Visible">true</bool>
 							<int name="ZIndex">1</int>
 						</Properties>
-						<Item class="UITextSizeConstraint" referent="RBX00140">
+						<Item class="UITextSizeConstraint" referent="RBX00155">
 							<Properties>
 								<int name="MaxTextSize">22</int>
 								<int name="MinTextSize">1</int>
@@ -2138,6 +2441,249 @@
 							</Properties>
 						</Item>
 					</Item>
+				</Item>
+				<Item class="Frame" referent="RBX00156">
+					<Properties>
+						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+						<float name="BackgroundTransparency">1</float>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<int name="LayoutOrder">10</int>
+						<string name="Name">Line11</string>
+						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+						<float name="Rotation">0</float>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="TextLabel" referent="RBX00157">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
+							<float name="BackgroundTransparency">0</float>
+							<int name="BorderSizePixel">0</int>
+							<bool name="ClipsDescendants">false</bool>
+							<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Key</string>
+							<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>0.3400000035762787</XS><XO>0</XO><YS>0.9200000166893005</YS><YO>0</YO></UDim2>
+							<string name="Text">G</string>
+							<Color3 name="TextColor3"><R>0.929411768913269</R><G>0.8941176533699036</G><B>0.8117647171020508</B></Color3>
+							<bool name="TextScaled">true</bool>
+							<float name="TextSize">8</float>
+							<Color3 name="TextStrokeColor3"><R>0</R><G>0</G><B>0</B></Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextXAlignment">2</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+						<Item class="UITextSizeConstraint" referent="RBX00158">
+							<Properties>
+								<int name="MaxTextSize">22</int>
+								<int name="MinTextSize">1</int>
+								<string name="Name">UITextSizeConstraint</string>
+							</Properties>
+						</Item>
+						<Item class="UIPadding" referent="RBX00159">
+							<Properties>
+								<string name="Name">UIPadding</string>
+								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
+								<UDim name="PaddingLeft"><S>0.05999999865889549</S><O>0</O></UDim>
+								<UDim name="PaddingRight"><S>0.05999999865889549</S><O>0</O></UDim>
+								<UDim name="PaddingTop"><S>0</S><O>0</O></UDim>
+							</Properties>
+						</Item>
+					</Item>
+					<Item class="TextLabel" referent="RBX00160">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+							<float name="BackgroundTransparency">1</float>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Action</string>
+							<UDim2 name="Position"><XS>0.3799999952316284</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>0.6200000047683716</XS><XO>0</XO><YS>0.9200000166893005</YS><YO>0</YO></UDim2>
+							<string name="Text">SWITCH STANCE</string>
+							<Color3 name="TextColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
+							<bool name="TextScaled">true</bool>
+							<float name="TextSize">8</float>
+							<Color3 name="TextStrokeColor3"><R>0</R><G>0</G><B>0</B></Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextXAlignment">0</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+						<Item class="UITextSizeConstraint" referent="RBX00161">
+							<Properties>
+								<int name="MaxTextSize">22</int>
+								<int name="MinTextSize">1</int>
+								<string name="Name">UITextSizeConstraint</string>
+							</Properties>
+						</Item>
+					</Item>
+				</Item>
+				<Item class="Frame" referent="RBX00162">
+					<Properties>
+						<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+						<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+						<float name="BackgroundTransparency">1</float>
+						<int name="BorderSizePixel">1</int>
+						<bool name="ClipsDescendants">false</bool>
+						<int name="LayoutOrder">11</int>
+						<string name="Name">Line12</string>
+						<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+						<float name="Rotation">0</float>
+						<UDim2 name="Size"><XS>1</XS><XO>0</XO><YS>0.06979919970035553</YS><YO>0</YO></UDim2>
+						<bool name="Visible">true</bool>
+						<int name="ZIndex">1</int>
+					</Properties>
+					<Item class="TextLabel" referent="RBX00163">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
+							<float name="BackgroundTransparency">0</float>
+							<int name="BorderSizePixel">0</int>
+							<bool name="ClipsDescendants">false</bool>
+							<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Key</string>
+							<UDim2 name="Position"><XS>0</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>0.3400000035762787</XS><XO>0</XO><YS>0.9200000166893005</YS><YO>0</YO></UDim2>
+							<string name="Text">Z / X</string>
+							<Color3 name="TextColor3"><R>0.929411768913269</R><G>0.8941176533699036</G><B>0.8117647171020508</B></Color3>
+							<bool name="TextScaled">true</bool>
+							<float name="TextSize">8</float>
+							<Color3 name="TextStrokeColor3"><R>0</R><G>0</G><B>0</B></Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextXAlignment">2</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+						<Item class="UITextSizeConstraint" referent="RBX00164">
+							<Properties>
+								<int name="MaxTextSize">22</int>
+								<int name="MinTextSize">1</int>
+								<string name="Name">UITextSizeConstraint</string>
+							</Properties>
+						</Item>
+						<Item class="UIPadding" referent="RBX00165">
+							<Properties>
+								<string name="Name">UIPadding</string>
+								<UDim name="PaddingBottom"><S>0</S><O>0</O></UDim>
+								<UDim name="PaddingLeft"><S>0.05999999865889549</S><O>0</O></UDim>
+								<UDim name="PaddingRight"><S>0.05999999865889549</S><O>0</O></UDim>
+								<UDim name="PaddingTop"><S>0</S><O>0</O></UDim>
+							</Properties>
+						</Item>
+					</Item>
+					<Item class="TextLabel" referent="RBX00166">
+						<Properties>
+							<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+							<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+							<float name="BackgroundTransparency">1</float>
+							<int name="BorderSizePixel">1</int>
+							<bool name="ClipsDescendants">false</bool>
+							<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+							<int name="LayoutOrder">0</int>
+							<string name="Name">Action</string>
+							<UDim2 name="Position"><XS>0.3799999952316284</XS><XO>0</XO><YS>0</YS><YO>0</YO></UDim2>
+							<float name="Rotation">0</float>
+							<UDim2 name="Size"><XS>0.6200000047683716</XS><XO>0</XO><YS>0.9200000166893005</YS><YO>0</YO></UDim2>
+							<string name="Text">SPECIALS (BY STANCE)</string>
+							<Color3 name="TextColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
+							<bool name="TextScaled">true</bool>
+							<float name="TextSize">8</float>
+							<Color3 name="TextStrokeColor3"><R>0</R><G>0</G><B>0</B></Color3>
+							<float name="TextStrokeTransparency">1</float>
+							<float name="TextTransparency">0</float>
+							<token name="TextXAlignment">0</token>
+							<token name="TextYAlignment">1</token>
+							<bool name="Visible">true</bool>
+							<int name="ZIndex">1</int>
+						</Properties>
+						<Item class="UITextSizeConstraint" referent="RBX00167">
+							<Properties>
+								<int name="MaxTextSize">22</int>
+								<int name="MinTextSize">1</int>
+								<string name="Name">UITextSizeConstraint</string>
+							</Properties>
+						</Item>
+					</Item>
+				</Item>
+			</Item>
+		</Item>
+		<Item class="ImageLabel" referent="RBX00168">
+			<Properties>
+				<Vector2 name="AnchorPoint"><X>0.5</X><Y>0</Y></Vector2>
+				<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+				<float name="BackgroundTransparency">1</float>
+				<int name="BorderSizePixel">1</int>
+				<bool name="ClipsDescendants">false</bool>
+				<Content name="Image"><url>rbxassetid://83131085331194</url></Content>
+				<Color3 name="ImageColor3"><R>1</R><G>1</G><B>1</B></Color3>
+				<float name="ImageTransparency">0</float>
+				<int name="LayoutOrder">0</int>
+				<string name="Name">RoundClock</string>
+				<UDim2 name="Position"><XS>0.5</XS><XO>0</XO><YS>0.0949999988079071</YS><YO>0</YO></UDim2>
+				<float name="Rotation">0</float>
+				<token name="ScaleType">0</token>
+				<UDim2 name="Size"><XS>0.17000000178813934</XS><XO>0</XO><YS>0.054999999701976776</YS><YO>0</YO></UDim2>
+				<bool name="Visible">false</bool>
+				<int name="ZIndex">1</int>
+			</Properties>
+			<Item class="UIAspectRatioConstraint" referent="RBX00169">
+				<Properties>
+					<float name="AspectRatio">3.3333332538604736</float>
+					<token name="AspectType">0</token>
+					<token name="DominantAxis">0</token>
+					<string name="Name">UIAspectRatioConstraint</string>
+				</Properties>
+			</Item>
+			<Item class="TextLabel" referent="RBX00170">
+				<Properties>
+					<Vector2 name="AnchorPoint"><X>0</X><Y>0</Y></Vector2>
+					<Color3 name="BackgroundColor3"><R>0.6392157077789307</R><G>0.6352941393852234</G><B>0.6470588445663452</B></Color3>
+					<float name="BackgroundTransparency">1</float>
+					<int name="BorderSizePixel">1</int>
+					<bool name="ClipsDescendants">false</bool>
+					<Font name="FontFace"><Family><url>rbxasset://fonts/families/Bangers.json</url></Family><Weight>400</Weight><Style>Normal</Style></Font>
+					<int name="LayoutOrder">0</int>
+					<string name="Name">Text</string>
+					<UDim2 name="Position"><XS>0.10000000149011612</XS><XO>0</XO><YS>0.11999999731779099</YS><YO>0</YO></UDim2>
+					<float name="Rotation">0</float>
+					<UDim2 name="Size"><XS>0.800000011920929</XS><XO>0</XO><YS>0.7599999904632568</YS><YO>0</YO></UDim2>
+					<string name="Text">ROUND 1  1:30</string>
+					<Color3 name="TextColor3"><R>0.054901961237192154</R><G>0.05098039284348488</G><B>0.0470588244497776</B></Color3>
+					<bool name="TextScaled">true</bool>
+					<float name="TextSize">8</float>
+					<Color3 name="TextStrokeColor3"><R>0</R><G>0</G><B>0</B></Color3>
+					<float name="TextStrokeTransparency">1</float>
+					<float name="TextTransparency">0</float>
+					<token name="TextXAlignment">2</token>
+					<token name="TextYAlignment">1</token>
+					<bool name="Visible">true</bool>
+					<int name="ZIndex">1</int>
+				</Properties>
+				<Item class="UITextSizeConstraint" referent="RBX00171">
+					<Properties>
+						<int name="MaxTextSize">34</int>
+						<int name="MinTextSize">1</int>
+						<string name="Name">UITextSizeConstraint</string>
+					</Properties>
 				</Item>
 			</Item>
 		</Item>
