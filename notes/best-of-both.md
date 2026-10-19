@@ -64,3 +64,9 @@ what i'm taking from the two bought games. g1 = sold to trulyagents.rbxlx (style
 5. stances with loadouts + the skill data module
 6. stats + server-timed training
 7. everything else
+
+## second look (after matches and drills)
+- both games' server scripts are empty in the files, only names and ui survive. the names still show the design
+- g1 loop: jobs for yen (restock shelves, roadwork delivery, cooking), quests with primary and secondary tracks, talents, injuries after fights with a hospital bill, a between rounds corner (hydrate, pep talk, treatment), a results screen, a tutorial guide book
+- g2 loop: 9 training stations (jump rope, speed bag, mitts, crunches, squats, bench, curls, puncher, roadwork with a clock), a skill tree, a stats screen, a character creator
+- what i'm missing most: a reason to keep going. no record, no rank, no quests, no money, nothing tells a new player what to do
