@@ -383,10 +383,11 @@ CombatConfig.Match = {
 	Rounds = 3,
 	RoundTime = 90,
 	BreakTime = 10,
+	CornerHeal = 0.35, -- share of the missing health the cutman gets back between rounds
 	Intro = 4.5, -- the VS screen with both boxers before round 1
 	Countdown = 3, -- frozen in the corners before each round
 	KnockdownPoints = 15, -- on top of damage dealt, for the decision
-	EndTime = 6, -- winner shown, then both go back outside the ropes
+	EndTime = 7, -- result screen up, then both go back outside the ropes
 	PadLeaveDistance = 10, -- walk this far off your pad and you give it up
 }
 

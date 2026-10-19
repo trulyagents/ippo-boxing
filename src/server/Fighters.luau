@@ -823,10 +823,13 @@ function Fighters.show(f: Fighter, moveName: string)
 	end
 end
 
--- between rounds: wind and guard back, health keeps what the fight took
-function Fighters.rest(f: Fighter)
+-- between rounds: wind and guard back, health gets the given share of what's missing back
+function Fighters.rest(f: Fighter, heal: number?): number
+	local before = f.Health
+	f.Health = math.min(f.MaxHealthNow, f.Health + (f.MaxHealthNow - f.Health) * (heal or 0))
 	f.Stamina, f.Guard = Config.MaxStamina, Config.MaxGuard
 	publish(f)
+	return f.Health - before
 end
 
 -- the ring and the upstairs room, everywhere else players just walk around

@@ -64,11 +64,11 @@ function CareerServer.event(player: Player, event: string, detail: string?)
 	CareerServer.show(player)
 end
 
--- after a ring match. result is "Win", "Loss" or "Draw"
-function CareerServer.matchResult(player: Player, result: string, ko: boolean)
+-- after a ring match. result is "Win", "Loss" or "Draw". gives back the rank points it changed
+function CareerServer.matchResult(player: Player, result: string, ko: boolean): number
 	local data = PlayerData.data(player)
 	if not data then
-		return
+		return 0
 	end
 	local record = data.Record
 	local before = Career.rankOf(data.RankPoints)
@@ -101,6 +101,7 @@ function CareerServer.matchResult(player: Player, result: string, ko: boolean)
 			tell(player, (if points > 0 then "RANK UP: " else "RANK DOWN: ") .. after)
 		end)
 	end
+	return points
 end
 
 return CareerServer

@@ -81,6 +81,18 @@ local function runMatch(red: Pad, blue: Pad)
 	table.clear(recorded)
 	local corners = { red, blue }
 	local points: { [Fighters.Fighter]: number } = { [a] = 0, [b] = 0 }
+	-- what each one did, this round and the whole fight, for the corner and result screens
+	type Tally = { Hits: number, Damage: number, Downs: number }
+	local function tally(): Tally
+		return { Hits = 0, Damage = 0, Downs = 0 }
+	end
+	local roundTally: { [Fighters.Fighter]: Tally } = { [a] = tally(), [b] = tally() }
+	local fightTally: { [Fighters.Fighter]: Tally } = { [a] = tally(), [b] = tally() }
+	local function count(f: Fighters.Fighter, key: string, amount: number)
+		local r, t = roundTally[f] :: any, fightTally[f] :: any
+		r[key] += amount
+		t[key] += amount
+	end
 	for _, f in fighters do
 		Fighters.reset(f)
 		f.Match = "Ring"
@@ -89,11 +101,14 @@ local function runMatch(red: Pad, blue: Pad)
 	Fighters.onHit = function(attacker, target, damage)
 		if points[attacker] and points[target] then
 			points[attacker] += damage
+			count(attacker, "Hits", 1)
+			count(attacker, "Damage", damage)
 		end
 	end
 	Fighters.onDown = function(target, attacker)
 		if points[attacker] and points[target] then
 			points[attacker] += Config.KnockdownPoints
+			count(attacker, "Downs", 1)
 		end
 	end
 
@@ -153,10 +168,10 @@ local function runMatch(red: Pad, blue: Pad)
 	hold(Config.Intro)
 
 	for round = 1, Config.Rounds do
+		for _, f in fighters do
+			roundTally[f] = tally()
+		end
 		for i, f in fighters do
-			if round > 1 then
-				Fighters.rest(f)
-			end
 			place(f, corners[i].Start, corners[3 - i].Start.Position)
 			Fighters.freeze(f, Config.Countdown)
 		end
@@ -183,6 +198,20 @@ local function runMatch(red: Pad, blue: Pad)
 			for i, f in fighters do
 				place(f, corners[i].Start, corners[3 - i].Start.Position)
 				Fighters.freeze(f, Config.BreakTime)
+				-- the corner: wind back, the cutman patches some health, and how the round went
+				local healed = Fighters.rest(f, Config.CornerHeal)
+				local other = fighters[3 - i]
+				if f.Player then
+					fx:FireClient(f.Player, "Corner", {
+						Round = round,
+						Side = corners[i].Name,
+						Healed = math.floor(healed + 0.5),
+						You = roundTally[f],
+						Them = roundTally[other],
+						Lead = points[f] - points[other],
+						EndsAt = workspace:GetServerTimeNow() + Config.BreakTime,
+					})
+				end
 			end
 			if hold(Config.BreakTime) then
 				break
@@ -198,6 +227,33 @@ local function runMatch(red: Pad, blue: Pad)
 	ring:SetAttribute("MatchRound", nil)
 	local name = winner and winner.Player and string.upper(winner.Player.DisplayName)
 	tell(if name then name .. " WINS BY " .. how else "DRAW", "Bell")
+
+	-- record it first so the result screen shows the new record and rank
+	local gained: { [Fighters.Fighter]: number } = {}
+	for _, f in fighters do
+		if f.Player and not recorded[f.Player] then
+			recorded[f.Player] = true
+			gained[f] = Career.matchResult(
+				f.Player,
+				if winner == nil then "Draw" elseif winner == f then "Win" else "Loss",
+				how == "K.O."
+			)
+		end
+	end
+	for i, f in fighters do
+		local other = fighters[3 - i]
+		if f.Player and not gone(f) then
+			fx:FireClient(f.Player, "Result", {
+				Outcome = if winner == nil then "Draw" elseif winner == f then "Win" else "Loss",
+				How = if winner then how else "DECISION",
+				Points = gained[f] or 0,
+				You = card(f.Player),
+				Them = if other.Player then card(other.Player) else nil,
+				YouFight = fightTally[f],
+				ThemFight = fightTally[other],
+			})
+		end
+	end
 	task.wait(Config.EndTime)
 
 	for i, f in fighters do
@@ -209,13 +265,6 @@ local function runMatch(red: Pad, blue: Pad)
 			if f.Player then
 				PlayerData.foughtMatch(f.Player)
 			end
-		end
-		if f.Player and not recorded[f.Player] then
-			Career.matchResult(
-				f.Player,
-				if winner == nil then "Draw" elseif winner == f then "Win" else "Loss",
-				how == "K.O."
-			)
 		end
 	end
 	table.clear(recorded)
