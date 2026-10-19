@@ -120,7 +120,7 @@ local function centerHint(center: boolean)
 end
 
 local function idleHint(): string
-	return if controlsOpen then "" else "H - CONTROLS"
+	return if controlsOpen or UserInputService.TouchEnabled then "" else "H - CONTROLS"
 end
 hint.Text = idleHint()
 
@@ -412,7 +412,9 @@ RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, f
 			centerHint(true)
 		elseif state == "KO" then
 			count.Text = ""
-			hint.Text = if me:GetAttribute("InMatch") then "" else "You got knocked out. Press Enter to go again"
+			hint.Text = if me:GetAttribute("InMatch")
+				then ""
+				else "You got knocked out. " .. (if UserInputService.TouchEnabled then "Tap JAB" else "Press Enter") .. " to go again"
 			centerHint(true)
 		else
 			count.TextTransparency = 1

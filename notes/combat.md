@@ -201,3 +201,10 @@ testing
 - lune run tools/test: requires every shared module (their asserts run) plus loop checks on rank bands, match points order, every quest's event/reward/drill being real, drill grades getting worse the further off, beats in order, jump rope only speeding up, stat bonuses capped. first run caught nothing real (my event list was missing PerfectDrill)
 - cheats: Cheat remote (server/Cheats.luau), Studio or my UserId only, checked on the server. SkipPhase ends the ring's intro/round/break now, Stat sets a stat, RankPoints adds points. all go through the real code (PlayerData, Career, Matches' own hold loop)
 - don't test live state from the command bar or mcp server require, that's a separate copy of the modules. fire the Cheat remote from a client instead
+
+mobile
+- StarterGui.MobileControls (built in studio), driven by client/MobileControls. only on touch devices and only in fight mode, the street keeps roblox's normal controls
+- punches bottom right (big JAB), hold GUARD (camera pitch sets low/high like pc), slip arrows + hold WEAVE on the left above the stick, specials (named for your stance) / LOCK / SWAP / STANCE top right
+- slips need weave mode on the server, so a slip tap sends weave on, slip, weave off. 3 messages, well inside the action rate limit
+- knocked down: any punch button mashes up. KO'd outside a match: JAB goes again. the controls card and the H hint hide on touch
+- tested by clicking the real buttons in studio (they take mouse too), not on a real phone yet. not done: drills on mobile (they still want keys), a sprint/run button
