@@ -53,6 +53,11 @@ local function wantedHeight(): string
 	return if pitch() < line then "Low" else "High"
 end
 
+local function fightMode(): boolean
+	local character = player.Character
+	return character == nil or character:GetAttribute("FightMode") ~= false
+end
+
 local function sendGuard(height: string | false)
 	if (height or nil) ~= sentHeight then
 		sentHeight = height or nil
@@ -71,7 +76,7 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	elseif input.KeyCode == Enum.KeyCode.F then
 		guardHeld = true
 		sendGuard(wantedHeight())
-	elseif input.KeyCode == Enum.KeyCode.Space then
+	elseif input.KeyCode == Enum.KeyCode.Space and fightMode() then
 		if state == "Down" then
 			action:FireServer("GetUp")
 		else
@@ -117,12 +122,17 @@ RunService.RenderStepped:Connect(function()
 	end
 end)
 
--- no jumping in a boxing ring, and space is weave mode now
+-- no jumping while boxing, space is weave mode there. out on the street space jumps again
 local function noJump(character: Model)
 	local humanoid = character:WaitForChild("Humanoid", 10)
-	if humanoid and humanoid:IsA("Humanoid") then
-		humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, false)
+	if not (humanoid and humanoid:IsA("Humanoid")) then
+		return
 	end
+	local function apply()
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, character:GetAttribute("FightMode") == false)
+	end
+	apply()
+	character:GetAttributeChangedSignal("FightMode"):Connect(apply)
 end
 
 -- step into my own punches when they fire. i own my character's physics so the push goes here

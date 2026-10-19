@@ -56,6 +56,15 @@ local function updateScore()
 	score.Text = string.format("%d / %d", hits, #times)
 end
 
+-- space is the drill button, so no jumping until it's over
+local function setJump(on: boolean)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	if humanoid then
+		humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, on and character:GetAttribute("FightMode") == false)
+	end
+end
+
 local function press()
 	local now = os.clock()
 	-- the server ignores mashing anyway, this just keeps the remote quiet
@@ -91,6 +100,7 @@ remote.OnClientEvent:Connect(function(kind, a, b, c)
 		hitButton.Visible = UserInputService.TouchEnabled
 		drill.Visible = true
 		active = true
+		setJump(false)
 	elseif kind == "Grade" and typeof(a) == "number" and typeof(b) == "string" and marks[a] then
 		graded[a] = b
 		marks[a].Visible = false
@@ -98,6 +108,7 @@ remote.OnClientEvent:Connect(function(kind, a, b, c)
 		updateScore()
 	elseif kind == "Done" and typeof(a) == "number" then
 		active = false
+		setJump(true)
 		showGrade(if a > 0 then "DONE" else "TRY AGAIN", if a > 0 then COLORS.Perfect else COLORS.Miss)
 		task.delay(1, function()
 			if not active then

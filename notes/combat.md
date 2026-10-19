@@ -170,6 +170,7 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
 
 ## fight mode
 - players only box inside a fight zone: Map.FightZones has Ring (inside the ropes) and Upstairs (the spar room). dummies are always on, and a match keeps you on
-- outside: normal roblox walk and idle (the Animate script comes back on), walk 16, jumping on, punches/guard/slips/stance/specials do nothing
+- outside: normal roblox walk and idle (the Animate script comes back on), walk 16, space jumps (not during a drill), punches/guard/slips/stance/specials do nothing
+- jumping needs JumpPower and JumpHeight both set, the character uses jump power mode
 - the server checks your position every tick and sets FightMode on the character, the animator swaps anims off that
 - training drills still play the punch anims outside a zone, the bags and mitts are on the ground floor

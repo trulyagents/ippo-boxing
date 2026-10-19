@@ -1,4 +1,4 @@
--- Two practice opponents: a bag by the ring that only covers up, and a sparring
+-- Two practice opponents upstairs: a bag that only covers up, and a sparring
 -- partner that throws back, guards and slips.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -8,8 +8,6 @@ local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Fighters = require(script.Parent.Fighters)
 local Gear = require(script.Parent.Gear)
 
-local ring = workspace:WaitForChild("Ring")
-local spawns = ring:WaitForChild("FighterSpawns")
 local random = Random.new()
 
 local PUNCHES = { "Jab", "Jab", "Jab", "Cross", "Cross", "Hook", "Body", "Uppercut" }
@@ -173,9 +171,12 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 	end
 end
 
--- the bag stands outside the ring by the steps, the partner spars upstairs so the ring stays free for matches
-local bagModel, bag =
-	makeDummy("Punching Bag Dummy", spawns:WaitForChild("BagSpot") :: BasePart, Color3.fromRGB(120, 120, 125))
+-- both stand upstairs so the ring stays free for matches and you can only box them in a fight zone
+local bagModel, bag = makeDummy(
+	"Punching Bag Dummy",
+	workspace:WaitForChild("Map"):WaitForChild("Gym"):WaitForChild("BagSpot") :: BasePart,
+	Color3.fromRGB(120, 120, 125)
+)
 local sparModel, spar = makeDummy(
 	"Sparring Partner",
 	workspace:WaitForChild("Map"):WaitForChild("Gym"):WaitForChild("SparSpot") :: BasePart,

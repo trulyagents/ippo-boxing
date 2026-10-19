@@ -108,7 +108,9 @@ end
 local function setWalk(f: Fighter)
 	if not f.FightMode then
 		f.Humanoid.WalkSpeed = Config.StreetWalkSpeed
+		-- set both, the character can be on either jump mode
 		f.Humanoid.JumpHeight = Config.StreetJumpHeight
+		f.Humanoid.JumpPower = Config.StreetJumpPower
 		return
 	end
 	local busy = f.State ~= "Idle"
@@ -680,7 +682,10 @@ function Fighters.setGuard(f: Fighter, height: string?, canParry: boolean?)
 	if height ~= nil and height ~= "High" and height ~= "Low" then
 		return
 	end
-	if height and (not f.FightMode or f.State == "Down" or f.State == "KO" or f.State == "Stunned" or f.State == "Switching") then
+	if
+		height
+		and (not f.FightMode or f.State == "Down" or f.State == "KO" or f.State == "Stunned" or f.State == "Switching")
+	then
 		return
 	end
 	if f.GuardHeight == height then
@@ -715,7 +720,10 @@ end
 
 function Fighters.slip(f: Fighter, direction: string)
 	local now = os.clock()
-	if not f.FightMode or (direction ~= "Left" and direction ~= "Right" and direction ~= "Duck" and direction ~= "Back") then
+	if
+		not f.FightMode
+		or (direction ~= "Left" and direction ~= "Right" and direction ~= "Duck" and direction ~= "Back")
+	then
 		return
 	end
 	-- players slip out of weave mode, dummies don't bother with it

@@ -371,6 +371,7 @@ CombatConfig.MaxKnockdowns = 3 -- third one is a TKO
 CombatConfig.WalkSpeed = 10
 CombatConfig.StreetWalkSpeed = 16 -- out of fight mode, normal roblox walking
 CombatConfig.StreetJumpHeight = 7.2
+CombatConfig.StreetJumpPower = 50
 CombatConfig.GuardWalkSpeed = 6
 
 -- remote rate limit
