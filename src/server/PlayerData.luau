@@ -8,7 +8,13 @@ local RunService = game:GetService("RunService")
 local ProfileStore = require(script.Parent.ProfileStore)
 local Stats = require(ReplicatedStorage.Shared.Stats)
 
-local template = { Stats = {} :: { [string]: number } }
+local template = {
+	Stats = {} :: { [string]: number },
+	Record = { Wins = 0, Losses = 0, Draws = 0, KOs = 0 },
+	RankPoints = 0,
+	Quest = { Step = 1, Count = 0 },
+}
+export type Data = typeof(template)
 local store = ProfileStore.New(if RunService:IsStudio() then "BoxersStudio" else "Boxers", template)
 local profiles: { [Player]: any } = {}
 
@@ -48,6 +54,12 @@ function PlayerData.load(player: Player): { [string]: number }?
 	profiles[player] = profile
 	show(player, profile.Data.Stats)
 	return profile.Data.Stats
+end
+
+-- the whole saved table, for Career
+function PlayerData.data(player: Player): Data?
+	local profile = profiles[player]
+	return profile and profile.Data
 end
 
 function PlayerData.stats(player: Player): { [string]: number }?
@@ -90,7 +102,10 @@ Players.PlayerRemoving:Connect(function(player)
 	landed[player] = nil
 	local profile = profiles[player]
 	if profile then
-		profile:EndSession()
+		-- deferred so other leave handlers (a forfeit loss) still get to write first
+		task.defer(function()
+			profile:EndSession()
+		end)
 	end
 end)
 

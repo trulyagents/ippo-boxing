@@ -8,6 +8,7 @@ local UserInputService = game:GetService("UserInputService")
 
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Stats = require(ReplicatedStorage.Shared.Stats)
+local Career = require(ReplicatedStorage.Shared.Career)
 local LockOn = require(script.Parent:WaitForChild("LockOn"))
 
 local player = Players.LocalPlayer
@@ -17,7 +18,12 @@ local gain = gui:WaitForChild("Gain") :: TextLabel
 local menu = gui:WaitForChild("Menu") :: Frame
 local sheet = menu:WaitForChild("Sheet") :: ImageLabel
 local tabs = sheet:WaitForChild("Tabs")
-local pages = { Stats = sheet:WaitForChild("StatsPage") :: Frame, Styles = sheet:WaitForChild("StylesPage") :: Frame }
+local pages = {
+	Stats = sheet:WaitForChild("StatsPage") :: Frame,
+	Styles = sheet:WaitForChild("StylesPage") :: Frame,
+	Record = sheet:WaitForChild("RecordPage") :: Frame,
+}
+local tracker = gui:WaitForChild("QuestTracker") :: TextLabel
 local radar = pages.Stats:WaitForChild("Radar")
 local shape = radar:WaitForChild("Shape")
 local fill = shape:WaitForChild("Fill")
@@ -154,6 +160,71 @@ local function drawStyles()
 end
 
 local tab = "Stats"
+
+local function num(key: string): number
+	return (player:GetAttribute(key) :: number?) or 0
+end
+
+-- the current quest and how far along it is, nil once they're all done
+local function currentQuest(): (Career.Quest?, number)
+	return Career.Quests[num("QuestStep")], num("QuestCount")
+end
+
+local function drawRecord()
+	local page = pages.Record
+	local points = num("RankPoints")
+	local rank, nextAt = Career.rankOf(points);
+	(page:WaitForChild("Rank"):WaitForChild("Text") :: TextLabel).Text = rank
+	local bar = page:WaitForChild("Progress"):WaitForChild("Clip"):WaitForChild("Fill") :: ImageLabel
+	local from = 0
+	for _, r in Career.Ranks do
+		if r.Name == rank then
+			from = r.At
+		end
+	end
+	bar.Size = UDim2.fromScale(if nextAt then (points - from) / (nextAt - from) else 1, 1)
+	local nextName = ""
+	for _, r in Career.Ranks do
+		if r.At == nextAt then
+			nextName = r.Name
+		end
+	end
+	(page:WaitForChild("Points") :: TextLabel).Text = if nextAt
+		then string.format("%d / %d TO %s", points, nextAt, nextName)
+		else string.format("%d POINTS, TOP OF THE LADDER", points)
+	for _, key in { "Wins", "Losses", "Draws", "KOs" } do
+		(page:WaitForChild(key):WaitForChild("Value") :: TextLabel).Text = tostring(num(key))
+	end
+	local card = page:WaitForChild("Quest")
+	local quest, count = currentQuest();
+	(card:WaitForChild("Text") :: TextLabel).Text = if quest
+		then quest.Text
+		else "Every quest done. Keep climbing the ladder.";
+	(card:WaitForChild("Count") :: TextLabel).Text = if quest then string.format("%d / %d", count, quest.Need) else "";
+	(card:WaitForChild("Reward") :: TextLabel).Text = if quest
+		then string.format("REWARD: +%d %s", quest.Reward.Amount, string.upper(quest.Reward.Stat))
+		else ""
+end
+
+-- one line under the menu button so new players always know what to do next
+local function drawTracker()
+	local quest, count = currentQuest()
+	-- it would sit on the menu title, so it hides while the menu is open
+	tracker.Visible = quest ~= nil and not menu.Visible
+	if quest then
+		tracker.Text = string.format("NEXT: %s  %d/%d", quest.Text, count, quest.Need)
+	end
+end
+drawTracker()
+for _, key in { "QuestStep", "QuestCount", "RankPoints", "Wins", "Losses", "Draws", "KOs" } do
+	player:GetAttributeChangedSignal(key):Connect(function()
+		drawTracker()
+		if menu.Visible and tab == "Record" then
+			drawRecord()
+		end
+	end)
+end
+
 local function showTab(name: string)
 	tab = name
 	for n, page in pages do
@@ -164,8 +235,10 @@ local function showTab(name: string)
 	end
 	if name == "Stats" then
 		drawStats()
-	else
+	elseif name == "Styles" then
 		drawStyles()
+	else
+		drawRecord()
 	end
 end
 
@@ -181,6 +254,7 @@ local function setOpen(open: boolean)
 		return
 	end
 	menu.Visible = open
+	drawTracker()
 	if open then
 		sheetScale.Scale = 0.85
 		TweenService:Create(sheetScale, POP, { Scale = 1 }):Play()

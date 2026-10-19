@@ -8,6 +8,7 @@ local RunService = game:GetService("RunService")
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Stats = require(ReplicatedStorage.Shared.Stats)
 local PlayerData = require(script.Parent.PlayerData)
+local Career = require(script.Parent.Career)
 
 export type Fighter = {
 	Model: Model,
@@ -489,6 +490,7 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		addCourage(target, "CleanTaken")
 		if attacker.Player then
 			PlayerData.landed(attacker.Player)
+			Career.event(attacker.Player, "Hit")
 		end
 		if target.Player and PlayerData.foughtRecently(target.Player) then
 			PlayerData.add(target.Player, "Endurance", Stats.FightGain.Endurance)

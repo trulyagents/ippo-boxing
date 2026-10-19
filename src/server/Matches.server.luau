@@ -8,6 +8,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Config = require(ReplicatedStorage.Shared.CombatConfig).Match
 local Fighters = require(script.Parent.Fighters)
 local PlayerData = require(script.Parent.PlayerData)
+local Career = require(script.Parent.Career)
 
 local ring = workspace:WaitForChild("Ring")
 local padFolder = workspace:WaitForChild("Map"):WaitForChild("GymRing"):WaitForChild("JoinPads")
@@ -25,6 +26,7 @@ type Pad = {
 
 local pads: { Pad } = {}
 local running = false
+local recorded: { [Player]: boolean } = {} -- players whose result is already in this match
 
 local function setPad(pad: Pad, player: Player?)
 	pad.Player = player
@@ -76,6 +78,7 @@ local function runMatch(red: Pad, blue: Pad)
 	running = true
 	ring:SetAttribute("MatchOn", true)
 	local fighters = { a, b }
+	table.clear(recorded)
 	local corners = { red, blue }
 	local points: { [Fighters.Fighter]: number } = { [a] = 0, [b] = 0 }
 	for _, f in fighters do
@@ -182,7 +185,15 @@ local function runMatch(red: Pad, blue: Pad)
 				PlayerData.foughtMatch(f.Player)
 			end
 		end
+		if f.Player and not recorded[f.Player] then
+			Career.matchResult(
+				f.Player,
+				if winner == nil then "Draw" elseif winner == f then "Win" else "Loss",
+				how == "K.O."
+			)
+		end
 	end
+	table.clear(recorded)
 	setPad(red, nil)
 	setPad(blue, nil)
 	ring:SetAttribute("MatchOn", nil)
@@ -246,5 +257,13 @@ task.spawn(function()
 				end
 			end
 		end
+	end
+end)
+
+-- quitting mid match is a loss, written now before the profile closes
+Players.PlayerRemoving:Connect(function(player)
+	if running and not recorded[player] and (pads[1].Player == player or pads[2].Player == player) then
+		recorded[player] = true
+		Career.matchResult(player, "Loss", false)
 	end
 end)

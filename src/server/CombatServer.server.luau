@@ -8,6 +8,7 @@ local Config = require(ReplicatedStorage.Shared.CombatConfig)
 local Fighters = require(script.Parent.Fighters)
 local Gear = require(script.Parent.Gear)
 local PlayerData = require(script.Parent.PlayerData)
+local Career = require(script.Parent.Career)
 
 local remotes = ReplicatedStorage:FindFirstChild("BoxingRemotes") or Instance.new("Folder")
 remotes.Name = "BoxingRemotes"
@@ -74,6 +75,7 @@ end
 
 local function join(player: Player)
 	if PlayerData.load(player) then
+		Career.show(player)
 		loadBoxer(player)
 	end
 end

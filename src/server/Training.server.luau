@@ -7,6 +7,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Stats = require(ReplicatedStorage.Shared.Stats)
 local Fighters = require(script.Parent.Fighters)
 local PlayerData = require(script.Parent.PlayerData)
+local Career = require(script.Parent.Career)
 
 local remotes = ReplicatedStorage:WaitForChild("BoxingRemotes")
 local fx = remotes:WaitForChild("Fx") :: RemoteEvent
@@ -56,6 +57,10 @@ local function finish(player: Player, s: Session)
 	local gain = math.floor(Stats.DrillGain * score / #s.Times * 10 + 0.5) / 10
 	if gain > 0 then
 		PlayerData.add(player, s.Stat, gain)
+		Career.event(player, "Drill", s.Stat)
+	end
+	if score == #s.Times then
+		Career.event(player, "PerfectDrill")
 	end
 	training:FireClient(player, "Done", gain)
 	local f = Fighters.get(player.Character)
