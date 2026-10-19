@@ -383,7 +383,12 @@ CombatConfig.Match = {
 	Rounds = 3,
 	RoundTime = 90,
 	BreakTime = 10,
-	CornerHeal = 0.35, -- share of the missing health the cutman gets back between rounds
+	-- between rounds you pick one, guard comes back either way
+	Corner = {
+		Hydrate = {}, -- stamina all the way back
+		Treatment = { MaxHealth = 15, Heal = 0.3 }, -- lasting damage back off max health, then a share of what's missing
+		PepTalk = { Courage = 35 },
+	},
 	Intro = 4.5, -- the VS screen with both boxers before round 1
 	Countdown = 3, -- frozen in the corners before each round
 	KnockdownPoints = 15, -- on top of damage dealt, for the decision

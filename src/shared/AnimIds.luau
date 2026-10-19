@@ -67,4 +67,7 @@ return {
 
 	-- training. g2's boxer skip with the feet lifted out of the floor (tools/jumprope.py)
 	JumpRope = "rbxassetid://111205795682531",
+
+	-- ring. on the corner stool between rounds, arms back on the ropes, heavy breathing (blender)
+	CornerSit = "rbxassetid://90543389158564",
 } :: { [string]: string }

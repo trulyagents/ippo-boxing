@@ -823,13 +823,29 @@ function Fighters.show(f: Fighter, moveName: string)
 	end
 end
 
--- between rounds: wind and guard back, health gets the given share of what's missing back
-function Fighters.rest(f: Fighter, heal: number?): number
-	local before = f.Health
-	f.Health = math.min(f.MaxHealthNow, f.Health + (f.MaxHealthNow - f.Health) * (heal or 0))
-	f.Stamina, f.Guard = Config.MaxStamina, Config.MaxGuard
+-- between rounds: the guard comes back, the rest is the corner pick
+function Fighters.rest(f: Fighter)
+	f.Guard = Config.MaxGuard
 	publish(f)
-	return f.Health - before
+end
+
+-- the corner pick between rounds. Hydrate is wind, Treatment wins back some lasting damage,
+-- Pep Talk is courage. returns false for anything else
+function Fighters.corner(f: Fighter, pick: string): boolean
+	local c = Config.Match.Corner[pick]
+	if not c then
+		return false
+	end
+	if pick == "Hydrate" then
+		f.Stamina = Config.MaxStamina
+	elseif pick == "Treatment" then
+		f.MaxHealthNow = math.max(f.MaxHealthNow, math.min(Config.MaxHealth, f.MaxHealthNow + c.MaxHealth))
+		f.Health = math.min(f.MaxHealthNow, f.Health + (f.MaxHealthNow - f.Health) * c.Heal)
+	else
+		f.Courage = math.min(Config.MaxCourage, f.Courage + c.Courage)
+	end
+	publish(f)
+	return true
 end
 
 -- the ring and the upstairs room, everywhere else players just walk around

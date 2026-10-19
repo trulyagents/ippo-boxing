@@ -13,6 +13,37 @@ local Career = require(script.Parent.Career)
 local ring = workspace:WaitForChild("Ring")
 local padFolder = workspace:WaitForChild("Map"):WaitForChild("GymRing"):WaitForChild("JoinPads")
 local fx = ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Fx") :: RemoteEvent
+local stoolTemplate = ReplicatedStorage:WaitForChild("BoxingGear"):WaitForChild("CornerStool") :: Model
+
+-- the corner pick: one per break, only while you're sitting in it
+local picking: { [Player]: Fighters.Fighter } = {}
+local cornerPick = Instance.new("RemoteEvent")
+cornerPick.Name = "CornerPick"
+cornerPick.Parent = fx.Parent
+cornerPick.OnServerEvent:Connect(function(player, pick)
+	local f = picking[player]
+	if not f or typeof(pick) ~= "string" or Fighters.get(f.Model) ~= f then
+		return
+	end
+	if Fighters.corner(f, pick) then
+		picking[player] = nil
+		cornerPick:FireClient(player, pick)
+	end
+end)
+
+-- a stool on the canvas under where the boxer stands, facing the same way, and sit them on it
+local function sitDown(f: Fighters.Fighter): Model
+	local stool = stoolTemplate:Clone()
+	local look = f.Root.CFrame.LookVector
+	local params = RaycastParams.new()
+	params.FilterDescendantsInstances = { f.Model }
+	local hit = workspace:Raycast(f.Root.Position, Vector3.new(0, -10, 0), params)
+	local floor = if hit then hit.Position else f.Root.Position - Vector3.new(0, 3, 0)
+	stool:PivotTo(CFrame.lookAt(floor, floor + Vector3.new(look.X, 0, look.Z)))
+	stool.Parent = workspace
+	f.Model:SetAttribute("Sitting", true)
+	return stool
+end
 
 type Pad = {
 	Name: string,
@@ -195,17 +226,19 @@ local function runMatch(red: Pad, blue: Pad)
 		if round < Config.Rounds then
 			ring:SetAttribute("MatchEndsAt", workspace:GetServerTimeNow() + Config.BreakTime)
 			tell("END OF ROUND " .. round, "Bell")
+			local stools: { Model } = {}
 			for i, f in fighters do
 				place(f, corners[i].Start, corners[3 - i].Start.Position)
 				Fighters.freeze(f, Config.BreakTime)
-				-- the corner: wind back, the cutman patches some health, and how the round went
-				local healed = Fighters.rest(f, Config.CornerHeal)
+				table.insert(stools, sitDown(f))
+				-- the corner: guard back, how the round went, and one pick (CornerPick remote)
+				Fighters.rest(f)
 				local other = fighters[3 - i]
 				if f.Player then
+					picking[f.Player] = f
 					fx:FireClient(f.Player, "Corner", {
 						Round = round,
 						Side = corners[i].Name,
-						Healed = math.floor(healed + 0.5),
 						You = roundTally[f],
 						Them = roundTally[other],
 						Lead = points[f] - points[other],
@@ -213,7 +246,16 @@ local function runMatch(red: Pad, blue: Pad)
 					})
 				end
 			end
-			if hold(Config.BreakTime) then
+			local quit = hold(Config.BreakTime)
+			table.clear(picking)
+			-- up off the stool for the bell, or if the other one left mid break
+			for _, stool in stools do
+				stool:Destroy()
+			end
+			for _, f in fighters do
+				f.Model:SetAttribute("Sitting", nil)
+			end
+			if quit then
 				break
 			end
 		end

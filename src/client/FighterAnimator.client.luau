@@ -262,6 +262,8 @@ local function updateLoops(rig: Rig)
 		Guard = height == "High",
 		LowGuard = height == "Low",
 		Weave = free and model:GetAttribute("Weaving") == true,
+		-- on the corner stool between rounds
+		CornerSit = model:GetAttribute("Sitting") == true,
 	}
 	for role, want in loops do
 		local t = load(rig, roleFor(model, role))
@@ -283,11 +285,11 @@ local function updateLoops(rig: Rig)
 		then health < Config.MaxHealth * (Config.HurtBelow + 0.08)
 		else health < Config.MaxHealth * Config.HurtBelow
 	rig.Gassed = if rig.Gassed then stamina < Config.GassedBelow + 10 else stamina < Config.GassedBelow
-	local hurt = free and rig.Hurt == true
-	local gassed = free and not hurt and rig.Gassed == true
+	local hurt = free and not loops.CornerSit and rig.Hurt == true
+	local gassed = free and not hurt and not loops.CornerSit and rig.Gassed == true
 	local idle = load(rig, roleFor(model, "Idle"))
 	if idle then
-		idle:AdjustWeight(if hurt or gassed then 0.001 else 1, 0.3)
+		idle:AdjustWeight(if hurt or gassed or loops.CornerSit then 0.001 else 1, 0.3)
 	end
 	for role, want in { Hurt = hurt, Gassed = gassed } do
 		local t = load(rig, role)
