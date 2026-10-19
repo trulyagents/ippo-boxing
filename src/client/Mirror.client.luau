@@ -48,15 +48,12 @@ end
 
 local world = Instance.new("Folder")
 world.Name = "MirrorWorld"
--- everything touching the real room, so nothing of it ever gets hidden as an outside part
-local roomParts: { [BasePart]: boolean } = {}
 
 -- the room, copied once. the mirror wall itself is left out, its copy would sit on the glass
 local params = OverlapParams.new()
 params.FilterDescendantsInstances = { zone }
 params.FilterType = Enum.RaycastFilterType.Exclude
 for _, part in workspace:GetPartBoundsInBox(zone.CFrame, zone.Size + Vector3.new(2, 4, 2), params) do
-	roomParts[part] = true
 	if part:IsDescendantOf(map) and (part.Position - PLANE):Dot(NORMAL) > 1.5 and part.Transparency < 1 then
 		local copy = part:Clone()
 		for _, d in copy:GetDescendants() do
@@ -114,12 +111,20 @@ do
 	end
 end
 
--- outside parts sitting where the mirrored room is would poke into the reflection
+-- anything entirely behind the glass, where the mirrored room is, would show through the hole
+-- (the stairwell, the street). parts that cross the glass, like the floor and ceiling, stay
+local function behindGlass(part: BasePart): boolean
+	local cf, half = part.CFrame, part.Size / 2
+	local reach = math.abs(cf.RightVector:Dot(NORMAL)) * half.X
+		+ math.abs(cf.UpVector:Dot(NORMAL)) * half.Y
+		+ math.abs(cf.LookVector:Dot(NORMAL)) * half.Z
+	return (part.Position - PLANE):Dot(NORMAL) + reach < 0.05
+end
 local intruders: { BasePart } = {}
 do
 	local centre = reflectPoint(zone.Position)
 	for _, part in workspace:GetPartBoundsInBox(CFrame.new(centre), zone.Size + Vector3.new(0, 4, 0)) do
-		if not roomParts[part] and not part:IsDescendantOf(world) and part.Transparency < 1 then
+		if not part:IsDescendantOf(world) and part.Transparency < 1 and behindGlass(part) then
 			table.insert(intruders, part)
 		end
 	end
