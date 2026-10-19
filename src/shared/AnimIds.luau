@@ -64,4 +64,7 @@ return {
 	RollRight = "rbxassetid://111487002291729",
 	LungeUppercut = "rbxassetid://110247453598111",
 	StepCounter = "rbxassetid://78317788834785",
+
+	-- training. g2's boxer skip with the feet lifted out of the floor (tools/jumprope.py)
+	JumpRope = "rbxassetid://111205795682531",
 } :: { [string]: string }

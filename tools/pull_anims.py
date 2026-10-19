@@ -52,6 +52,9 @@ ROLES = {
     "RollRight": ("game2", None, "DempseyRoll1", False, 3),
     "LungeUppercut": ("game2", None, "GazellePunch", False, 3),
     "StepCounter": ("game2", None, "JoltCounter_Hit", False, 3),
+    # training
+    "JumpRope": ("game2", None, "JumpRopeAnim", True, 2),
+    "JumpRope2": ("game2", None, "JumpRopeAnim2", True, 2),
 }
 
 
