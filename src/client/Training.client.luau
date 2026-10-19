@@ -28,6 +28,8 @@ local chargeFill = chargeClip:WaitForChild("Fill") :: ImageLabel
 local target = drill:WaitForChild("Target") :: ImageLabel
 local grade = drill:WaitForChild("Grade") :: TextLabel
 local hitButton = drill:WaitForChild("HitButton") :: ImageButton
+-- bag work on touch: one button per punch the notes ask for
+local comboButtons = drill:WaitForChild("ComboButtons") :: Frame
 
 local NAMES = { Power = "HEAVY BAG", Technique = "BAG WORK", Stamina = "JUMP ROPE", Speed = "MITTS" } :: { [string]: string }
 local HINTS = {
@@ -180,7 +182,9 @@ remote.OnClientEvent:Connect(function(event, a, b, c, stand)
 				m.Name = "Note" .. i
 				m.Visible = true;
 				(m:WaitForChild("Key") :: TextLabel).Text = if kind == "Combo" and drillInfo.Keys
-					then Stats.ComboInputs[drillInfo.Keys[(i - 1) % #drillInfo.Keys + 1]]
+					then (if UserInputService.TouchEnabled
+						then string.upper(drillInfo.Keys[(i - 1) % #drillInfo.Keys + 1])
+						else Stats.ComboInputs[drillInfo.Keys[(i - 1) % #drillInfo.Keys + 1]])
 					else ""
 				m.Parent = notes
 				marks[i] = m
@@ -191,11 +195,14 @@ remote.OnClientEvent:Connect(function(event, a, b, c, stand)
 		end
 		local stat = tostring(a)
 		titleText.Text = (NAMES[stat] or "TRAINING") .. "  -  " .. string.upper(stat)
-		hint.Text = HINTS[kind] or ""
+		hint.Text = if UserInputService.TouchEnabled and kind == "Combo"
+			then "TAP THE PUNCH ON THE NOTE"
+			else HINTS[kind] or ""
 		grade.Text = "READY"
 		grade.TextColor3 = Color3.fromRGB(14, 13, 12)
 		updateScore()
 		hitButton.Visible = UserInputService.TouchEnabled and kind ~= "Combo"
+		comboButtons.Visible = UserInputService.TouchEnabled and kind == "Combo"
 		drill.Visible = true
 		active = true
 		setJump(false)
@@ -306,3 +313,10 @@ hitButton.MouseButton1Down:Connect(function()
 	end
 end)
 hitButton.MouseButton1Up:Connect(holdEnd)
+for _, punch in { "Jab", "Cross", "Hook" } do
+	(comboButtons:WaitForChild(punch) :: ImageButton).MouseButton1Down:Connect(function()
+		if kind == "Combo" then
+			press(punch)
+		end
+	end)
+end

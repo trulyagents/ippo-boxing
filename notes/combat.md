@@ -207,4 +207,5 @@ mobile
 - punches bottom right (big JAB), hold GUARD (camera pitch sets low/high like pc), slip arrows + hold WEAVE on the left above the stick, specials (named for your stance) / LOCK / SWAP / STANCE top right
 - slips need weave mode on the server, so a slip tap sends weave on, slip, weave off. 3 messages, well inside the action rate limit
 - knocked down: any punch button mashes up. KO'd outside a match: JAB goes again. the controls card and the H hint hide on touch
-- tested by clicking the real buttons in studio (they take mouse too), not on a real phone yet. not done: drills on mobile (they still want keys), a sprint/run button
+- tested by clicking the real buttons in studio (they take mouse too), not on a real phone yet. not done: a sprint/run button
+- drills on touch: heavy bag, jump rope and mitts already had the HIT button (touch only). bag work now gets JAB / CROSS / HOOK buttons next to the drill card (BoxingMenu.Drill.ComboButtons), the notes say the punch name instead of M1/M2/E, and the hint says tap. the fight buttons hide while a drill card is up. same Training remote, the server grades it all like before

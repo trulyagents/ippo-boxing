@@ -25,6 +25,8 @@ local root = gui:WaitForChild("Root") :: Frame
 local punches = root:WaitForChild("Punches") :: Frame
 local slips = root:WaitForChild("Slips") :: Frame
 local extras = root:WaitForChild("Extras") :: Frame
+-- drills have their own buttons on the drill card
+local drillCard = playerGui:WaitForChild("BoxingMenu"):WaitForChild("Drill") :: GuiObject
 
 -- the keyboard card means nothing on a phone
 local controls = playerGui:WaitForChild("BoxingHUD"):FindFirstChild("Controls")
@@ -168,7 +170,7 @@ end
 local lastStance: string? = nil
 RunService.Heartbeat:Connect(function()
 	local character = player.Character
-	local on = character ~= nil and character:GetAttribute("FightMode") ~= false
+	local on = character ~= nil and character:GetAttribute("FightMode") ~= false and not drillCard.Visible
 	root.Visible = on
 	if guardHeld then
 		sendGuard(wantedHeight())
