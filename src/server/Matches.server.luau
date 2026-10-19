@@ -114,6 +114,8 @@ local function runMatch(red: Pad, blue: Pad)
 
 	local winner: Fighters.Fighter? = nil
 	local how = ""
+	-- a forfeit before the first bell isn't a win, or an alt could leave on cue for free points
+	local fought = false
 	local function gone(f: Fighters.Fighter): boolean
 		local player = f.Player
 		return not player or player.Parent ~= Players or Fighters.get(f.Model) ~= f or f.Model.Parent ~= workspace
@@ -187,6 +189,7 @@ local function runMatch(red: Pad, blue: Pad)
 			break
 		end
 		tell("FIGHT!", "Bell")
+		fought = true
 		if hold(Config.RoundTime) then
 			break
 		end
@@ -236,12 +239,13 @@ local function runMatch(red: Pad, blue: Pad)
 	ring:SetAttribute("MatchEndsAt", nil)
 	ring:SetAttribute("MatchRound", nil)
 	local name = winner and winner.Player and string.upper(winner.Player.DisplayName)
-	tell(if name then name .. " WINS BY " .. how else "DRAW", "Bell")
+	local noContest = how == "FORFEIT" and not fought
+	tell(if noContest then "OPPONENT LEFT" elseif name then name .. " WINS BY " .. how else "DRAW", "Bell")
 
 	-- record it first so the result screen shows the new record and rank
 	local gained: { [Fighters.Fighter]: number } = {}
 	for _, f in fighters do
-		if f.Player and not recorded[f.Player] then
+		if f.Player and not recorded[f.Player] and not noContest then
 			recorded[f.Player] = true
 			gained[f] = Career.matchResult(
 				f.Player,
@@ -252,7 +256,7 @@ local function runMatch(red: Pad, blue: Pad)
 	end
 	for i, f in fighters do
 		local other = fighters[3 - i]
-		if f.Player and not gone(f) then
+		if f.Player and not gone(f) and not noContest then
 			fx:FireClient(f.Player, "Result", {
 				Outcome = if winner == nil then "Draw" elseif winner == f then "Win" else "Loss",
 				How = if winner then how else "DECISION",

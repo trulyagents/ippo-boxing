@@ -41,7 +41,8 @@ end
 
 -- per-fighter hit reactions the animator layers on top of the pose
 export type Reaction = { Move: string, Result: string, Started: number, Side: number }
-Feel.reactions = {} :: { [Model]: Reaction }
+-- weak keys so fighters that leave or respawn don't stay in here
+Feel.reactions = (setmetatable({}, { __mode = "k" }) :: any) :: { [Model]: Reaction }
 
 function Feel.react(model: Model, move: string, result: string, side: number)
 	Feel.reactions[model] = { Move = move, Result = result, Started = os.clock(), Side = side }

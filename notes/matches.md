@@ -22,3 +22,5 @@ ring matches from g2's join pads (Map.GymRing.JoinPads Red and Blue). numbers in
 - result screen: MatchResult (StarterGui, built in studio) for the 2 fighters. you win/lose/draw and how, whole fight punches and knockdowns, rank points gained or lost, new rank and record. the record is written before the screen now so it shows the new numbers
 - both cards use art/menu/card_plain.png, the style card without the halftone strip (the dots made the text hard to read). if images show blank in studio it is studio not fetching, a full studio restart fixed it
 - the controls card (H) hides when a ring match starts and H can't open it mid match
+- leaving before the first FIGHT bell is no contest: the one who stayed gets no win and no points ("OPPONENT LEFT"), the leaver still takes the loss. stops an alt leaving on cue to farm wins
+- resetting mid match now destroys your old body (it used to stay in the game as a ghost fighter), so the match sees you gone and it's a forfeit

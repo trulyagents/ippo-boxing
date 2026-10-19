@@ -277,6 +277,7 @@ CombatConfig.GuardBreakStun = 1.2
 CombatConfig.SlipTime = 0.35 -- i-frames against punches the slip dodges
 CombatConfig.SlipCost = 10
 CombatConfig.SlipCooldown = 0.6
+CombatConfig.SlipBackSpeed = 26 -- studs per second a player's back slip slides them for 0.15s (about 4 studs)
 CombatConfig.CounterWindow = 0.7 -- after a clean slip, your next punch is a counter
 CombatConfig.CounterBonus = 1.6
 CombatConfig.SlipPunishBonus = 1.5 -- uppercut into a duck

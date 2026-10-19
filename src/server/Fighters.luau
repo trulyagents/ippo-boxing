@@ -781,8 +781,8 @@ function Fighters.slip(f: Fighter, direction: string)
 	end
 	setState(f, "Recovery", now + Config.SlipTime)
 	playAction(f, "Slip" .. direction)
-	if direction == "Back" then
-		-- step back out of range
+	-- step back out of range. players own their physics, their client does it (CombatInput)
+	if direction == "Back" and not f.Player then
 		f.Root.AssemblyLinearVelocity = -f.Root.CFrame.LookVector * 40
 	end
 	task.delay(Config.SlipTime, function()

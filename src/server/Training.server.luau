@@ -252,6 +252,9 @@ training.OnServerEvent:Connect(function(player, kind, key)
 	if (s.Kind == "Combo" or s.Kind == "Rhythm") and kind == "Hit" then
 		onBeat(player, s, key)
 	elseif s.Kind == "Charge" then
+		if s.Rep > #s.Times then
+			return
+		end
 		if kind == "Down" and not s.DownAt and workspace:GetServerTimeNow() >= s.Start then
 			s.DownAt = pressTime(player)
 		elseif kind == "Up" and s.DownAt then

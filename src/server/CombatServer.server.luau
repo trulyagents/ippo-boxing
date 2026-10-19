@@ -43,7 +43,21 @@ local function loadBoxer(player: Player)
 		return Players:CreateHumanoidModelFromDescriptionAsync(description, Enum.HumanoidRigType.R6)
 	end)
 	if not made or not character then
-		player:LoadCharacterAsync()
+		-- their avatar wouldn't build, a plain one still gets to box
+		made, character = pcall(function()
+			return Players:CreateHumanoidModelFromDescriptionAsync(
+				Instance.new("HumanoidDescription"),
+				Enum.HumanoidRigType.R6
+			)
+		end)
+	end
+	if not made or not character then
+		-- roblox's avatar service is down, try again shortly instead of leaving them without a body
+		task.delay(5, function()
+			if player.Parent == Players and not (player.Character and player.Character.Parent) then
+				loadBoxer(player)
+			end
+		end)
 		return
 	end
 	character.Name = player.Name
@@ -59,6 +73,8 @@ local function loadBoxer(player: Player)
 	if humanoid then
 		humanoid.Died:Once(function()
 			task.wait(2)
+			-- setting player.Character doesn't remove the old body, it would stay a fighter forever
+			character:Destroy()
 			if player.Parent == Players then
 				loadBoxer(player)
 			end

@@ -138,9 +138,26 @@ end
 -- step into my own punches when they fire. i own my character's physics so the push goes here
 local function stepIn(character: Model)
 	character:GetAttributeChangedSignal("ActionToken"):Connect(function()
-		local move = Config.Moves[character:GetAttribute("Action")]
 		local root = character:FindFirstChild("HumanoidRootPart")
-		if not (move and root and root:IsA("BasePart")) then
+		if not (root and root:IsA("BasePart")) then
+			return
+		end
+		-- a back slip steps me out of range, the server can't move my body for me
+		if character:GetAttribute("Action") == "SlipBack" then
+			local look = root.CFrame.LookVector
+			local ends = os.clock() + 0.15
+			local back: RBXScriptConnection
+			back = RunService.Heartbeat:Connect(function(dt)
+				if os.clock() > ends or not root.Parent then
+					back:Disconnect()
+					return
+				end
+				root.CFrame -= look * Config.SlipBackSpeed * dt
+			end)
+			return
+		end
+		local move = Config.Moves[character:GetAttribute("Action")]
+		if not move then
 			return
 		end
 		local token = character:GetAttribute("ActionToken")
