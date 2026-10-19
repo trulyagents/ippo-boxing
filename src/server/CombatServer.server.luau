@@ -23,13 +23,12 @@ Fighters.setFxRemote(fx)
 -- R6 for everyone so the boxing poses fit every avatar the same way
 Players.CharacterAutoLoads = false
 
--- players start in their corner of the ring, the sparring partner takes the other one
+-- players start on the sidewalk right outside the gym door
 local function spawnPoint(): CFrame
-	local ring = workspace:FindFirstChild("Ring")
-	local spawns = ring and ring:FindFirstChild("FighterSpawns")
-	local corner = spawns and spawns:FindFirstChild("PlayerCorner")
-	if corner and corner:IsA("BasePart") then
-		return corner.CFrame
+	local map = workspace:FindFirstChild("Map")
+	local outside = map and map:FindFirstChild("PlayerSpawn")
+	if outside and outside:IsA("BasePart") then
+		return outside.CFrame
 	end
 	local spawn = workspace:FindFirstChild("SpawnLocation")
 	return if spawn and spawn:IsA("BasePart") then spawn.CFrame + Vector3.new(0, 3.5, 0) else CFrame.new(0, 5, 0)
@@ -127,7 +126,7 @@ action.OnServerEvent:Connect(function(player, kind, value)
 		Fighters.mash(f)
 	elseif kind == "Reset" then
 		-- back to full after a KO so you can keep practising
-		if f.State == "KO" then
+		if f.State == "KO" and not f.Match then
 			Fighters.reset(f)
 		end
 	end

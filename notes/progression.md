@@ -16,3 +16,7 @@ stats, unlocks and saving (step 6). numbers live in src/shared/Stats.luau
 - stats tab: radar (6 spokes + edges the script places) and a bar per stat. styles tab: a card per stance in the loadout, cloned from the StyleCard template, specials rows cloned from SpecialRow
 - the only popup during play is "+1 POWER" on whole point gains, fight gains of 0.1 stay quiet
 - X only closes by clicking, the X key is a special
+
+## spar first
+- training only counts after landing 10 clean hits (dummies count) in the last 30 min, or a finished ring match. otherwise the prompt says SPAR FIRST
+- endurance from getting hit needs the same, so standing afk next to the partner does nothing

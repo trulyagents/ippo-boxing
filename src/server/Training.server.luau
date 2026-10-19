@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Stats = require(ReplicatedStorage.Shared.Stats)
 local PlayerData = require(script.Parent.PlayerData)
 
+local fx = ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Fx") :: RemoteEvent
 local nextRep: { [Player]: number } = {}
 
 local function statFor(name: string): string?
@@ -44,6 +45,10 @@ local function hook(model: Model, stat: string)
 			return
 		end
 		nextRep[player] = now + Stats.TrainCooldown
+		if not PlayerData.foughtRecently(player) then
+			fx:FireClient(player, "Match", "SPAR FIRST")
+			return
+		end
 		PlayerData.add(player, stat, Stats.TrainGain)
 	end)
 end

@@ -375,4 +375,15 @@ CombatConfig.GuardWalkSpeed = 6
 CombatConfig.ActionsPerSecond = 14
 CombatConfig.ActionBurst = 8
 
+-- ring matches, joined from the pads in the corners
+CombatConfig.Match = {
+	Rounds = 3,
+	RoundTime = 90,
+	BreakTime = 10,
+	Countdown = 3, -- frozen in the corners before each round
+	KnockdownPoints = 15, -- on top of damage dealt, for the decision
+	EndTime = 6, -- winner shown, then both go back outside the ropes
+	PadLeaveDistance = 10, -- walk this far off your pad and you give it up
+}
+
 return CombatConfig

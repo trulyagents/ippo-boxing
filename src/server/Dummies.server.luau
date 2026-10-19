@@ -38,7 +38,7 @@ end
 local function nearestPlayer(f: Fighters.Fighter): (Fighters.Fighter?, number)
 	local best, bestDistance = nil, math.huge
 	for model, other in Fighters.all() do
-		if other.Player and model.Parent and other.State ~= "KO" then
+		if other.Player and model.Parent and other.State ~= "KO" and not other.Match then
 			local d = (other.Root.Position - f.Root.Position).Magnitude
 			if d < bestDistance then
 				best, bestDistance = other, d
@@ -108,6 +108,12 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 	while model.Parent do
 		task.wait(0.12)
 		if model:GetAttribute("TestFreeze") then
+			continue
+		end
+		-- a real match is on, go stand in the neutral corner out of the way
+		if ring:GetAttribute("MatchOn") and f.State ~= "KO" and f.State ~= "Down" then
+			Fighters.setGuard(f, nil)
+			f.Humanoid:MoveTo(home.Position)
 			continue
 		end
 		local target, distance = nearestPlayer(f)

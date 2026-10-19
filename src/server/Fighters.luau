@@ -50,9 +50,14 @@ export type Fighter = {
 	NextSwitch: number,
 	SpecialReady: { [string]: number },
 	Stats: { [string]: number }, -- the saved stats for players, empty for dummies
+	Match: string?, -- fighters in a match only hit each other
 }
 
 local Fighters = {}
+
+-- set by Matches to score fights
+Fighters.onHit = nil :: ((attacker: Fighter, target: Fighter, damage: number, result: string) -> ())?
+Fighters.onDown = nil :: ((target: Fighter, attacker: Fighter) -> ())?
 local byModel: { [Model]: Fighter } = {}
 
 local fx: RemoteEvent? = nil
@@ -166,6 +171,7 @@ function Fighters.register(model: Model, player: Player?, stats: { [string]: num
 		NextSwitch = 0,
 		SpecialReady = {},
 		Stats = stats or {},
+		Match = nil,
 	}
 	byModel[model] = f
 	-- Roblox health isn't used for boxing, keep the humanoid alive
@@ -227,7 +233,7 @@ local function findTarget(f: Fighter, range: number): Fighter?
 	local best, bestDistance = nil, math.huge
 	local look = f.Root.CFrame.LookVector
 	for model, other in byModel do
-		if other ~= f and model.Parent and other.State ~= "KO" then
+		if other ~= f and model.Parent and other.State ~= "KO" and other.Match == f.Match then
 			local offset = other.Root.Position - f.Root.Position
 			local flat = Vector3.new(offset.X, 0, offset.Z)
 			local distance = flat.Magnitude
@@ -259,6 +265,9 @@ local function knockDown(target: Fighter, attacker: Fighter)
 	target.GuardHeight = nil
 	target.Weaving = false
 	target.Slip = nil
+	if Fighters.onDown then
+		Fighters.onDown(target, attacker)
+	end
 	if target.Knockdowns >= Config.MaxKnockdowns then
 		setState(target, "KO")
 		broadcast("KO", target.Model, attacker.Model)
@@ -461,12 +470,18 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		damage = math.max(damage, target.Health)
 	end
 	target.Health -= damage
+	if Fighters.onHit then
+		Fighters.onHit(attacker, target, damage, result)
+	end
 
 	if result == "Clean" or result == "Counter" or result == "Open" then
 		stun(target, move.Hitstun * hitstun)
 		addCourage(attacker, if result == "Counter" then "CounterLanded" else "CleanLanded")
 		addCourage(target, "CleanTaken")
-		if target.Player then
+		if attacker.Player then
+			PlayerData.landed(attacker.Player)
+		end
+		if target.Player and PlayerData.foughtRecently(target.Player) then
 			PlayerData.add(target.Player, "Endurance", Stats.FightGain.Endurance)
 		end
 		-- clean head shots stick for the rest of the fight
@@ -764,6 +779,19 @@ function Fighters.mash(f: Fighter)
 		f.Model:SetAttribute("GetUpProgress", nil)
 		getUp(f)
 	end
+end
+
+-- can't throw anything until then (corners before a round)
+function Fighters.freeze(f: Fighter, seconds: number)
+	f.BusyUntil = os.clock() + seconds
+	f.Guarding, f.GuardHeight, f.Weaving = false, nil, false
+	publish(f)
+end
+
+-- between rounds: wind and guard back, health keeps what the fight took
+function Fighters.rest(f: Fighter)
+	f.Stamina, f.Guard = Config.MaxStamina, Config.MaxGuard
+	publish(f)
 end
 
 -- stamina and guard come back over time

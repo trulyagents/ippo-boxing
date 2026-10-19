@@ -64,7 +64,30 @@ function PlayerData.add(player: Player, stat: string, amount: number)
 	show(player, stats)
 end
 
+-- training only counts if you've been fighting lately, so standing afk at a bag does nothing
+local landed: { [Player]: { count: number, at: number } } = {}
+function PlayerData.landed(player: Player)
+	local l = landed[player] or { count = 0, at = 0 }
+	if os.clock() - l.at > Stats.FightWindow then
+		l.count = 0
+	end
+	l.count += 1
+	l.at = os.clock()
+	landed[player] = l
+end
+
+-- a finished ring match counts as a full spar
+function PlayerData.foughtMatch(player: Player)
+	landed[player] = { count = Stats.FightHits, at = os.clock() }
+end
+
+function PlayerData.foughtRecently(player: Player): boolean
+	local l = landed[player]
+	return l ~= nil and l.count >= Stats.FightHits and os.clock() - l.at <= Stats.FightWindow
+end
+
 Players.PlayerRemoving:Connect(function(player)
+	landed[player] = nil
 	local profile = profiles[player]
 	if profile then
 		profile:EndSession()

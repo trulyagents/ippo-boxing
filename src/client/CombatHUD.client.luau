@@ -22,6 +22,9 @@ local calloutScale = callout:WaitForChild("UIScale") :: UIScale
 local count = gui:WaitForChild("Count") :: TextLabel
 local hint = gui:WaitForChild("Hint") :: TextLabel
 local thoughtLabel = gui:WaitForChild("Thought") :: TextLabel
+local roundClock = gui:WaitForChild("RoundClock") :: ImageLabel
+local roundText = roundClock:WaitForChild("Text") :: TextLabel
+local ring = workspace:WaitForChild("Ring")
 
 local function fillOf(stat: string): ImageLabel
 	return bars:WaitForChild(stat):WaitForChild("Track"):WaitForChild("Clip"):WaitForChild("Fill") :: ImageLabel
@@ -324,6 +327,11 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName
 		if a == me then
 			thought(Config.SecondWindLines[b] or "")
 		end
+	elseif kind == "Match" and typeof(a) == "string" then
+		shout(a, Color3.fromRGB(255, 255, 255), if #a > 12 then 70 else 110)
+		if b == "Bell" then
+			play("Bell", me)
+		end
 	elseif kind == "GetUp" and a == me then
 		shout("BACK UP!", Color3.fromRGB(255, 255, 255), 60)
 	elseif kind == "Special" and typeof(b) == "string" and Config.Specials[b] then
@@ -336,6 +344,16 @@ end)
 -- after the camera scripts so the shake isn't overwritten
 RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, function(dt)
 	local me = player.Character
+	-- round clock while a ring match is on and you're close enough to watch it
+	local endsAt = ring:GetAttribute("MatchEndsAt")
+	local myRoot = me and me:FindFirstChild("HumanoidRootPart")
+	roundClock.Visible = typeof(endsAt) == "number"
+		and myRoot ~= nil
+		and ((myRoot :: BasePart).Position - ring:GetPivot().Position).Magnitude < 70
+	if roundClock.Visible then
+		local left = math.max(0, math.ceil((endsAt :: number) - workspace:GetServerTimeNow()))
+		roundText.Text = string.format("ROUND %d  %d:%02d", ring:GetAttribute("MatchRound") or 1, left // 60, left % 60)
+	end
 	if me then
 		setBars(me)
 		setStance(me)
@@ -349,7 +367,7 @@ RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, f
 			hint.Text = string.format("MASH SPACE TO GET UP  %d%%", math.floor(progress * 100))
 		elseif state == "KO" then
 			count.Text = ""
-			hint.Text = "You got knocked out. Press Enter to go again"
+			hint.Text = if me:GetAttribute("InMatch") then "" else "You got knocked out. Press Enter to go again"
 		else
 			count.TextTransparency = 1
 			count.TextStrokeTransparency = 1

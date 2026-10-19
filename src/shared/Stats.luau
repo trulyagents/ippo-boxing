@@ -27,6 +27,9 @@ Stats.TrainGain = 1
 Stats.TrainCooldown = 3
 -- endurance and willpower only grow by fighting
 Stats.FightGain = { Endurance = 0.1, Willpower = 1 } -- per clean hit taken, per get up
+-- land this many clean hits (on anyone, dummies count) and training counts for this long after
+Stats.FightHits = 10
+Stats.FightWindow = 1800
 
 -- what each stance and special needs, anything not listed is open from the start
 Stats.Unlocks = {
@@ -56,7 +59,13 @@ function Stats.unlocked(stats: { [string]: number }, unlock: string): boolean
 	return #Stats.missing(stats, unlock) == 0
 end
 
-assert(Stats.bonus({ Power = 50 }, "Power") == 0.15 and Stats.bonus({ Power = 500 }, "Power") == 0.3, "stat bonus scaling is off")
-assert(not Stats.unlocked({ Speed = 10 }, "PeekABoo") and Stats.unlocked({ Speed = 10, Endurance = 12 }, "PeekABoo"), "unlock check is off")
+assert(
+	Stats.bonus({ Power = 50 }, "Power") == 0.15 and Stats.bonus({ Power = 500 }, "Power") == 0.3,
+	"stat bonus scaling is off"
+)
+assert(
+	not Stats.unlocked({ Speed = 10 }, "PeekABoo") and Stats.unlocked({ Speed = 10, Endurance = 12 }, "PeekABoo"),
+	"unlock check is off"
+)
 
 return Stats
