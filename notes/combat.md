@@ -209,3 +209,7 @@ mobile
 - knocked down: any punch button mashes up. KO'd outside a match: JAB goes again. the controls card and the H hint hide on touch
 - tested by clicking the real buttons in studio (they take mouse too), not on a real phone yet. not done: a sprint/run button
 - drills on touch: heavy bag, jump rope and mitts already had the HIT button (touch only). bag work now gets JAB / CROSS / HOOK buttons next to the drill card (BoxingMenu.Drill.ComboButtons), the notes say the punch name instead of M1/M2/E, and the hint says tap. the fight buttons hide while a drill card is up. same Training remote, the server grades it all like before
+
+music
+- client/Music: APM tracks (roblox's licensed library, free, no credit) in ReplicatedStorage.BoxingSounds.Music. Gym1 Power Move, Gym2 Hot For a Minute play quietly anywhere (0.18). when the ring has a match on and you're within 70 studs, crossfades to Match1 Stomp and Swagger, Match2 Explosive Memories, Match3 Young Guns (0.32), back after. each list loops in order
+- no mute button yet

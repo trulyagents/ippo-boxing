@@ -23,3 +23,4 @@ gym based on the kamogawa gym look (yellow walls, green mat floor, blue ring, re
 - the hall's lot was sunk 8 studs, raised it with a LotFill slab at 3.55 and made it a park (Street.Park): g2 grass, bushes, a path and streetlights down the middle
 - two small lots top left are still bare
 - walking out of the gym works, 60 fps in studio with the whole city. pathfinding can't get out of the ring because of the ropes, players can
+- upstairs (sparring floor) furnished, all in Workspace.Map.Gym.Upstairs (lives in the place, ctrl+s): blue sparring mat with a red border and 4 padded corner posts under the sparring partner, mirror wall on the west side, 3 benches and a copy of the gym lockers on the north wall, glove cubby / water cooler / dumbbell rack on the south wall, 4 posters (SurfaceGui, Bangers), 9 of the gym's ceiling lights. no prompts or scripts in any of it. middle stays open for sparring
