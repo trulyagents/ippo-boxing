@@ -9,3 +9,5 @@ fight record, rank and quests. lists in src/shared/Career.luau, saving in src/se
 - while you still have quests left the spar first rule is off for drills
 - menu has a RECORD tab (rank, progress to the next one, record, current quest). one NEXT: line sits under the menu button, hidden while the menu is open and once every quest is done
 - not done: daily quests, rewards past stats (money, gear), a rank badge over heads
+- saving: profilestore autosaves every 5 min, saves on leave and on shutdown, and has the session lock. a match result also saves right away (PlayerData.save after matchResult), so a server crash can't eat a win
+- the saved table has Version = 1. new fields just go in the template (Reconcile fills them in). renaming or reshaping one means bumping Version and migrating old saves in PlayerData.load

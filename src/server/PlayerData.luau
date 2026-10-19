@@ -9,6 +9,9 @@ local ProfileStore = require(script.Parent.ProfileStore)
 local Stats = require(ReplicatedStorage.Shared.Stats)
 
 local template = {
+	-- bump this and migrate in load if a field ever gets renamed or reshaped. new fields just
+	-- go in the template, Reconcile adds them to old saves
+	Version = 1,
 	Stats = {} :: { [string]: number },
 	Record = { Wins = 0, Losses = 0, Draws = 0, KOs = 0 },
 	RankPoints = 0,
@@ -74,6 +77,15 @@ function PlayerData.add(player: Player, stat: string, amount: number)
 	end
 	stats[stat] = math.min(Stats.Cap, (stats[stat] or 0) + amount)
 	show(player, stats)
+end
+
+-- write it now instead of waiting for the 5 minute autosave, for things that would really hurt
+-- to lose if the server crashed (a match result). doesn't yield
+function PlayerData.save(player: Player)
+	local profile = profiles[player]
+	if profile and profile:IsActive() then
+		profile:Save()
+	end
 end
 
 -- training only counts if you've been fighting lately, so standing afk at a bag does nothing

@@ -95,6 +95,7 @@ function CareerServer.matchResult(player: Player, result: string, ko: boolean): 
 			CareerServer.event(player, "KO")
 		end
 	end
+	PlayerData.save(player)
 	local after = Career.rankOf(data.RankPoints)
 	if after ~= before then
 		task.delay(2, function()
