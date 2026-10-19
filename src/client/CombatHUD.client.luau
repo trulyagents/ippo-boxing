@@ -94,6 +94,14 @@ UserInputService.InputBegan:Connect(function(input, processed)
 end)
 
 -- the bottom line only says something when there's something to say
+-- the hint lives bottom right, but down and KO messages go back to the middle
+local HINT_CORNER = { AnchorPoint = hint.AnchorPoint, Position = hint.Position, Align = hint.TextXAlignment }
+local function centerHint(center: boolean)
+	hint.AnchorPoint = if center then Vector2.new(0.5, 1) else HINT_CORNER.AnchorPoint
+	hint.Position = if center then UDim2.new(0.5, 0, 1, -14) else HINT_CORNER.Position
+	hint.TextXAlignment = if center then Enum.TextXAlignment.Center else HINT_CORNER.Align
+end
+
 local function idleHint(): string
 	return if controlsOpen then "" else "H - CONTROLS"
 end
@@ -365,13 +373,16 @@ RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, f
 			count.Text = tostring(downCount)
 			local progress = me:GetAttribute("GetUpProgress") or 0
 			hint.Text = string.format("MASH SPACE TO GET UP  %d%%", math.floor(progress * 100))
+			centerHint(true)
 		elseif state == "KO" then
 			count.Text = ""
 			hint.Text = if me:GetAttribute("InMatch") then "" else "You got knocked out. Press Enter to go again"
+			centerHint(true)
 		else
 			count.TextTransparency = 1
 			count.TextStrokeTransparency = 1
 			hint.Text = idleHint()
+			centerHint(false)
 		end
 		-- the opponent you're locked on to, or whoever you last traded with
 		local other = lockedModel()
