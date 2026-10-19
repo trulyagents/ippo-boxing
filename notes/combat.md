@@ -181,3 +181,9 @@ sound pass
 - the count: no clean ref voice on roblox (only ripped game/anime clips), so it's a canvas slap per count (a pro sound effects hand smack), pitched up a bit each number. server sends Fx "Count"
 - corner picks: hydrate = squirt bottle, treatment = tape rip, pep talk = sergeant shout or "allez allez" + a clap. played on your own client when the server takes the pick
 - Crowd (wrestling crowd boos) isn't used anymore, kept in case i want an ambience bed later
+
+layout fixes (architecture pass)
+- every remote is made in server/Remotes.luau (Action, Fx, Training, CornerPick) on first require. it needs nothing else so no script waits on another. new remote = one more name there. clients still WaitForChild by name
+- Fighters.onHit / onDown are listener lists now (call it with a function, get back a stop function). was a single slot, a second ring would have overwritten the first ring's scoring
+- the corner between rounds is server/Corner.luau (stool, sitting, the pick remote). Matches calls Corner.open per boxer and the function it gives back at the bell
+- skipped: one entry script for everything. 4 server scripts + 11 client ones, it works, not worth the churn yet

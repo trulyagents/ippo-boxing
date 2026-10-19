@@ -11,11 +11,9 @@ local Fighters = require(script.Parent.Fighters)
 local PlayerData = require(script.Parent.PlayerData)
 local Career = require(script.Parent.Career)
 
-local remotes = ReplicatedStorage:WaitForChild("BoxingRemotes")
-local fx = remotes:WaitForChild("Fx") :: RemoteEvent
-local training = remotes:FindFirstChild("Training") or Instance.new("RemoteEvent")
-training.Name = "Training"
-training.Parent = remotes
+local Remotes = require(script.Parent.Remotes)
+local fx = Remotes.Fx
+local training = Remotes.Training
 
 type Session = {
 	Stat: string,

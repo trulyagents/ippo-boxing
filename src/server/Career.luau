@@ -7,9 +7,8 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Career = require(ReplicatedStorage.Shared.Career)
 local PlayerData = require(script.Parent.PlayerData)
 
--- looked up when needed, CombatServer makes the remotes after the modules load
+local fx = require(script.Parent.Remotes).Fx
 local function tell(player: Player, text: string)
-	local fx = ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Fx") :: RemoteEvent
 	fx:FireClient(player, "Match", text)
 end
 

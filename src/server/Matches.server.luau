@@ -9,42 +9,11 @@ local Config = require(ReplicatedStorage.Shared.CombatConfig).Match
 local Fighters = require(script.Parent.Fighters)
 local PlayerData = require(script.Parent.PlayerData)
 local Career = require(script.Parent.Career)
+local Corner = require(script.Parent.Corner)
 
 local ring = workspace:WaitForChild("Ring")
 local padFolder = workspace:WaitForChild("Map"):WaitForChild("GymRing"):WaitForChild("JoinPads")
-local fx = ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Fx") :: RemoteEvent
-local stoolTemplate = ReplicatedStorage:WaitForChild("BoxingGear"):WaitForChild("CornerStool") :: Model
-
--- the corner pick: one per break, only while you're sitting in it
-local picking: { [Player]: Fighters.Fighter } = {}
-local cornerPick = Instance.new("RemoteEvent")
-cornerPick.Name = "CornerPick"
-cornerPick.Parent = fx.Parent
-cornerPick.OnServerEvent:Connect(function(player, pick)
-	local f = picking[player]
-	if not f or typeof(pick) ~= "string" or Fighters.get(f.Model) ~= f then
-		return
-	end
-	if Fighters.corner(f, pick) then
-		picking[player] = nil
-		cornerPick:FireClient(player, pick)
-	end
-end)
-
--- a stool on the canvas under where the boxer stands, facing the same way, and sit them on it
-local function sitDown(f: Fighters.Fighter): Model
-	local stool = stoolTemplate:Clone()
-	local look = f.Root.CFrame.LookVector
-	local params = RaycastParams.new()
-	params.FilterDescendantsInstances = { f.Model }
-	local hit = workspace:Raycast(f.Root.Position, Vector3.new(0, -10, 0), params)
-	local floor = if hit then hit.Position else f.Root.Position - Vector3.new(0, 3, 0)
-	stool:PivotTo(CFrame.lookAt(floor, floor + Vector3.new(look.X, 0, look.Z)))
-	stool.Parent = workspace
-	f.Model:SetAttribute("Sitting", true)
-	return stool
-end
-
+local fx = require(script.Parent.Remotes).Fx
 type Pad = {
 	Name: string,
 	Start: BasePart, -- inside the ring, where you stand for the bell
@@ -129,19 +98,19 @@ local function runMatch(red: Pad, blue: Pad)
 		f.Match = "Ring"
 		f.Model:SetAttribute("InMatch", true)
 	end
-	Fighters.onHit = function(attacker, target, damage)
+	local stopHits = Fighters.onHit(function(attacker, target, damage)
 		if points[attacker] and points[target] then
 			points[attacker] += damage
 			count(attacker, "Hits", 1)
 			count(attacker, "Damage", damage)
 		end
-	end
-	Fighters.onDown = function(target, attacker)
+	end)
+	local stopDowns = Fighters.onDown(function(target, attacker)
 		if points[attacker] and points[target] then
 			points[attacker] += Config.KnockdownPoints
 			count(attacker, "Downs", 1)
 		end
-	end
+	end)
 
 	local winner: Fighters.Fighter? = nil
 	local how = ""
@@ -226,17 +195,14 @@ local function runMatch(red: Pad, blue: Pad)
 		if round < Config.Rounds then
 			ring:SetAttribute("MatchEndsAt", workspace:GetServerTimeNow() + Config.BreakTime)
 			tell("END OF ROUND " .. round, "Bell")
-			local stools: { Model } = {}
+			local standUp: { () -> () } = {}
 			for i, f in fighters do
 				place(f, corners[i].Start, corners[3 - i].Start.Position)
 				Fighters.freeze(f, Config.BreakTime)
-				table.insert(stools, sitDown(f))
-				-- the corner: guard back, how the round went, and one pick (CornerPick remote)
-				Fighters.rest(f)
 				local other = fighters[3 - i]
-				if f.Player then
-					picking[f.Player] = f
-					fx:FireClient(f.Player, "Corner", {
+				table.insert(
+					standUp,
+					Corner.open(f, {
 						Round = round,
 						Side = corners[i].Name,
 						You = roundTally[f],
@@ -244,16 +210,12 @@ local function runMatch(red: Pad, blue: Pad)
 						Lead = points[f] - points[other],
 						EndsAt = workspace:GetServerTimeNow() + Config.BreakTime,
 					})
-				end
+				)
 			end
 			local quit = hold(Config.BreakTime)
-			table.clear(picking)
 			-- up off the stool for the bell, or if the other one left mid break
-			for _, stool in stools do
-				stool:Destroy()
-			end
-			for _, f in fighters do
-				f.Model:SetAttribute("Sitting", nil)
+			for _, up in standUp do
+				up()
 			end
 			if quit then
 				break
@@ -261,7 +223,8 @@ local function runMatch(red: Pad, blue: Pad)
 		end
 	end
 
-	Fighters.onHit, Fighters.onDown = nil, nil
+	stopHits()
+	stopDowns()
 	if not winner and points[a] ~= points[b] then
 		winner, how = if points[a] > points[b] then a else b, "DECISION"
 	end

@@ -10,16 +10,8 @@ local Gear = require(script.Parent.Gear)
 local PlayerData = require(script.Parent.PlayerData)
 local Career = require(script.Parent.Career)
 
-local remotes = ReplicatedStorage:FindFirstChild("BoxingRemotes") or Instance.new("Folder")
-remotes.Name = "BoxingRemotes"
-remotes.Parent = ReplicatedStorage
-local action = remotes:FindFirstChild("Action") or Instance.new("RemoteEvent")
-action.Name = "Action"
-action.Parent = remotes
-local fx = remotes:FindFirstChild("Fx") or Instance.new("RemoteEvent")
-fx.Name = "Fx"
-fx.Parent = remotes
-Fighters.setFxRemote(fx)
+local Remotes = require(script.Parent.Remotes)
+local action = Remotes.Action
 
 -- R6 for everyone so the boxing poses fit every avatar the same way
 Players.CharacterAutoLoads = false

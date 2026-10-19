@@ -58,24 +58,38 @@ export type Fighter = {
 
 local Fighters = {}
 
--- set by Matches to score fights
-Fighters.onHit = nil :: ((attacker: Fighter, target: Fighter, damage: number, result: string) -> ())?
-Fighters.onDown = nil :: ((target: Fighter, attacker: Fighter) -> ())?
+-- anyone who wants to know about landed hits and knockdowns (Matches scores fights with these).
+-- a list, so two rings running at once each keep their own score
+type HitListener = (attacker: Fighter, target: Fighter, damage: number, result: string) -> ()
+type DownListener = (target: Fighter, attacker: Fighter) -> ()
+local hitListeners: { HitListener } = {}
+local downListeners: { DownListener } = {}
+local function listen<T>(list: { T }, fn: T): () -> ()
+	table.insert(list, fn)
+	return function()
+		local i = table.find(list, fn)
+		if i then
+			table.remove(list, i)
+		end
+	end
+end
+-- each returns a function that stops listening
+function Fighters.onHit(fn: HitListener): () -> ()
+	return listen(hitListeners, fn)
+end
+function Fighters.onDown(fn: DownListener): () -> ()
+	return listen(downListeners, fn)
+end
 local byModel: { [Model]: Fighter } = {}
 
-local fx: RemoteEvent? = nil
-function Fighters.setFxRemote(remote: RemoteEvent)
-	fx = remote
-end
+local fx = require(script.Parent.Remotes).Fx
 local function broadcast(...: any)
-	if fx then
-		fx:FireAllClients(...)
-	end
+	fx:FireAllClients(...)
 end
 
 -- just to the fighter's own player, for things only they need to see
 local function tell(f: Fighter, ...: any)
-	if fx and f.Player then
+	if f.Player then
 		fx:FireClient(f.Player, ...)
 	end
 end
@@ -283,8 +297,8 @@ local function knockDown(target: Fighter, attacker: Fighter)
 	target.GuardHeight = nil
 	target.Weaving = false
 	target.Slip = nil
-	if Fighters.onDown then
-		Fighters.onDown(target, attacker)
+	for _, fn in table.clone(downListeners) do
+		task.spawn(fn, target, attacker)
 	end
 	if target.Knockdowns >= Config.MaxKnockdowns then
 		setState(target, "KO")
@@ -489,8 +503,8 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		damage = math.max(damage, target.Health)
 	end
 	target.Health -= damage
-	if Fighters.onHit then
-		Fighters.onHit(attacker, target, damage, result)
+	for _, fn in table.clone(hitListeners) do
+		task.spawn(fn, attacker, target, damage, result)
 	end
 
 	if result == "Clean" or result == "Counter" or result == "Open" then
