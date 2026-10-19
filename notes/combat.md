@@ -196,3 +196,8 @@ type checking
 - uses the new solver, the old one flags elseif chains that are fine. 0 errors as of now
 - still not strict: CombatHUD, CombatInput, FighterAnimator, ImpactFX, CombatServer, Dummies (older files, convert one at a time when i'm in them). ProfileStore is someone else's, skipped
 - swapped the deprecated LoadCharacter / GetHumanoidDescriptionFromUserId / CreateHumanoidModelFromDescription for their Async versions
+
+testing
+- lune run tools/test: requires every shared module (their asserts run) plus loop checks on rank bands, match points order, every quest's event/reward/drill being real, drill grades getting worse the further off, beats in order, jump rope only speeding up, stat bonuses capped. first run caught nothing real (my event list was missing PerfectDrill)
+- cheats: Cheat remote (server/Cheats.luau), Studio or my UserId only, checked on the server. SkipPhase ends the ring's intro/round/break now, Stat sets a stat, RankPoints adds points. all go through the real code (PlayerData, Career, Matches' own hold loop)
+- don't test live state from the command bar or mcp server require, that's a separate copy of the modules. fire the Cheat remote from a client instead

@@ -70,6 +70,15 @@ function PlayerData.stats(player: Player): { [string]: number }?
 	return profile and profile.Data.Stats
 end
 
+-- QA only (Cheats): put a stat at an exact value
+function PlayerData.set(player: Player, stat: string, value: number)
+	local stats = PlayerData.stats(player)
+	if stats and Stats.MaxBonus[stat] then
+		stats[stat] = math.clamp(value, 0, Stats.Cap)
+		show(player, stats)
+	end
+end
+
 function PlayerData.add(player: Player, stat: string, amount: number)
 	local stats = PlayerData.stats(player)
 	if not stats or not Stats.MaxBonus[stat] then

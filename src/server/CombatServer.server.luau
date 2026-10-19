@@ -11,6 +11,7 @@ local PlayerData = require(script.Parent.PlayerData)
 local Career = require(script.Parent.Career)
 
 local Remotes = require(script.Parent.Remotes)
+require(script.Parent.Cheats) -- QA commands, Studio and the owner only
 local action = Remotes.Action
 
 -- R6 for everyone so the boxing poses fit every avatar the same way

@@ -138,6 +138,11 @@ local function runMatch(red: Pad, blue: Pad)
 			if over() then
 				return true
 			end
+			-- QA: Cheats sets this to jump to the end of the intro, round or break
+			if ring:GetAttribute("SkipPhase") then
+				ring:SetAttribute("SkipPhase", nil)
+				break
+			end
 		end
 		return false
 	end
