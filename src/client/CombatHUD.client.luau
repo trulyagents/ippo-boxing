@@ -3,6 +3,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local CollectionService = game:GetService("CollectionService")
 local TweenService = game:GetService("TweenService")
 
 local Config = require(ReplicatedStorage.Shared.CombatConfig)
@@ -384,6 +385,7 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName
 end)
 
 -- after the camera scripts so the shake isn't overwritten
+local nearbyCheckAt, nearby = 0, nil :: Model?
 RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, function(dt)
 	local me = player.Character
 	-- round clock while a ring match is on and you're close enough to watch it
@@ -421,20 +423,21 @@ RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, f
 		-- the opponent you're locked on to, or whoever you last traded with
 		local other = lockedModel()
 		if not other then
-			for _, model in workspace:GetChildren() do
-				if
-					model:IsA("Model")
-					and model ~= me
-					and model:GetAttribute("State")
-					and model:FindFirstChild("HumanoidRootPart")
-				then
-					local root = me:FindFirstChild("HumanoidRootPart")
-					if root and (model.HumanoidRootPart.Position - root.Position).Magnitude < 10 then
-						other = model
+			-- who's near only needs checking a few times a second, not every frame
+			local now = os.clock()
+			if now >= nearbyCheckAt then
+				nearbyCheckAt = now + 0.2
+				nearby = nil
+				local root = me:FindFirstChild("HumanoidRootPart")
+				for _, model in CollectionService:GetTagged("Fighter") do
+					local theirRoot = model ~= me and model:FindFirstChild("HumanoidRootPart")
+					if root and theirRoot and (theirRoot.Position - root.Position).Magnitude < 10 then
+						nearby = model :: Model
 						break
 					end
 				end
 			end
+			other = if nearby and nearby.Parent then nearby else nil
 		end
 		-- just their name, no bars, you read them off their body
 		theirs.Visible = other ~= nil

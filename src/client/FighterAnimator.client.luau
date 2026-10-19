@@ -251,6 +251,11 @@ local function onStance(rig: Rig)
 	play(rig, roleFor(rig.Model, "Idle"), 1, 0.25)
 end
 
+-- reused every frame for every rig so the loop makes no garbage
+local loops = { Guard = false, LowGuard = false, Weave = false, CornerSit = false }
+local tells = { Hurt = false, Gassed = false }
+local weights = { 0, 0, 0, 0 }
+
 local function updateLoops(rig: Rig)
 	local model = rig.Model
 	local state = model:GetAttribute("State")
@@ -258,13 +263,11 @@ local function updateLoops(rig: Rig)
 
 	-- high guard, low guard and the weave bob are all held loops
 	local height = if free then model:GetAttribute("GuardHeight") else nil
-	local loops = {
-		Guard = height == "High",
-		LowGuard = height == "Low",
-		Weave = free and model:GetAttribute("Weaving") == true,
-		-- on the corner stool between rounds
-		CornerSit = model:GetAttribute("Sitting") == true,
-	}
+	loops.Guard = height == "High"
+	loops.LowGuard = height == "Low"
+	loops.Weave = free and model:GetAttribute("Weaving") == true
+	-- on the corner stool between rounds
+	loops.CornerSit = model:GetAttribute("Sitting") == true
 	for role, want in loops do
 		local t = load(rig, roleFor(model, role))
 		if t then
@@ -291,7 +294,8 @@ local function updateLoops(rig: Rig)
 	if idle then
 		idle:AdjustWeight(if hurt or gassed or loops.CornerSit then 0.001 else 1, 0.3)
 	end
-	for role, want in { Hurt = hurt, Gassed = gassed } do
+	tells.Hurt, tells.Gassed = hurt, gassed
+	for role, want in tells do
 		local t = load(rig, role)
 		if t then
 			if want and not t.IsPlaying then
@@ -307,10 +311,11 @@ local function updateLoops(rig: Rig)
 	local v = if root then root.CFrame:VectorToObjectSpace(root.AssemblyLinearVelocity) else Vector3.zero
 	v = Vector3.new(v.X, 0, v.Z)
 	local moving = free and v.Magnitude > 1.5
-	local weights = { 0, 0, 0, 0 }
 	if moving then
 		local u = v.Unit
-		weights = { math.max(-u.Z, 0), math.max(u.Z, 0), math.max(-u.X, 0), math.max(u.X, 0) }
+		weights[1], weights[2], weights[3], weights[4] = math.max(-u.Z, 0), math.max(u.Z, 0), math.max(-u.X, 0), math.max(u.X, 0)
+	else
+		weights[1], weights[2], weights[3], weights[4] = 0, 0, 0, 0
 	end
 	for i, role in WALKS do
 		local t = load(rig, roleFor(model, role))
