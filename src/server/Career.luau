@@ -28,7 +28,47 @@ local function funnel(player: Player, step: number, name: string)
 	end)
 end
 
+-- playing with a friend: when you land in a server a friend is in, you both get a small boost on
+-- your weakest stat, once a day each. that's the whole reward for the invite button
+local FRIEND_BONUS = 1
+local function weakestStat(data: any): string
+	local weakest, lowest = Stats.Names[1], math.huge
+	for _, name in Stats.Names do
+		local v = data.Stats[name] or 0
+		if v < lowest then
+			weakest, lowest = name, v
+		end
+	end
+	return weakest
+end
+local function friendBonus(player: Player)
+	local data = PlayerData.data(player)
+	local today = Daily.today(os.time())
+	if not data or data.FriendBonusDay == today then
+		return
+	end
+	data.FriendBonusDay = today
+	local stat = weakestStat(data)
+	PlayerData.add(player, stat, FRIEND_BONUS)
+	fx:FireClient(player, "Match", "PLAYING WITH A FRIEND: +" .. FRIEND_BONUS .. " " .. string.upper(stat))
+end
+local function checkFriends(player: Player)
+	for _, other in game:GetService("Players"):GetPlayers() do
+		if other ~= player then
+			local ok, friends = pcall(function()
+				return player:IsFriendsWith(other.UserId)
+			end)
+			if ok and friends then
+				friendBonus(player)
+				friendBonus(other)
+				return
+			end
+		end
+	end
+end
+
 function CareerServer.joined(player: Player)
+	task.delay(6, checkFriends, player)
 	local data = PlayerData.data(player)
 	if not data then
 		return
@@ -41,13 +81,7 @@ function CareerServer.joined(player: Player)
 	local streak = Daily.next(data.Daily.Last, data.Daily.Streak, today)
 	if streak then
 		data.Daily.Last, data.Daily.Streak = today, streak
-		local weakest, lowest = Stats.Names[1], math.huge
-		for _, name in Stats.Names do
-			local v = data.Stats[name] or 0
-			if v < lowest then
-				weakest, lowest = name, v
-			end
-		end
+		local weakest = weakestStat(data)
 		local amount = Daily.reward(streak) + (if Shop.owns(player, "VIP") then ShopData.VIPDailyBonus else 0)
 		PlayerData.add(player, weakest, amount)
 		-- a beat late so the client's listening by then

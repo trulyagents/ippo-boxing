@@ -14,3 +14,10 @@ how it works
 - QA cheats: Pass (act as owner this session), Receipt (run a product receipt through the real handler, studio only)
 - fair: nothing for sale makes you hit harder than someone who trained. respec only moves points around
 - not done: pass icons (they have roblox's default), a proper KO burst / VIP test in a real match
+
+launch kit
+- page renamed to Second Wind Boxing with a search friendly description, through the open cloud key (patch the start place, the universe ignores displayName)
+- store art in art/promo: icon.png 1024 and thumbnail.png 1920x1080, made from a blender render (models/art/promo.blend, a copy of the rig file, gitignored like it) + make_promo.py for the comic burst, halftone and Bangers title. style copied from the top roblox boxing games: big glove at the lens, angry face, red/blue ring, bold title
+- pass + product icons uploaded with the key (PATCH imageFile on game-passes and developer-products)
+- the game icon and thumbnails CAN'T go through the api key, roblox only takes them from a logged in browser. upload icon.png and thumbnail.png by hand in the creator hub
+- INVITE stamp next to MENU opens roblox's invite prompt (only on the live game, studio doesn't show it). playing in a server with a friend gives you both +1 on your weakest stat, once a day each

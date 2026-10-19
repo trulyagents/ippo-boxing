@@ -22,3 +22,5 @@ __pycache__/
 # third party rig, no redistribution license
 models/anims/*.blend
 models/anims/*.blend1
+models/art/*.blend
+models/art/*.blend1
