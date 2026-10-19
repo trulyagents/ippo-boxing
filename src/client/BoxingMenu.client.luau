@@ -20,6 +20,8 @@ local tabs = sheet:WaitForChild("Tabs")
 local pages = { Stats = sheet:WaitForChild("StatsPage") :: Frame, Styles = sheet:WaitForChild("StylesPage") :: Frame }
 local radar = pages.Stats:WaitForChild("Radar")
 local shape = radar:WaitForChild("Shape")
+local fill = shape:WaitForChild("Fill")
+local scaleLabel = radar:WaitForChild("Scale") :: TextLabel
 local rows = pages.Stats:WaitForChild("Rows")
 local cardTemplate = pages.Styles:WaitForChild("StyleCard") :: ImageLabel
 
@@ -43,20 +45,60 @@ local function needsText(mine: { [string]: number }, unlock: string): string
 	return table.concat(parts, "  ")
 end
 
+-- one right triangle of the fill: right angle at h, one leg out to b, the other up to a.
+-- works in the radar's 0-1 space, fine because the radar is square
+local function rightTriangle(t: ImageLabel, h: Vector2, b: Vector2, a: Vector2)
+	local along, up = b - h, a - h
+	if along.Magnitude < 1e-4 or up.Magnitude < 1e-4 then
+		t.Visible = false
+		return
+	end
+	local x = along.Unit
+	-- the image's "up" for a frame rotated to x is (x.Y, -x.X). if a sits the other side, use the flipped image
+	local upright = up.Unit:Dot(Vector2.new(x.Y, -x.X)) > 0
+	t.Image = fill:GetAttribute(if upright then "BL" else "TL") :: string
+	t.Visible = true
+	t.Size = UDim2.fromScale(along.Magnitude, up.Magnitude)
+	local mid = h + along / 2 + up / 2
+	t.Position = UDim2.fromScale(mid.X, mid.Y)
+	t.Rotation = math.deg(math.atan2(x.Y, x.X))
+end
+
+-- any triangle as two right triangles split at the foot of the height onto the longest side
+local function triangle(i: number, p1: Vector2, p2: Vector2, p3: Vector2)
+	local a, b, c = p1, p2, p3
+	if (p1 - p3).Magnitude > (b - c).Magnitude and (p1 - p3).Magnitude >= (p1 - p2).Magnitude then
+		a, b, c = p2, p1, p3
+	elseif (p1 - p2).Magnitude > (b - c).Magnitude then
+		a, b, c = p3, p1, p2
+	end
+	local base = c - b
+	local h = if base.Magnitude < 1e-4 then b else b + base.Unit * (a - b):Dot(base.Unit)
+	rightTriangle(fill:WaitForChild("Tri" .. i .. "a") :: ImageLabel, h, b, a)
+	rightTriangle(fill:WaitForChild("Tri" .. i .. "b") :: ImageLabel, h, c, a)
+end
+
 local function drawStats()
 	local mine = stats()
+	-- the web scales to your best stat in steps of 20 so a new boxer still gets a real shape
+	local best = 0
+	for _, name in Stats.Names do
+		best = math.max(best, mine[name])
+	end
+	local outer = math.clamp(math.ceil(math.max(best, 1) / 20) * 20, 20, Stats.Cap)
+	scaleLabel.Text = "OUTER RING " .. outer
 	local tips = {}
 	for i, name in Stats.Names do
 		-- a sliver even at 0 so the shape never collapses to a dot
-		local v = math.max(0.04, mine[name] / Stats.Cap)
+		local v = math.max(0.06, math.min(mine[name] / outer, 1))
 		local a = math.rad(60 * (i - 1))
-		tips[i] = Vector2.new(0.5 + math.sin(a) * RADIUS * v, 0.5 - math.cos(a) * RADIUS * v);
-		(shape:WaitForChild("Spoke" .. name) :: Frame).Size = UDim2.fromScale(0.025, RADIUS * v)
+		tips[i] = Vector2.new(0.5 + math.sin(a) * RADIUS * v, 0.5 - math.cos(a) * RADIUS * v)
 		local row = rows:WaitForChild(name)
-		local fill = row:WaitForChild("Track"):WaitForChild("Clip"):WaitForChild("Fill") :: ImageLabel
-		fill.Size = UDim2.fromScale(mine[name] / Stats.Cap, 1);
+		local bar = row:WaitForChild("Track"):WaitForChild("Clip"):WaitForChild("Fill") :: ImageLabel
+		bar.Size = UDim2.fromScale(mine[name] / Stats.Cap, 1);
 		(row:WaitForChild("Value") :: TextLabel).Text = tostring(math.floor(mine[name]))
 	end
+	local center = Vector2.new(0.5, 0.5)
 	for i, p in tips do
 		local q = tips[i % #tips + 1]
 		local edge = shape:WaitForChild("Edge" .. i) :: Frame
@@ -64,6 +106,7 @@ local function drawStats()
 		edge.Position = UDim2.fromScale((p.X + q.X) / 2, (p.Y + q.Y) / 2)
 		edge.Size = UDim2.new(d.Magnitude, 0, 0.012, 0)
 		edge.Rotation = math.deg(math.atan2(d.Y, d.X))
+		triangle(i, center, p, q)
 	end
 end
 

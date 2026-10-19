@@ -69,7 +69,17 @@ def button():
     img.save(os.path.join(OUT, "button.png"))
 
 
+# white right triangles the radar fill is built from, right angle bottom left and top left
+def triangles():
+    S = 256
+    for name, pts in (("tri_bl", [(0, 0), (0, S), (S, S)]), ("tri_tl", [(0, 0), (S, 0), (0, S)])):
+        img = Image.new("RGBA", (S, S), (0, 0, 0, 0))
+        ImageDraw.Draw(img).polygon(pts, fill=(255, 255, 255, 255))
+        img.save(os.path.join(OUT, name + ".png"))
+
+
 if __name__ == "__main__":
+    triangles()
     for f in (sheet, radar, card, button):
         f()
     print("done")
