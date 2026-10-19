@@ -69,5 +69,5 @@ return {
 	JumpRope = "rbxassetid://111205795682531",
 
 	-- ring. on the corner stool between rounds, arms back on the ropes, heavy breathing (blender)
-	CornerSit = "rbxassetid://90543389158564",
+	CornerSit = "rbxassetid://77870198491013",
 } :: { [string]: string }
