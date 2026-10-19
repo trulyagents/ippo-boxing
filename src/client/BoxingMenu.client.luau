@@ -129,7 +129,12 @@ local function drawStyles()
 			card.LayoutOrder = order
 			card.Visible = true
 			card.Parent = pages.Styles
-			cards[stance] = card
+			cards[stance] = card;
+			-- click (or tap) a card to switch to it, the server checks it's unlocked
+			(card:WaitForChild("Pick") :: TextButton).Activated:Connect(function()
+				local action = ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Action") :: RemoteEvent
+				action:FireServer("SetStance", stance)
+			end)
 			local list = card:WaitForChild("Specials")
 			local rowTemplate = list:WaitForChild("SpecialRow") :: Frame
 			for slot, special in Config.Stances[stance].Specials do
@@ -146,7 +151,7 @@ local function drawStyles()
 		(card:WaitForChild("Name") :: TextLabel).Text = Config.Stances[stance].Name;
 		(card:WaitForChild("Status"):WaitForChild("Text") :: TextLabel).Text = if current == stance
 			then "EQUIPPED"
-			elseif open then "G TO SWITCH"
+			elseif open then (if UserInputService.TouchEnabled then "TAP TO EQUIP" else "CLICK TO EQUIP")
 			else "LOCKED";
 		(card:WaitForChild("Needs") :: TextLabel).Text = if open then "" else "NEEDS " .. needsText(mine, stance);
 		(card:WaitForChild("Locked") :: Frame).Visible = not open
@@ -332,3 +337,16 @@ task.spawn(function()
 		end
 	end
 end)
+
+-- equipped moves to the new card as soon as the stance changes
+local function watchStance(character: Model)
+	character:GetAttributeChangedSignal("Stance"):Connect(function()
+		if tab == "Styles" then
+			drawStyles()
+		end
+	end)
+end
+player.CharacterAdded:Connect(watchStance)
+if player.Character then
+	watchStance(player.Character)
+end

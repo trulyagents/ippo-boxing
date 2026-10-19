@@ -6,6 +6,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
 local ProfileStore = require(script.Parent.ProfileStore)
+local Remotes = require(script.Parent.Remotes)
 local Stats = require(ReplicatedStorage.Shared.Stats)
 
 local template = {
@@ -15,6 +16,7 @@ local template = {
 	Stats = {} :: { [string]: number },
 	Record = { Wins = 0, Losses = 0, Draws = 0, KOs = 0 },
 	RankPoints = 0,
+	Stance = "Orthodox", -- what you spawn in, your last pick
 	Quest = { Step = 1, Count = 0 },
 }
 export type Data = typeof(template)
@@ -70,12 +72,37 @@ function PlayerData.stats(player: Player): { [string]: number }?
 	return profile and profile.Data.Stats
 end
 
+-- a stance or special that just opened up gets its own card on the client (Fx "Unlocked")
+local function unlockedNow(stats: { [string]: number }): { [string]: boolean }
+	local open = {}
+	for name in Stats.Unlocks do
+		open[name] = Stats.unlocked(stats, name)
+	end
+	return open
+end
+local function announce(player: Player, before: { [string]: boolean }, stats: { [string]: number })
+	for name, open in unlockedNow(stats) do
+		if open and not before[name] then
+			Remotes.Fx:FireClient(player, "Unlocked", name)
+		end
+	end
+end
+
 -- QA only (Cheats): put a stat at an exact value
 function PlayerData.set(player: Player, stat: string, value: number)
 	local stats = PlayerData.stats(player)
 	if stats and Stats.MaxBonus[stat] then
+		local before = unlockedNow(stats)
 		stats[stat] = math.clamp(value, 0, Stats.Cap)
 		show(player, stats)
+		announce(player, before, stats)
+	end
+end
+
+function PlayerData.setStance(player: Player, stance: string)
+	local data = PlayerData.data(player)
+	if data then
+		data.Stance = stance
 	end
 end
 
@@ -84,8 +111,10 @@ function PlayerData.add(player: Player, stat: string, amount: number)
 	if not stats or not Stats.MaxBonus[stat] then
 		return
 	end
+	local before = unlockedNow(stats)
 	stats[stat] = math.min(Stats.Cap, (stats[stat] or 0) + amount)
 	show(player, stats)
+	announce(player, before, stats)
 end
 
 -- write it now instead of waiting for the 5 minute autosave, for things that would really hurt

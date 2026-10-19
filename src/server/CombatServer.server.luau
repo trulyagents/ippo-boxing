@@ -67,7 +67,12 @@ local function loadBoxer(player: Player)
 	Gear.strip(character)
 	Gear.gloves(character)
 	Gear.trunks(character)
-	Fighters.register(character, player, stats)
+	local f = Fighters.register(character, player, stats)
+	-- back in the stance you last picked
+	local data = PlayerData.data(player)
+	if f and data then
+		Fighters.setStance(f, data.Stance, true)
+	end
 	-- boxing never kills you, so dying means you fell off the map or reset
 	local humanoid = character:FindFirstChildOfClass("Humanoid")
 	if humanoid then
@@ -129,6 +134,8 @@ action.OnServerEvent:Connect(function(player, kind, value)
 		Fighters.slip(f, value)
 	elseif kind == "Stance" then
 		Fighters.switchStance(f)
+	elseif kind == "SetStance" and typeof(value) == "string" then
+		Fighters.setStance(f, value)
 	elseif kind == "Special" and (value == 1 or value == 2) then
 		Fighters.special(f, value)
 	elseif kind == "TestSecondWind" and RunService:IsStudio() then

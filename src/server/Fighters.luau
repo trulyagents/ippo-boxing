@@ -671,6 +671,8 @@ function Fighters.special(f: Fighter, slot: number)
 end
 
 -- G cycles through your loadout. a short beat where you can't punch or guard, then a cooldown
+local changeStance: (f: Fighter, stance: string) -> ()
+
 function Fighters.switchStance(f: Fighter)
 	local now = os.clock()
 	if not canAct(f) or now < f.NextSwitch then
@@ -689,7 +691,40 @@ function Fighters.switchStance(f: Fighter)
 	if nextStance == f.Stance then
 		return
 	end
-	f.Stance = nextStance
+	changeStance(f, nextStance)
+end
+
+-- straight to a stance (the Styles tab, or the saved one on spawn with instant). players need it
+-- unlocked. gives back whether it changed
+function Fighters.setStance(f: Fighter, stance: string, instant: boolean?): boolean
+	if not Config.Stances[stance] or stance == f.Stance or (f.Player and not Stats.unlocked(f.Stats, stance)) then
+		return false
+	end
+	-- out of a fight there's nothing to interrupt, so just change and remember it
+	if instant or not f.FightMode then
+		f.Stance = stance
+		if f.Player and not instant then
+			PlayerData.setStance(f.Player, stance)
+		end
+		publish(f)
+		setWalk(f)
+		return true
+	end
+	if not canAct(f) or os.clock() < f.NextSwitch then
+		return false
+	end
+	changeStance(f, stance)
+	return true
+end
+
+-- the switch itself: a short beat where you can't act, then a cooldown before the next one.
+-- a player's last stance is what they spawn in next time
+changeStance = function(f: Fighter, stance: string)
+	local now = os.clock()
+	f.Stance = stance
+	if f.Player then
+		PlayerData.setStance(f.Player, stance)
+	end
 	f.NextSwitch = now + Config.StanceSwitchCooldown
 	f.Model:SetAttribute("StanceReady", workspace:GetServerTimeNow() + Config.StanceSwitchCooldown)
 	f.Guarding, f.GuardHeight = false, nil
