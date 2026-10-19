@@ -13,3 +13,4 @@ ring matches from g2's join pads (Map.GymRing.JoinPads Red and Blue). numbers in
 - players spawn on the sidewalk outside the gym door (Map.PlayerSpawn), not in the ring anymore
 - g2 used 180s rounds and 3 or 5 round limits, i went shorter for roblox attention spans
 - not done: spectator seats, betting, ranked, more than one ring
+- the wall interval timer (Map.GymRing.IntervalTimer, g2's prop) works now: IntervalTimer.client shows the round, minutes and seconds left off the ring's MatchRound/MatchEndsAt and lights the 10 bars for the share of the round left. 0:00 between fights. digits are my own 7 segment pngs (art/timer/make_digits.py), unlit segments are fully clear because the gym lights brighten decals so even faint ones read as lit
