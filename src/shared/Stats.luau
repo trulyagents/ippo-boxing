@@ -22,9 +22,19 @@ Stats.Equipment = {
 	{ "JumpRope", "Stamina" },
 	{ "MittModel", "Speed" },
 }
-Stats.TrainHold = 2.5 -- seconds holding the prompt per rep
-Stats.TrainGain = 1
-Stats.TrainCooldown = 3
+-- a training session is a short rhythm drill. the server owns the beat times and grades every press
+export type Drill = { Beats: number, Gaps: { number }, Punches: { string }? }
+Stats.Drills = {
+	Power = { Beats = 8, Gaps = { 0.9 }, Punches = { "Cross", "Hook" } }, -- heavy, steady shots
+	Technique = { Beats = 10, Gaps = { 0.5, 0.5, 1 }, Punches = { "Jab", "Jab", "Cross" } }, -- combos with a beat between
+	Stamina = { Beats = 16, Gaps = { 0.45 } }, -- jump rope, fast and even
+	Speed = { Beats = 12, Gaps = { 0.3, 0.8 }, Punches = { "Jab", "Cross" } }, -- quick pairs on the mitts
+} :: { [string]: Drill }
+Stats.DrillLeadIn = 1.5 -- seconds before the first beat
+Stats.DrillPerfect = 0.1 -- seconds either side of a beat
+Stats.DrillGood = 0.22
+Stats.DrillGain = 2 -- for a perfect session, scales down with accuracy
+Stats.DrillCooldown = 2
 -- endurance and willpower only grow by fighting
 Stats.FightGain = { Endurance = 0.1, Willpower = 1 } -- per clean hit taken, per get up
 -- land this many clean hits (on anyone, dummies count) and training counts for this long after
@@ -38,6 +48,22 @@ Stats.Unlocks = {
 	WeaveRoll = { Speed = 25, Stamina = 20 },
 	LungeUppercut = { Power = 20 },
 } :: { [string]: { [string]: number } }
+
+-- seconds after the lead in for every beat of a drill
+function Stats.beatTimes(drill: Drill): { number }
+	local times, t = {}, 0
+	for i = 1, drill.Beats do
+		table.insert(times, t)
+		t += drill.Gaps[(i - 1) % #drill.Gaps + 1]
+	end
+	return times
+end
+
+-- how far off the beat a press was, in seconds either way
+function Stats.grade(off: number): string
+	off = math.abs(off)
+	return if off <= Stats.DrillPerfect then "Perfect" elseif off <= Stats.DrillGood then "Good" else "Miss"
+end
 
 function Stats.bonus(stats: { [string]: number }, name: string): number
 	return math.min(stats[name] or 0, Stats.Cap) / Stats.Cap * Stats.MaxBonus[name]
@@ -59,6 +85,14 @@ function Stats.unlocked(stats: { [string]: number }, unlock: string): boolean
 	return #Stats.missing(stats, unlock) == 0
 end
 
+assert(
+	Stats.grade(-0.05) == "Perfect" and Stats.grade(0.2) == "Good" and Stats.grade(0.3) == "Miss",
+	"drill grading is off"
+)
+assert(
+	#Stats.beatTimes(Stats.Drills.Speed) == 12 and Stats.beatTimes(Stats.Drills.Speed)[3] == 1.1,
+	"beat times are off"
+)
 assert(
 	Stats.bonus({ Power = 50 }, "Power") == 0.15 and Stats.bonus({ Power = 500 }, "Power") == 0.3,
 	"stat bonus scaling is off"

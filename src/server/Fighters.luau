@@ -788,6 +788,15 @@ function Fighters.freeze(f: Fighter, seconds: number)
 	publish(f)
 end
 
+-- just the punch animation, no hit. for training on the bags and mitts
+function Fighters.show(f: Fighter, moveName: string)
+	local move = Config.Moves[moveName]
+	if move then
+		f.Model:SetAttribute("ActionLength", move.Startup)
+		playAction(f, moveName)
+	end
+end
+
 -- between rounds: wind and guard back, health keeps what the fight took
 function Fighters.rest(f: Fighter)
 	f.Stamina, f.Guard = Config.MaxStamina, Config.MaxGuard

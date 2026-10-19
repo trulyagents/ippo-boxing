@@ -172,7 +172,7 @@ button.MouseLeave:Connect(function()
 	TweenService:Create(buttonScale, FAST, { Scale = 1 }):Play()
 end)
 
--- "+1 POWER" when a stat goes up by a whole point (fight gains of 0.1 stay quiet)
+-- "+1.5 POWER" when a stat goes up from training
 local gainScale = gain:WaitForChild("UIScale") :: UIScale
 local last = stats()
 local fadeToken = 0
@@ -183,12 +183,14 @@ local function onStat(name: string)
 	if menu.Visible then
 		showTab(tab)
 	end
-	if diff < 1 then
+	-- drills give tenths, fight gains of 0.1 stay quiet
+	if diff < 0.15 then
 		return
 	end
 	fadeToken += 1
 	local token = fadeToken
-	gain.Text = string.format("+%d %s", math.floor(diff + 0.5), string.upper(name))
+	local rounded = math.floor(diff * 10 + 0.5) / 10
+	gain.Text = string.format(if rounded % 1 == 0 then "+%d %s" else "+%.1f %s", rounded, string.upper(name))
 	gain.TextTransparency, gain.TextStrokeTransparency = 0, 0
 	gainScale.Scale = 0.6
 	TweenService:Create(gainScale, POP, { Scale = 1 }):Play()
