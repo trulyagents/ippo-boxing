@@ -1,6 +1,7 @@
 --!strict
--- Gym equipment runs a short rhythm drill. The server picks the beat times, the client only says
--- when you pressed, and the server grades each press against the beat. Better timing, bigger gain.
+-- Every gym station runs its own short minigame (see Stats.Drills). The server picks the beats
+-- and cue times and grades every press, the client only says what was pressed and when.
+-- Better grades, bigger gain.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -18,16 +19,18 @@ training.Parent = remotes
 
 type Session = {
 	Stat: string,
+	Kind: string,
 	Part: BasePart,
-	Start: number, -- server time of the first beat
-	Times: { number },
+	Start: number, -- server time of the first beat (Combo, Rhythm)
+	Times: { number }, -- one entry per beat or rep, grades are indexed the same way
 	Graded: { [number]: string },
 	Presses: number,
-	Token: number,
+	Rep: number, -- the rep being played (Charge, Reaction)
+	DownAt: number?, -- Charge: when the hold started
+	CueAt: number?, -- Reaction: when the mitt came up
 }
 local sessions: { [Player]: Session } = {}
 local nextDrill: { [Player]: number } = {}
-local token = 0
 
 local function statFor(name: string): string?
 	for _, pair in Stats.Equipment do
@@ -42,6 +45,11 @@ local function near(player: Player, part: BasePart, range: number): boolean
 	local character = player.Character
 	local root = character and character:FindFirstChild("HumanoidRootPart")
 	return root ~= nil and root:IsA("BasePart") and (root.Position - part.Position).Magnitude <= range
+end
+
+-- the press left the client about half a round trip ago
+local function pressTime(player: Player): number
+	return workspace:GetServerTimeNow() - math.clamp(player:GetNetworkPing(), 0, 0.25)
 end
 
 local function finish(player: Player, s: Session)
@@ -71,6 +79,28 @@ local function finish(player: Player, s: Session)
 	end
 end
 
+-- a graded beat or rep: tell the client, and on a landed one throw the punch and swing the bag
+local function grade(player: Player, s: Session, i: number, g: string)
+	s.Graded[i] = g
+	training:FireClient(player, "Grade", i, g)
+	local drill = Stats.Drills[s.Stat]
+	local punches = drill.Punches or drill.Keys
+	local f = Fighters.get(player.Character)
+	if not (punches and f) or g == "Miss" then
+		return
+	end
+	local punch = punches[(i - 1) % #punches + 1]
+	Fighters.show(f, punch)
+	-- bags hang on a rope and swing for real, the mitts are just a target
+	local push = Stats.DrillPush[g]
+	local away = (s.Part.Position - f.Root.Position) * Vector3.new(1, 0, 1)
+	if push and not s.Part.Anchored and away.Magnitude > 0.1 then
+		task.delay(Config.Moves[punch].Startup, function()
+			s.Part:ApplyImpulse(away.Unit * push * s.Part.AssemblyMass)
+		end)
+	end
+end
+
 -- the open sides of each piece of equipment (not into the wall or the bag next to it), worked
 -- out once. a drill stands you square in front of one of them
 local fronts: { [BasePart]: { Vector3 } } = {}
@@ -89,6 +119,30 @@ local function findFronts(part: BasePart, ignore: Instance): { Vector3 }
 	return open
 end
 
+-- the mitt comes up at random moments, the server sends the cue the moment it happens
+local function runReaction(player: Player, s: Session)
+	local random = Random.new()
+	task.wait(Stats.DrillLeadIn)
+	for rep in s.Times do
+		task.wait(random:NextNumber(Stats.ReactDelay[1], Stats.ReactDelay[2]))
+		if sessions[player] ~= s then
+			return
+		end
+		s.Rep, s.CueAt = rep, workspace:GetServerTimeNow()
+		training:FireClient(player, "Cue", rep)
+		task.wait(Stats.ReactWindow)
+		if sessions[player] ~= s then
+			return
+		end
+		s.CueAt = nil
+		if not s.Graded[rep] then
+			grade(player, s, rep, "Miss")
+		end
+	end
+	task.wait(0.5)
+	finish(player, s)
+end
+
 local function begin(player: Player, stat: string, part: BasePart)
 	local now = os.clock()
 	if sessions[player] or now < (nextDrill[player] or 0) or not near(player, part, 10) then
@@ -104,25 +158,40 @@ local function begin(player: Player, stat: string, part: BasePart)
 		return
 	end
 	local drill = Stats.Drills[stat]
-	token += 1
+	local times = {}
+	if drill.Kind == "Combo" or drill.Kind == "Rhythm" then
+		times = Stats.beatTimes(drill)
+	else
+		for i = 1, drill.Reps :: number do
+			times[i] = 0
+		end
+	end
 	local s: Session = {
 		Stat = stat,
+		Kind = drill.Kind,
 		Part = part,
 		Start = workspace:GetServerTimeNow() + Stats.DrillLeadIn,
-		Times = Stats.beatTimes(drill),
+		Times = times,
 		Graded = {},
 		Presses = 0,
-		Token = token,
+		Rep = 1,
+		DownAt = nil,
+		CueAt = nil,
 	}
 	sessions[player] = s
-	local length = Stats.DrillLeadIn + s.Times[#s.Times] + Stats.DrillGood + 0.3
-	nextDrill[player] = now + length + Stats.DrillCooldown
+	-- how long it can run at most
+	local length = Stats.DrillLeadIn
+		+ if drill.Kind == "Charge"
+			then #times * (Stats.ChargeMax + 1.5)
+			elseif drill.Kind == "Reaction" then #times * (Stats.ReactDelay[2] + Stats.ReactWindow) + 1
+			else times[#times] + Stats.DrillGood + 0.3
+	nextDrill[player] = now + Stats.DrillCooldown
 	-- stand still and don't throw real punches while drilling. on the bags and mitts you get
 	-- stood a punch away facing them, the jump rope just keeps you where you are
 	Fighters.freeze(f, length)
 	local stand = f.Root.CFrame
 	local flat = (f.Root.Position - part.Position) * Vector3.new(1, 0, 1)
-	if Stats.Drills[stat].Punches and flat.Magnitude > 0.1 then
+	if drill.Kind ~= "Rhythm" and flat.Magnitude > 0.1 then
 		-- the open side closest to where you walked up from, square on, never at an angle
 		local side, best = nil, -math.huge
 		for _, axis in fronts[part] or {} do
@@ -137,27 +206,17 @@ local function begin(player: Player, stat: string, part: BasePart)
 	end
 	Fighters.setDrilling(f, true)
 	-- the client owns its character, so it does the move into place
-	training:FireClient(player, "Start", stat, s.Start, s.Times, stand)
-	task.delay(length, finish, player, s)
+	training:FireClient(player, "Start", stat, s.Start, times, stand)
+	if drill.Kind == "Reaction" then
+		task.spawn(runReaction, player, s)
+	else
+		task.delay(length, finish, player, s)
+	end
 end
 
-training.OnServerEvent:Connect(function(player, kind)
-	local s = sessions[player]
-	if kind ~= "Hit" or not s then
-		return
-	end
-	-- more presses than this is mashing, it gets nothing
-	s.Presses += 1
-	if s.Presses > #s.Times * 2 then
-		return
-	end
-	if not near(player, s.Part, 10) then
-		finish(player, s)
-		return
-	end
-	-- the press left the client about half a round trip ago
-	local at = workspace:GetServerTimeNow() - math.clamp(player:GetNetworkPing(), 0, 0.25) - s.Start
-	-- first press near each beat is the one that counts
+-- Combo and Rhythm: the first press near each beat counts, Combo also wants the right punch
+local function onBeat(player: Player, s: Session, key: string?)
+	local at = pressTime(player) - s.Start
 	local best, bestOff = nil, math.huge
 	for i, t in s.Times do
 		local off = at - t
@@ -168,20 +227,46 @@ training.OnServerEvent:Connect(function(player, kind)
 	if not best or math.abs(bestOff) > Stats.DrillGood + 0.13 then
 		return
 	end
-	local grade = Stats.grade(bestOff)
-	s.Graded[best] = grade
-	training:FireClient(player, "Grade", best, grade)
-	local punches = Stats.Drills[s.Stat].Punches
-	local f = Fighters.get(player.Character)
-	if punches and f and grade ~= "Miss" then
-		Fighters.show(f, punches[(best - 1) % #punches + 1])
-		-- bags hang on a rope and swing for real, the mitts are just a target
-		local push = Stats.DrillPush[grade]
-		local away = (s.Part.Position - f.Root.Position) * Vector3.new(1, 0, 1)
-		if push and not s.Part.Anchored and away.Magnitude > 0.1 then
-			task.delay(Config.Moves[punches[(best - 1) % #punches + 1]].Startup, function()
-				s.Part:ApplyImpulse(away.Unit * push * s.Part.AssemblyMass)
-			end)
+	local keys = Stats.Drills[s.Stat].Keys
+	local wrong = keys ~= nil and keys[(best - 1) % #keys + 1] ~= key
+	grade(player, s, best, if wrong then "Miss" else Stats.grade(bestOff))
+end
+
+training.OnServerEvent:Connect(function(player, kind, key)
+	local s = sessions[player]
+	if not s or (kind ~= "Hit" and kind ~= "Down" and kind ~= "Up") or (key ~= nil and typeof(key) ~= "string") then
+		return
+	end
+	-- more presses than this is mashing, it gets nothing
+	s.Presses += 1
+	if s.Presses > #s.Times * 3 then
+		return
+	end
+	if not near(player, s.Part, 10) then
+		finish(player, s)
+		return
+	end
+	if (s.Kind == "Combo" or s.Kind == "Rhythm") and kind == "Hit" then
+		onBeat(player, s, key)
+	elseif s.Kind == "Charge" then
+		if kind == "Down" and not s.DownAt and workspace:GetServerTimeNow() >= s.Start then
+			s.DownAt = pressTime(player)
+		elseif kind == "Up" and s.DownAt then
+			local held = pressTime(player) - s.DownAt
+			s.DownAt = nil
+			grade(player, s, s.Rep, Stats.chargeGrade(held))
+			s.Rep += 1
+			if s.Rep > #s.Times then
+				task.delay(0.8, finish, player, s)
+			end
+		end
+	elseif s.Kind == "Reaction" and kind == "Hit" then
+		local cue = s.CueAt
+		if cue and not s.Graded[s.Rep] then
+			-- the cue took half a round trip to get there and the press half a round trip back
+			local seconds = workspace:GetServerTimeNow() - cue - 2 * math.clamp(player:GetNetworkPing(), 0, 0.25)
+			s.CueAt = nil
+			grade(player, s, s.Rep, Stats.reactGrade(math.max(0, seconds)))
 		end
 	end
 end)

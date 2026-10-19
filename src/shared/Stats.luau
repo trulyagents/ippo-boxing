@@ -22,14 +22,45 @@ Stats.Equipment = {
 	{ "JumpRope", "Stamina" },
 	{ "MittModel", "Speed" },
 }
--- a training session is a short rhythm drill. the server owns the beat times and grades every press
-export type Drill = { Beats: number, Gaps: { number }, Punches: { string }? }
+-- every station has its own minigame, the server times and grades all of them
+--   Charge: hold and let go in the sweet spot (heavy bag)
+--   Combo: notes slide in with the punch to throw, right key on the beat (bag work)
+--   Rhythm: press on the beat, it speeds up (jump rope)
+--   Reaction: the mitt flashes at a random moment, hit it fast (mitts)
+export type Drill = {
+	Kind: string,
+	Beats: number?, -- Combo and Rhythm
+	Gaps: { number }?,
+	Keys: { string }?, -- Combo, the punch each beat wants, cycled
+	Reps: number?, -- Charge and Reaction
+	Punches: { string }?, -- what you throw on a landed rep, cycled
+}
+-- jump rope starts at a skip every 0.6s and ends at 0.36s
+local rope = {}
+for i = 0, 14 do
+	table.insert(rope, 0.6 - 0.24 * i / 14)
+end
 Stats.Drills = {
-	Power = { Beats = 8, Gaps = { 0.9 }, Punches = { "Cross", "Hook" } }, -- heavy, steady shots
-	Technique = { Beats = 10, Gaps = { 0.5, 0.5, 1 }, Punches = { "Jab", "Jab", "Cross" } }, -- combos with a beat between
-	Stamina = { Beats = 16, Gaps = { 0.45 } }, -- jump rope, fast and even
-	Speed = { Beats = 12, Gaps = { 0.3, 0.8 }, Punches = { "Jab", "Cross" } }, -- quick pairs on the mitts
+	Power = { Kind = "Charge", Reps = 5, Punches = { "Cross", "Hook" } },
+	Technique = {
+		Kind = "Combo",
+		Beats = 10,
+		Gaps = { 0.55, 0.55, 1 },
+		Keys = { "Jab", "Jab", "Cross", "Jab", "Cross", "Hook" },
+	},
+	Stamina = { Kind = "Rhythm", Beats = 16, Gaps = rope },
+	Speed = { Kind = "Reaction", Reps = 8, Punches = { "Jab", "Cross" } },
 } :: { [string]: Drill }
+-- the input for each combo key, shown on the note
+Stats.ComboInputs = { Jab = "M1", Cross = "M2", Hook = "E" }
+Stats.ChargeTarget = 1 -- seconds held for a perfect charge
+Stats.ChargePerfect = 0.12 -- either side of the target
+Stats.ChargeGood = 0.3
+Stats.ChargeMax = 2 -- the meter's full length, holding past it is a miss
+Stats.ReactPerfect = 0.3 -- reaction time after the flash
+Stats.ReactGood = 0.5
+Stats.ReactWindow = 0.9 -- how long the mitt stays up
+Stats.ReactDelay = { 0.8, 2.2 } -- random wait before each flash
 Stats.DrillLeadIn = 1.5 -- seconds before the first beat
 Stats.DrillPerfect = 0.1 -- seconds either side of a beat
 Stats.DrillGood = 0.22
@@ -51,14 +82,28 @@ Stats.Unlocks = {
 	LungeUppercut = { Power = 20 },
 } :: { [string]: { [string]: number } }
 
--- seconds after the lead in for every beat of a drill
+-- seconds after the lead in for every beat of a Combo or Rhythm drill
 function Stats.beatTimes(drill: Drill): { number }
+	local gaps = drill.Gaps :: { number }
 	local times, t = {}, 0
-	for i = 1, drill.Beats do
+	for i = 1, drill.Beats :: number do
 		table.insert(times, t)
-		t += drill.Gaps[(i - 1) % #drill.Gaps + 1]
+		t += gaps[(i - 1) % #gaps + 1]
 	end
 	return times
+end
+
+function Stats.chargeGrade(held: number): string
+	local off = math.abs(held - Stats.ChargeTarget)
+	return if held > Stats.ChargeMax
+		then "Miss"
+		elseif off <= Stats.ChargePerfect then "Perfect"
+		elseif off <= Stats.ChargeGood then "Good"
+		else "Miss"
+end
+
+function Stats.reactGrade(seconds: number): string
+	return if seconds <= Stats.ReactPerfect then "Perfect" elseif seconds <= Stats.ReactGood then "Good" else "Miss"
 end
 
 -- how far off the beat a press was, in seconds either way
@@ -92,9 +137,14 @@ assert(
 	"drill grading is off"
 )
 assert(
-	#Stats.beatTimes(Stats.Drills.Speed) == 12 and Stats.beatTimes(Stats.Drills.Speed)[3] == 1.1,
+	#Stats.beatTimes(Stats.Drills.Technique) == 10 and math.abs(Stats.beatTimes(Stats.Drills.Technique)[4] - 2.1) < 1e-9,
 	"beat times are off"
 )
+assert(
+	Stats.chargeGrade(1.05) == "Perfect" and Stats.chargeGrade(0.75) == "Good" and Stats.chargeGrade(2.5) == "Miss",
+	"charge grading is off"
+)
+assert(Stats.reactGrade(0.25) == "Perfect" and Stats.reactGrade(0.6) == "Miss", "reaction grading is off")
 assert(
 	Stats.bonus({ Power = 50 }, "Power") == 0.15 and Stats.bonus({ Power = 500 }, "Power") == 0.3,
 	"stat bonus scaling is off"

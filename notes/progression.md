@@ -22,11 +22,14 @@ stats, unlocks and saving (step 6). numbers live in src/shared/Stats.luau
 - endurance from getting hit needs the same, so standing afk next to the partner does nothing
 
 ## drills
-- prompt starts a drill, the server picks beat times from Stats.Drills and sends them, the client draws notes sliding to the hit line (BoxingMenu.Drill)
-- the client only sends "Hit", the server grades it against its own clock minus the player's ping. perfect 0.1s, good 0.22s
-- only the first press near each beat counts and more than 2 presses per beat counts nothing, so mashing gets 0
-- gain is 2 for a perfect run, scaled by score, to one decimal. +1.7 popup on the menu
-- a drill puts you in fight mode (boxing stance) and stands you square in front of the bag or mitts, 3.2 studs out, on the open side nearest where you walked up from (worked out once by raycasting the 4 sides). the client does the move, it owns the character. no walking or turning till it's done
-- the bags already had g2's rope physics, landed drill punches push them (perfect pushes harder). the server owns the bags so it can swing them
+- every station has its own minigame, all graded on the server (Stats.Drills):
+  - heavy bag, Charge: hold space or click, let go in the gold (1s held, perfect +-0.12, good +-0.3). 5 reps
+  - bag work, Combo: notes slide in with M1/M2/E on them, throw that punch on the beat, wrong key is a miss. 10 beats
+  - jump rope, Rhythm: press on the beat, skips go from 0.6s apart down to 0.36s. 16 beats
+  - mitts, Reaction: the mitt flashes at a random moment (server sends the cue live), hit it under 0.3s for perfect, 0.5 for good. early presses do nothing, slow ones miss. 8 reps
+- the client only sends Hit (with the punch for combos), Down and Up for the charge. the server takes the player's ping off, more than 3 presses a rep counts nothing
+- gain is 2 for a perfect run, scaled by score, to one decimal
+- a drill puts you in fight mode and stands you square in front of the equipment, no walking till it's done
+- landed reps throw the punch anim and swing the bag on its rope
 - still needs the spar first rule, except while you're on the quest line
 - rotated frames don't clip their children, so the drill panel isn't tilted like the menu
