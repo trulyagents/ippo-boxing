@@ -78,7 +78,8 @@ local function begin(player: Player, stat: string, part: BasePart)
 	if not f or f.State ~= "Idle" or f.Match then
 		return
 	end
-	if not PlayerData.foughtRecently(player) then
+	-- the quests walk you through the drills, so the spar rule only kicks in after them
+	if not PlayerData.foughtRecently(player) and not Career.onQuests(player) then
 		fx:FireClient(player, "Match", "SPAR FIRST")
 		return
 	end

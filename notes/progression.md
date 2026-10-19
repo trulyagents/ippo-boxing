@@ -27,5 +27,5 @@ stats, unlocks and saving (step 6). numbers live in src/shared/Stats.luau
 - only the first press near each beat counts and more than 2 presses per beat counts nothing, so mashing gets 0
 - gain is 2 for a perfect run, scaled by score, to one decimal. +1.7 popup on the menu
 - you're frozen for the drill so space and m1 don't throw real punches. walk off and it ends
-- still needs the spar first rule
+- still needs the spar first rule, except while you're on the quest line
 - rotated frames don't clip their children, so the drill panel isn't tilted like the menu

@@ -41,6 +41,12 @@ function CareerServer.show(player: Player)
 	(stats:FindFirstChild("Wins") :: IntValue).Value = record.Wins
 end
 
+-- still working through the quest line
+function CareerServer.onQuests(player: Player): boolean
+	local data = PlayerData.data(player)
+	return data ~= nil and Career.Quests[data.Quest.Step] ~= nil
+end
+
 -- something happened that might count toward the current quest
 function CareerServer.event(player: Player, event: string, detail: string?)
 	local data = PlayerData.data(player)
