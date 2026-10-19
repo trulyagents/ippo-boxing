@@ -131,6 +131,7 @@ local function runMatch(red: Pad, blue: Pad)
 	local function card(player: Player)
 		return {
 			Name = player.DisplayName,
+			UserId = player.UserId,
 			Rank = player:GetAttribute("Rank") or "ROOKIE",
 			Wins = player:GetAttribute("Wins") or 0,
 			Losses = player:GetAttribute("Losses") or 0,

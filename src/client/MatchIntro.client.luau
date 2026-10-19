@@ -28,6 +28,24 @@ local function fill(card: ImageLabel, info: any)
 	if typeof(info) ~= "table" then
 		return
 	end
+	-- their avatar headshot on the right, same as the one on the hud panel
+	local portrait = card:WaitForChild("Portrait") :: ImageLabel
+	portrait.Image = ""
+	local userId = tonumber(info.UserId)
+	if userId then
+		task.spawn(function()
+			local ok, image = pcall(
+				Players.GetUserThumbnailAsync,
+				Players,
+				math.max(userId, 1),
+				Enum.ThumbnailType.HeadShot,
+				Enum.ThumbnailSize.Size180x180
+			)
+			if ok then
+				portrait.Image = image
+			end
+		end)
+	end
 	(card:WaitForChild("Name") :: TextLabel).Text = string.upper(tostring(info.Name or "?"));
 	(card:WaitForChild("Rank") :: TextLabel).Text = tostring(info.Rank or "ROOKIE");
 	(card:WaitForChild("Record") :: TextLabel).Text = string.format(
