@@ -33,3 +33,4 @@ stats, unlocks and saving (step 6). numbers live in src/shared/Stats.luau
 - landed reps throw the punch anim and swing the bag on its rope
 - still needs the spar first rule, except while you're on the quest line
 - rotated frames don't clip their children, so the drill panel isn't tilted like the menu
+- jump rope prop: the server sets Skipping on the character for the jump rope drill, JumpRopeProp (client, runs for everyone you can see) clones the handles off a rack rope into the gloves and draws the rope as a Beam between them. the beam's ends get turned every frame so the arc swings down, back, over the head and out front, timed off the skip anim so it passes under the feet at the top of each skip

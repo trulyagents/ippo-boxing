@@ -75,6 +75,7 @@ local function finish(player: Player, s: Session)
 	local f = Fighters.get(player.Character)
 	if f then
 		Fighters.setDrilling(f, false)
+		f.Model:SetAttribute("Skipping", nil)
 		Fighters.freeze(f, 0)
 	end
 end
@@ -205,6 +206,10 @@ local function begin(player: Player, stat: string, part: BasePart)
 		stand = CFrame.lookAt(at, Vector3.new(part.Position.X, at.Y, part.Position.Z))
 	end
 	Fighters.setDrilling(f, true)
+	-- everyone around draws a rope in your hands for the jump rope drill (JumpRopeProp)
+	if drill.Kind == "Rhythm" then
+		f.Model:SetAttribute("Skipping", true)
+	end
 	-- the client owns its character, so it does the move into place
 	training:FireClient(player, "Start", stat, s.Start, times, stand)
 	if drill.Kind == "Reaction" then
