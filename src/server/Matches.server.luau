@@ -127,6 +127,30 @@ local function runMatch(red: Pad, blue: Pad)
 		return false
 	end
 
+	-- the VS screen: both in their corners, names, ranks and records up, the bell
+	local function card(player: Player)
+		return {
+			Name = player.DisplayName,
+			Rank = player:GetAttribute("Rank") or "ROOKIE",
+			Wins = player:GetAttribute("Wins") or 0,
+			Losses = player:GetAttribute("Losses") or 0,
+			Draws = player:GetAttribute("Draws") or 0,
+			KOs = player:GetAttribute("KOs") or 0,
+		}
+	end
+	for i, f in fighters do
+		place(f, corners[i].Start, corners[3 - i].Start.Position)
+		Fighters.freeze(f, Config.Intro)
+	end
+	for _, player in Players:GetPlayers() do
+		local character = player.Character
+		local root = character and character:FindFirstChild("HumanoidRootPart")
+		if root and root:IsA("BasePart") and (root.Position - center()).Magnitude < 70 then
+			fx:FireClient(player, "Intro", card(redPlayer), card(bluePlayer))
+		end
+	end
+	hold(Config.Intro)
+
 	for round = 1, Config.Rounds do
 		for i, f in fighters do
 			if round > 1 then

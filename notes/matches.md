@@ -14,3 +14,4 @@ ring matches from g2's join pads (Map.GymRing.JoinPads Red and Blue). numbers in
 - g2 used 180s rounds and 3 or 5 round limits, i went shorter for roblox attention spans
 - not done: spectator seats, betting, ranked, more than one ring
 - the wall interval timer (Map.GymRing.IntervalTimer, g2's prop) works now: IntervalTimer.client shows the round, minutes and seconds left off the ring's MatchRound/MatchEndsAt and lights the 10 bars for the share of the round left. 0:00 between fights. digits are my own 7 segment pngs (art/timer/make_digits.py), unlit segments are fully clear because the gym lights brighten decals so even faint ones read as lit
+- match intro: after both pads are taken, both boxers stand frozen in their corners for Config.Match.Intro (4.5s) while MatchIntro (StarterGui, built in studio) slides in a red and a blue card with name, rank and record (wins-losses-draws, KOs), VS pops with the bell, then it clears and ROUND 1 gets called
