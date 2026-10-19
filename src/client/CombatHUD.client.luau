@@ -87,8 +87,24 @@ task.delay(8, function()
 		showControls(false)
 	end
 end)
+-- never up during a ring match, it covers the other boxer
+local function inMatch(): boolean
+	local character = player.Character
+	return character ~= nil and character:GetAttribute("InMatch") == true
+end
+local function watchMatch(character: Model)
+	character:GetAttributeChangedSignal("InMatch"):Connect(function()
+		if inMatch() and controlsOpen then
+			showControls(false)
+		end
+	end)
+end
+player.CharacterAdded:Connect(watchMatch)
+if player.Character then
+	watchMatch(player.Character)
+end
 UserInputService.InputBegan:Connect(function(input, processed)
-	if not processed and input.KeyCode == Enum.KeyCode.H then
+	if not processed and input.KeyCode == Enum.KeyCode.H and (controlsOpen or not inMatch()) then
 		showControls(not controlsOpen)
 	end
 end)

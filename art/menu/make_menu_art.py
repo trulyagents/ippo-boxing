@@ -40,16 +40,18 @@ def radar():
 
 
 # style card: slanted cream ticket with a heavy ink rim and a halftone strip on the left
-def card():
+# card_plain is the same ticket without the strip, for cards full of text (match corner and result)
+def card(dots=True, name="card"):
     W, H = 900, 520
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     shape = rough_poly([(40, 12), (W - 10, 12), (W - 40, H - 12), (10, H - 12)], 3, 14)
     d.polygon(shape, fill=CREAM)
     d.line(shape + [shape[0]], fill=INK, width=10, joint="curve")
-    halftone(d, (30, 30, 150, H - 30), 12, 4.5)
+    if dots:
+        halftone(d, (30, 30, 150, H - 30), 12, 4.5)
     speckle(d, (30, 30, W - 40, H - 30), 120, INK, 1.8)
-    img.save(os.path.join(OUT, "card.png"))
+    img.save(os.path.join(OUT, name + ".png"))
 
 
 # the corner menu button: ink burst with a cream square inside
@@ -82,4 +84,5 @@ if __name__ == "__main__":
     triangles()
     for f in (sheet, radar, card, button):
         f()
+    card(False, "card_plain")
     print("done")

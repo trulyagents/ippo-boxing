@@ -18,4 +18,5 @@ ring matches from g2's join pads (Map.GymRing.JoinPads Red and Blue). numbers in
 - corner between rounds: MatchCorner (StarterGui, built in studio) slides in for the 10s break. this round's punches landed, damage and knockdowns for both, ahead/behind/even on the cards, and the cutman: stamina and guard back plus 35% of missing health (Config.Match.CornerHeal). health used to stay where the fight left it
 - no stool yet, there's no sit anim in either bought game. needs a real one made first
 - result screen: MatchResult (StarterGui, built in studio) for the 2 fighters. you win/lose/draw and how, whole fight punches and knockdowns, rank points gained or lost, new rank and record. the record is written before the screen now so it shows the new numbers
-- both cards use the same halftone paper image as the VS cards. if images show blank in studio it is studio not fetching, a full studio restart fixed it
+- both cards use art/menu/card_plain.png, the style card without the halftone strip (the dots made the text hard to read). if images show blank in studio it is studio not fetching, a full studio restart fixed it
+- the controls card (H) hides when a ring match starts and H can't open it mid match
