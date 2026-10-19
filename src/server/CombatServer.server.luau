@@ -33,16 +33,16 @@ local function loadBoxer(player: Player)
 		return
 	end
 	local ok, description = pcall(function()
-		return Players:GetHumanoidDescriptionFromUserId(math.max(player.UserId, 1))
+		return Players:GetHumanoidDescriptionFromUserIdAsync(math.max(player.UserId, 1))
 	end)
 	if not ok or not description then
 		description = Instance.new("HumanoidDescription")
 	end
 	local made, character = pcall(function()
-		return Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R6)
+		return Players:CreateHumanoidModelFromDescriptionAsync(description, Enum.HumanoidRigType.R6)
 	end)
 	if not made or not character then
-		player:LoadCharacter()
+		player:LoadCharacterAsync()
 		return
 	end
 	character.Name = player.Name

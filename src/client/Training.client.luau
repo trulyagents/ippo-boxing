@@ -29,7 +29,7 @@ local target = drill:WaitForChild("Target") :: ImageLabel
 local grade = drill:WaitForChild("Grade") :: TextLabel
 local hitButton = drill:WaitForChild("HitButton") :: ImageButton
 
-local NAMES = { Power = "HEAVY BAG", Technique = "BAG WORK", Stamina = "JUMP ROPE", Speed = "MITTS" }
+local NAMES = { Power = "HEAVY BAG", Technique = "BAG WORK", Stamina = "JUMP ROPE", Speed = "MITTS" } :: { [string]: string }
 local HINTS = {
 	Rhythm = "SPACE OR CLICK ON THE BEAT, IT SPEEDS UP",
 	Combo = "THROW THE PUNCH ON THE NOTE: M1 JAB, M2 CROSS, E HOOK",
@@ -107,7 +107,7 @@ end
 local function setJump(on: boolean)
 	local character = player.Character
 	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-	if humanoid then
+	if character and humanoid then
 		humanoid:SetStateEnabled(Enum.HumanoidStateType.Jumping, on and character:GetAttribute("FightMode") == false)
 	end
 end
@@ -189,7 +189,8 @@ remote.OnClientEvent:Connect(function(event, a, b, c, stand)
 		if kind == "Charge" then
 			layoutCharge()
 		end
-		titleText.Text = (NAMES[a] or "TRAINING") .. "  -  " .. string.upper(a)
+		local stat = tostring(a)
+		titleText.Text = (NAMES[stat] or "TRAINING") .. "  -  " .. string.upper(stat)
 		hint.Text = HINTS[kind] or ""
 		grade.Text = "READY"
 		grade.TextColor3 = Color3.fromRGB(14, 13, 12)

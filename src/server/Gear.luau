@@ -10,7 +10,7 @@ Gear.TrunksTemplate = "http://www.roblox.com/asset/?id=17137655469"
 
 -- each glove is separate mesh parts welded flat onto the arm, no rotation, so it
 -- follows the arm exactly. offsets are in arm space, the hand end is -Y
-local PARTS = {
+local PARTS: { { Name: string, Size: Vector3, Offset: CFrame, Lace: boolean, Box: boolean? } } = {
 	{ Name = "Glove", Size = Vector3.new(1.12, 1.06, 1.12), Offset = CFrame.new(0, -0.74, 0), Lace = false },
 	{
 		Name = "Thumb",

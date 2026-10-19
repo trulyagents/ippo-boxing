@@ -13,7 +13,7 @@ Stats.MaxBonus = {
 	Endurance = 0.25, -- off damage taken
 	Speed = 0.15, -- off punch startup
 	Willpower = 0.5, -- courage gained
-}
+} :: { [string]: number }
 
 -- gym equipment by model name prefix, first match wins
 Stats.Equipment = {
@@ -52,7 +52,7 @@ Stats.Drills = {
 	Speed = { Kind = "Reaction", Reps = 8, Punches = { "Jab", "Cross" } },
 } :: { [string]: Drill }
 -- the input for each combo key, shown on the note
-Stats.ComboInputs = { Jab = "M1", Cross = "M2", Hook = "E" }
+Stats.ComboInputs = { Jab = "M1", Cross = "M2", Hook = "E" } :: { [string]: string }
 Stats.ChargeTarget = 1 -- seconds held for a perfect charge
 Stats.ChargePerfect = 0.08 -- either side of the target
 Stats.ChargeGood = 0.2
@@ -67,7 +67,7 @@ Stats.DrillGood = 0.15
 Stats.DrillGain = 2 -- for a perfect session, scales down with accuracy
 Stats.DrillCooldown = 2
 Stats.DrillStandOff = 3.2 -- how far from the bag or mitts you get stood for a drill
-Stats.DrillPush = { Perfect = 7, Good = 4 } -- studs per second a landed drill punch swings the bag
+Stats.DrillPush = { Perfect = 7, Good = 4 } :: { [string]: number } -- studs per second a landed drill punch swings the bag
 -- endurance and willpower only grow by fighting
 Stats.FightGain = { Endurance = 0.1, Willpower = 1 } -- per clean hit taken, per get up
 -- land this many clean hits (on anyone, dummies count) and training counts for this long after

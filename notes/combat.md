@@ -187,3 +187,12 @@ layout fixes (architecture pass)
 - Fighters.onHit / onDown are listener lists now (call it with a function, get back a stop function). was a single slot, a second ring would have overwritten the first ring's scoring
 - the corner between rounds is server/Corner.luau (stool, sitting, the pick remote). Matches calls Corner.open per boxer and the function it gives back at the bell
 - skipped: one entry script for everything. 4 server scripts + 11 client ones, it works, not worth the churn yet
+
+type checking
+- luau-lsp is in rokit.toml. the roblox type file and sourcemap live in build/types (gitignored), remake them with:
+  curl -sSfL -o build/types/globalTypes.d.luau https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/main/scripts/globalTypes.d.luau
+  rojo sourcemap default.project.json -o build/types/sourcemap.json
+- check: luau-lsp analyze --definitions=build/types/globalTypes.d.luau --sourcemap=build/types/sourcemap.json --ignore="**/ProfileStore.luau" --flag:LuauSolverV2=true src
+- uses the new solver, the old one flags elseif chains that are fine. 0 errors as of now
+- still not strict: CombatHUD, CombatInput, FighterAnimator, ImpactFX, CombatServer, Dummies (older files, convert one at a time when i'm in them). ProfileStore is someone else's, skipped
+- swapped the deprecated LoadCharacter / GetHumanoidDescriptionFromUserId / CreateHumanoidModelFromDescription for their Async versions

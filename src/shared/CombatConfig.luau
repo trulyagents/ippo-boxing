@@ -298,7 +298,7 @@ CombatConfig.CourageGain = {
 	KnockedDown = 15,
 	GotUp = 10,
 	CleanTaken = -2,
-}
+} :: { [string]: number }
 -- chance of a second wind by courage, checked top down. 100 always gets it
 CombatConfig.SecondWindChance = {
 	{ At = 100, Chance = 1 },
@@ -388,7 +388,7 @@ CombatConfig.Match = {
 		Hydrate = {}, -- stamina all the way back
 		Treatment = { MaxHealth = 15, Heal = 0.3 }, -- lasting damage back off max health, then a share of what's missing
 		PepTalk = { Courage = 35 },
-	},
+	} :: { [string]: { MaxHealth: number?, Heal: number?, Courage: number? } },
 	Intro = 4.5, -- the VS screen with both boxers before round 1
 	Countdown = 3, -- frozen in the corners before each round
 	KnockdownPoints = 15, -- on top of damage dealt, for the decision

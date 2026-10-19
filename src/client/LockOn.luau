@@ -87,13 +87,14 @@ local function set(model: Model?)
 	local camera = workspace.CurrentCamera
 	if model then
 		camCFrame = camera.CFrame
-		marker.Adornee = rootOf(model)
+		-- the type file says Adornee can't be nil, it can
+		marker.Adornee = rootOf(model) :: any
 		marker.Enabled = true
 		chevron.TextTransparency = 1
 		TweenService:Create(chevron, TweenInfo.new(0.2), { TextTransparency = 0 }):Play()
 	else
 		marker.Enabled = false
-		marker.Adornee = nil
+		marker.Adornee = nil :: any
 		camera.CameraType = Enum.CameraType.Custom
 		camera.FieldOfView = BASE_FOV
 		UserInputService.MouseBehavior = Enum.MouseBehavior.Default

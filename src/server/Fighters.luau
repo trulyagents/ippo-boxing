@@ -136,14 +136,14 @@ local function setWalk(f: Fighter)
 		return
 	end
 	local busy = f.State ~= "Idle"
+	local action = f.Model:GetAttribute("Action") :: string?
 	f.Humanoid.WalkSpeed = if f.State == "Down"
 			or f.State == "KO"
 			or f.State == "Stunned"
 		then 0
 		elseif f.Weaving then Config.WeaveWalkSpeed
-		elseif
-			(f.State == "Windup" or f.State == "Recovery") and Config.Moves[f.Model:GetAttribute("Action")]
-		then Config.Moves[f.Model:GetAttribute("Action")].MoveSpeed
+		elseif (f.State == "Windup" or f.State == "Recovery") and action and Config.Moves[action]
+		then Config.Moves[action].MoveSpeed
 		elseif f.Guarding or busy then Config.GuardWalkSpeed
 		else Config.WalkSpeed
 	-- stances tweak how fast you move, but never wake up a planted fighter
@@ -854,10 +854,10 @@ function Fighters.corner(f: Fighter, pick: string): boolean
 	if pick == "Hydrate" then
 		f.Stamina = Config.MaxStamina
 	elseif pick == "Treatment" then
-		f.MaxHealthNow = math.max(f.MaxHealthNow, math.min(Config.MaxHealth, f.MaxHealthNow + c.MaxHealth))
-		f.Health = math.min(f.MaxHealthNow, f.Health + (f.MaxHealthNow - f.Health) * c.Heal)
+		f.MaxHealthNow = math.max(f.MaxHealthNow, math.min(Config.MaxHealth, f.MaxHealthNow + (c.MaxHealth or 0)))
+		f.Health = math.min(f.MaxHealthNow, f.Health + (f.MaxHealthNow - f.Health) * (c.Heal or 0))
 	else
-		f.Courage = math.min(Config.MaxCourage, f.Courage + c.Courage)
+		f.Courage = math.min(Config.MaxCourage, f.Courage + (c.Courage or 0))
 	end
 	publish(f)
 	return true

@@ -18,7 +18,7 @@ local function makeDummy(name: string, spawnPart: BasePart, shirt: Color3)
 	description.HeadColor = Color3.fromRGB(205, 160, 125)
 	description.LeftArmColor, description.RightArmColor = description.HeadColor, description.HeadColor
 	description.LeftLegColor, description.RightLegColor = Color3.fromRGB(30, 30, 35), Color3.fromRGB(30, 30, 35)
-	local model = Players:CreateHumanoidModelFromDescription(description, Enum.HumanoidRigType.R6)
+	local model = Players:CreateHumanoidModelFromDescriptionAsync(description, Enum.HumanoidRigType.R6)
 	model.Name = name
 	model:PivotTo(spawnPart.CFrame)
 	model.Parent = workspace

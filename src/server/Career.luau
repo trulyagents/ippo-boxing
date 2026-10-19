@@ -21,7 +21,7 @@ function CareerServer.show(player: Player)
 	end
 	local record = data.Record
 	local rank = Career.rankOf(data.RankPoints)
-	for key, value in record do
+	for key, value in record :: { [string]: number } do
 		player:SetAttribute(key, value)
 	end
 	player:SetAttribute("RankPoints", data.RankPoints)
@@ -30,14 +30,21 @@ function CareerServer.show(player: Player)
 	player:SetAttribute("QuestCount", data.Quest.Count)
 	local stats = player:FindFirstChild("leaderstats")
 	if not stats then
-		stats = Instance.new("Folder")
-		stats.Name = "leaderstats"
-		Instance.new("StringValue", stats).Name = "Rank"
-		Instance.new("IntValue", stats).Name = "Wins"
-		stats.Parent = player
+		local folder = Instance.new("Folder")
+		folder.Name = "leaderstats"
+		stats = folder
+		local rankValue = Instance.new("StringValue")
+		rankValue.Name = "Rank"
+		rankValue.Parent = folder
+		local winsValue = Instance.new("IntValue")
+		winsValue.Name = "Wins"
+		winsValue.Parent = folder
+		folder.Parent = player
 	end
-	(stats:FindFirstChild("Rank") :: StringValue).Value = rank;
-	(stats:FindFirstChild("Wins") :: IntValue).Value = record.Wins
+	if stats then
+		(stats:FindFirstChild("Rank") :: StringValue).Value = rank;
+		(stats:FindFirstChild("Wins") :: IntValue).Value = record.Wins
+	end
 end
 
 -- still working through the quest line

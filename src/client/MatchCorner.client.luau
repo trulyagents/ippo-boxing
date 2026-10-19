@@ -26,7 +26,7 @@ local POP = TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 local PICK_SOUNDS = { Hydrate = { "Squirt" }, Treatment = { "Tape" }, PepTalk = { "Pep", "Clap" } }
 local sounds = ReplicatedStorage:WaitForChild("BoxingSounds")
 local function play(name: string)
-	local pool = {}
+	local pool: { Sound } = {}
 	for _, x in sounds:GetChildren() do
 		if x:IsA("Sound") and x.Name:match("^" .. name .. "%d+$") then
 			table.insert(pool, x)
