@@ -73,7 +73,10 @@ local function switchTo(name: string)
 	current = name
 	local new = track(name)
 	if new then
-		if not new.IsPlaying then
+		-- pick the track back up where it was, don't restart it
+		if new.IsPaused then
+			new:Resume()
+		elseif not new.IsPlaying then
 			new:Play()
 		end
 		TweenService:Create(new, FADE, { Volume = VOLUME[name] }):Play()

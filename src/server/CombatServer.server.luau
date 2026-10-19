@@ -152,6 +152,10 @@ end)
 
 Players.PlayerRemoving:Connect(function(player)
 	buckets[player] = nil
+	-- roblox doesn't always destroy a leaver's body, and Fighters only lets go of it on Destroying
+	if player.Character then
+		player.Character:Destroy()
+	end
 end)
 
 local accumulated = 0

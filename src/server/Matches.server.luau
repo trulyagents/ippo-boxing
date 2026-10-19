@@ -76,6 +76,7 @@ local function runMatch(red: Pad, blue: Pad)
 		return
 	end
 	running = true
+	ring:SetAttribute("SkipPhase", nil) -- a QA skip left over from the last match
 	ring:SetAttribute("MatchOn", true)
 	local fighters = { a, b }
 	table.clear(recorded)
