@@ -51,6 +51,7 @@ export type Fighter = {
 	SpecialReady: { [string]: number },
 	Stats: { [string]: number }, -- the saved stats for players, empty for dummies
 	Match: string?, -- fighters in a match only hit each other
+	FightMode: boolean, -- players only box inside a fight zone (the ring, upstairs), dummies always
 }
 
 local Fighters = {}
@@ -105,6 +106,11 @@ local function addCourage(f: Fighter, reason: string)
 end
 
 local function setWalk(f: Fighter)
+	if not f.FightMode then
+		f.Humanoid.WalkSpeed = Config.StreetWalkSpeed
+		f.Humanoid.JumpHeight = Config.StreetJumpHeight
+		return
+	end
 	local busy = f.State ~= "Idle"
 	f.Humanoid.WalkSpeed = if f.State == "Down"
 			or f.State == "KO"
@@ -172,6 +178,7 @@ function Fighters.register(model: Model, player: Player?, stats: { [string]: num
 		SpecialReady = {},
 		Stats = stats or {},
 		Match = nil,
+		FightMode = true,
 	}
 	byModel[model] = f
 	-- Roblox health isn't used for boxing, keep the humanoid alive
@@ -209,7 +216,7 @@ function Fighters.reset(f: Fighter)
 end
 
 local function canAct(f: Fighter): boolean
-	return f.State == "Idle" and os.clock() >= f.BusyUntil
+	return f.FightMode and f.State == "Idle" and os.clock() >= f.BusyUntil
 end
 
 local function setState(f: Fighter, state: string, untilTime: number?)
@@ -673,7 +680,7 @@ function Fighters.setGuard(f: Fighter, height: string?, canParry: boolean?)
 	if height ~= nil and height ~= "High" and height ~= "Low" then
 		return
 	end
-	if height and (f.State == "Down" or f.State == "KO" or f.State == "Stunned" or f.State == "Switching") then
+	if height and (not f.FightMode or f.State == "Down" or f.State == "KO" or f.State == "Stunned" or f.State == "Switching") then
 		return
 	end
 	if f.GuardHeight == height then
@@ -696,7 +703,7 @@ function Fighters.setGuard(f: Fighter, height: string?, canParry: boolean?)
 end
 
 function Fighters.setWeave(f: Fighter, on: boolean)
-	if on and (f.State == "Down" or f.State == "KO") then
+	if on and (not f.FightMode or f.State == "Down" or f.State == "KO") then
 		return
 	end
 	if f.Weaving ~= on then
@@ -708,7 +715,7 @@ end
 
 function Fighters.slip(f: Fighter, direction: string)
 	local now = os.clock()
-	if direction ~= "Left" and direction ~= "Right" and direction ~= "Duck" and direction ~= "Back" then
+	if not f.FightMode or (direction ~= "Left" and direction ~= "Right" and direction ~= "Duck" and direction ~= "Back") then
 		return
 	end
 	-- players slip out of weave mode, dummies don't bother with it
@@ -803,10 +810,41 @@ function Fighters.rest(f: Fighter)
 	publish(f)
 end
 
+-- the ring and the upstairs room, everywhere else players just walk around
+local zones = workspace:WaitForChild("Map"):WaitForChild("FightZones")
+local function inZone(position: Vector3): boolean
+	for _, zone in zones:GetChildren() do
+		if zone:IsA("BasePart") then
+			local p = zone.CFrame:PointToObjectSpace(position)
+			local half = zone.Size / 2
+			if math.abs(p.X) <= half.X and math.abs(p.Y) <= half.Y and math.abs(p.Z) <= half.Z then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+local function updateFightMode(f: Fighter)
+	-- a match keeps you boxing even if you get knocked into the ropes
+	local on = f.Player == nil or f.Match ~= nil or inZone(f.Root.Position)
+	if on == f.FightMode then
+		return
+	end
+	f.FightMode = on
+	f.Model:SetAttribute("FightMode", on)
+	if not on then
+		f.Guarding, f.GuardHeight, f.Weaving = false, nil, false
+		publish(f)
+	end
+	setWalk(f)
+end
+
 -- stamina and guard come back over time
 function Fighters.tick(dt: number)
 	local now = os.clock()
 	for _, f in byModel do
+		updateFightMode(f)
 		if f.State ~= "Down" and f.State ~= "KO" then
 			local changed = false
 			local regen = Config.StaminaRegen

@@ -167,3 +167,9 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
   - falls and hit reactions checked against real ko photos and a head snap shot, they already matched (flat on the back with limp arms and the head turned, head snaps about 46 degrees). refs for every move are in my vault under Pipelines/References
   - lesson: always look at the rendered key frames before calling an anim done, the audit only checks curves and feet
   - weave roll is back on g2's original dempsey roll anims (my call after trying it), impacts 0.6 left / 0.5 right like before. ends blended onto the peek-a-boo guard so it doesn't pop: 3 frames in, 6 frames out (it ends deep in a crouch, 3 frames looked like a jump)
+
+## fight mode
+- players only box inside a fight zone: Map.FightZones has Ring (inside the ropes) and Upstairs (the spar room). dummies are always on, and a match keeps you on
+- outside: normal roblox walk and idle (the Animate script comes back on), walk 16, jumping on, punches/guard/slips/stance/specials do nothing
+- the server checks your position every tick and sets FightMode on the character, the animator swaps anims off that
+- training drills still play the punch anims outside a zone, the bags and mitts are on the ground floor

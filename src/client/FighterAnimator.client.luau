@@ -152,6 +152,7 @@ local function track(model: Instance)
 		end
 		rig.Token = model:GetAttribute("ActionToken")
 		rig.Stance = model:GetAttribute("Stance")
+		rig.FightMode = true
 		rigs[model] = rig
 		play(rig, roleFor(model, "Idle"))
 	end)
@@ -326,6 +327,21 @@ local function updateLoops(rig: Rig)
 	end
 end
 
+-- out of a fight zone the default roblox walk and idle take over, back in it the boxing anims do
+local function setFightMode(rig: Rig, on: boolean)
+	rig.FightMode = on
+	local animate = rig.Model:FindFirstChild("Animate")
+	if animate and animate:IsA("LocalScript") then
+		animate.Enabled = not on
+	end
+	for _, t in rig.Animator:GetPlayingAnimationTracks() do
+		t:Stop(0.2)
+	end
+	if on then
+		play(rig, roleFor(rig.Model, "Idle"), 1, 0.2)
+	end
+end
+
 RunService.PreSimulation:Connect(function()
 	local scale = Feel.scale()
 	for model, rig in rigs do
@@ -333,10 +349,18 @@ RunService.PreSimulation:Connect(function()
 			rigs[model] = nil
 			continue
 		end
+		local fightMode = model:GetAttribute("FightMode") ~= false
+		if fightMode ~= rig.FightMode then
+			setFightMode(rig, fightMode)
+		end
 		local token = model:GetAttribute("ActionToken")
 		if token ~= rig.Token then
 			rig.Token = token
 			onAction(rig)
+		end
+		if not fightMode then
+			-- only training punches play out here
+			continue
 		end
 		onState(rig, model:GetAttribute("State"))
 		onStance(rig)
