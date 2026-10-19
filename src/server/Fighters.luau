@@ -53,6 +53,7 @@ export type Fighter = {
 	Stats: { [string]: number }, -- the saved stats for players, empty for dummies
 	Match: string?, -- fighters in a match only hit each other
 	FightMode: boolean, -- players only box inside a fight zone (the ring, upstairs), dummies always
+	Drilling: boolean, -- on a training drill: boxing stance, planted feet
 }
 
 local Fighters = {}
@@ -107,6 +108,12 @@ local function addCourage(f: Fighter, reason: string)
 end
 
 local function setWalk(f: Fighter)
+	if f.Drilling then
+		f.Humanoid.WalkSpeed = 0
+		f.Humanoid.AutoRotate = false
+		return
+	end
+	f.Humanoid.AutoRotate = true
 	if not f.FightMode then
 		f.Humanoid.WalkSpeed = Config.StreetWalkSpeed
 		-- set both, the character can be on either jump mode
@@ -182,6 +189,7 @@ function Fighters.register(model: Model, player: Player?, stats: { [string]: num
 		Stats = stats or {},
 		Match = nil,
 		FightMode = true,
+		Drilling = false,
 	}
 	byModel[model] = f
 	-- Roblox health isn't used for boxing, keep the humanoid alive
@@ -838,7 +846,7 @@ end
 
 local function updateFightMode(f: Fighter)
 	-- a match keeps you boxing even if you get knocked into the ropes
-	local on = f.Player == nil or f.Match ~= nil or inZone(f.Root.Position)
+	local on = f.Player == nil or f.Match ~= nil or f.Drilling or inZone(f.Root.Position)
 	if on == f.FightMode then
 		return
 	end
@@ -848,6 +856,13 @@ local function updateFightMode(f: Fighter)
 		f.Guarding, f.GuardHeight, f.Weaving = false, nil, false
 		publish(f)
 	end
+	setWalk(f)
+end
+
+-- training drills plant you in a boxing stance until they're done
+function Fighters.setDrilling(f: Fighter, on: boolean)
+	f.Drilling = on
+	updateFightMode(f)
 	setWalk(f)
 end
 

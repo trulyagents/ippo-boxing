@@ -66,9 +66,27 @@ local function finish(player: Player, s: Session)
 	training:FireClient(player, "Done", gain)
 	local f = Fighters.get(player.Character)
 	if f then
-		f.Humanoid.AutoRotate = true
+		Fighters.setDrilling(f, false)
 		Fighters.freeze(f, 0)
 	end
+end
+
+-- the open sides of each piece of equipment (not into the wall or the bag next to it), worked
+-- out once. a drill stands you square in front of one of them
+local fronts: { [BasePart]: { Vector3 } } = {}
+local AXES = { Vector3.xAxis, -Vector3.xAxis, Vector3.zAxis, -Vector3.zAxis }
+local function findFronts(part: BasePart, ignore: Instance): { Vector3 }
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = { ignore }
+	local open = {}
+	for _, axis in AXES do
+		-- out past where you'd stand, at chest height
+		if not workspace:Raycast(part.Position, axis * (Stats.DrillStandOff + 2), params) then
+			table.insert(open, axis)
+		end
+	end
+	return open
 end
 
 local function begin(player: Player, stat: string, part: BasePart)
@@ -105,11 +123,19 @@ local function begin(player: Player, stat: string, part: BasePart)
 	local stand = f.Root.CFrame
 	local flat = (f.Root.Position - part.Position) * Vector3.new(1, 0, 1)
 	if Stats.Drills[stat].Punches and flat.Magnitude > 0.1 then
-		local at = Vector3.new(part.Position.X, f.Root.Position.Y, part.Position.Z) + flat.Unit * Stats.DrillStandOff
+		-- the open side closest to where you walked up from, square on, never at an angle
+		local side, best = nil, -math.huge
+		for _, axis in fronts[part] or {} do
+			local d = axis:Dot(flat.Unit)
+			if d > best then
+				side, best = axis, d
+			end
+		end
+		side = side or flat.Unit
+		local at = Vector3.new(part.Position.X, f.Root.Position.Y, part.Position.Z) + side * Stats.DrillStandOff
 		stand = CFrame.lookAt(at, Vector3.new(part.Position.X, at.Y, part.Position.Z))
 	end
-	f.Humanoid.WalkSpeed = 0
-	f.Humanoid.AutoRotate = false
+	Fighters.setDrilling(f, true)
 	-- the client owns its character, so it does the move into place
 	training:FireClient(player, "Start", stat, s.Start, s.Times, stand)
 	task.delay(length, finish, player, s)
@@ -172,6 +198,7 @@ local function hook(model: Model, stat: string)
 	prompt.MaxActivationDistance = 6
 	prompt.RequiresLineOfSight = false
 	prompt.Parent = part
+	fronts[part] = findFronts(part, model.Parent or model)
 	-- the server swings the bags, so it has to own them
 	if part:CanSetNetworkOwnership() then
 		part:SetNetworkOwner(nil)
