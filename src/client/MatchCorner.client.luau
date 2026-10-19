@@ -22,6 +22,27 @@ local PICKS = { "Hydrate", "Treatment", "PepTalk" }
 local KEYS = { [Enum.KeyCode.One] = 1, [Enum.KeyCode.Two] = 2, [Enum.KeyCode.Three] = 3 }
 local DONE = { Hydrate = "HYDRATED: STAMINA BACK", Treatment = "TREATED: DAMAGE PATCHED UP", PepTalk = "PEP TALK: COURAGE UP" }
 local POP = TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
+-- what you hear when the pick goes through, a random numbered copy of each (BoxingSounds)
+local PICK_SOUNDS = { Hydrate = { "Squirt" }, Treatment = { "Tape" }, PepTalk = { "Pep", "Clap" } }
+local sounds = ReplicatedStorage:WaitForChild("BoxingSounds")
+local function play(name: string)
+	local pool = {}
+	for _, x in sounds:GetChildren() do
+		if x:IsA("Sound") and x.Name:match("^" .. name .. "%d+$") then
+			table.insert(pool, x)
+		end
+	end
+	if #pool == 0 then
+		return
+	end
+	-- sounds don't play from ReplicatedStorage, a copy goes in the gui
+	local snd = pool[math.random(#pool)]:Clone()
+	snd.Parent = gui
+	snd:Play()
+	snd.Ended:Once(function()
+		snd:Destroy()
+	end)
+end
 
 local SIDE = { Red = Color3.fromRGB(220, 30, 30), Blue = Color3.fromRGB(30, 110, 230) }
 local IN = TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
@@ -56,6 +77,9 @@ end)
 cornerPick.OnClientEvent:Connect(function(pick)
 	picked = true
 	hint.Text = DONE[pick] or "DONE"
+	for _, name in PICK_SOUNDS[pick] or {} do
+		play(name)
+	end
 	for _, name in PICKS do
 		local b = button(name)
 		local chosen = name == pick

@@ -174,3 +174,10 @@ polishing the bought anims (tier 1 done: both stances' idle, guard, 4 walks)
 - jumping needs JumpPower and JumpHeight both set, the character uses jump power mode
 - the server checks your position every tick and sets FightMode on the character, the animator swaps anims off that
 - training drills still play the punch anims outside a zone, the bags and mitts are on the ground floor
+
+sound pass
+- ReplicatedStorage.BoxingSounds, all roblox creator store audio (mostly Pro Sound Effects, roblox's licensed library, free in public games, no credit needed). numbered copies (Thud1..3, Cheer1..4) and the hud picks a random one
+- knockdown and KO: canvas thud + crowd cheer (KO adds the bell). counters, guard breaks, second wind: cheer
+- the count: no clean ref voice on roblox (only ripped game/anime clips), so it's a canvas slap per count (a pro sound effects hand smack), pitched up a bit each number. server sends Fx "Count"
+- corner picks: hydrate = squirt bottle, treatment = tape rip, pep talk = sergeant shout or "allez allez" + a clap. played on your own client when the server takes the pick
+- Crowd (wrestling crowd boos) isn't used anymore, kept in case i want an ambience bed later

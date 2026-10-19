@@ -309,6 +309,7 @@ local function knockDown(target: Fighter, attacker: Fighter)
 	task.spawn(function()
 		for count = 1, Config.DownCount do
 			target.Model:SetAttribute("DownCount", count)
+			broadcast("Count", target.Model, count)
 			task.wait(1)
 			if target.DownToken ~= token or target.State ~= "Down" then
 				return

@@ -260,8 +260,18 @@ local function addShake(amount: number)
 	shake = math.max(shake, amount)
 end
 
+-- a name with numbered copies (Thud1, Thud2...) plays a random one so it doesn't get samey
 local function play(name: string, at: Instance?, pitch: number?)
 	local template = sounds:FindFirstChild(name)
+	if not template then
+		local pool = {}
+		for _, s in sounds:GetChildren() do
+			if s.Name:match("^" .. name .. "%d+$") then
+				table.insert(pool, s)
+			end
+		end
+		template = pool[math.random(math.max(#pool, 1))]
+	end
 	if not template then
 		return
 	end
@@ -311,6 +321,9 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName
 			addShake(if target == me then (if big then 1.2 else 0.5) else (if big then 0.6 else 0.15))
 		end
 		if attacker == me or target == me then
+			if result == "Counter" or result == "GuardBreak" then
+				play("Cheer", target)
+			end
 			if result == "Counter" then
 				local name = if typeof(counterName) == "string" then counterName else "COUNTER"
 				shout(name .. "!", Color3.fromRGB(255, 90, 60), if name == "CROSS COUNTER" then 110 else nil)
@@ -338,15 +351,17 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName
 			shout("SLIPPED!", Color3.fromRGB(120, 255, 160), 60)
 		end
 	elseif kind == "Down" then
-		play("Crowd", a)
+		play("Thud", a)
+		play("Cheer", a)
 		shout("DOWN!", Color3.fromRGB(255, 60, 60), 110)
 		addShake(if a == me then 2 else 0.8)
 	elseif kind == "KO" then
+		play("Thud", a)
 		play("Bell", a)
-		play("Crowd", a, 1.05)
+		play("Cheer", a, 1.05)
 		shout("K.O.!", Color3.fromRGB(255, 50, 50), 140)
 	elseif kind == "SecondWind" and typeof(a) == "Instance" then
-		play("Crowd", a, 1.1)
+		play("Cheer", a, 1.1)
 		shout("SECOND WIND!", Color3.fromRGB(255, 170, 60), 100)
 		if a == me then
 			thought(Config.SecondWindLines[b] or "")
@@ -356,6 +371,9 @@ fx.OnClientEvent:Connect(function(kind, a, b, move, result, _damage, counterName
 		if b == "Bell" then
 			play("Bell", me)
 		end
+	elseif kind == "Count" then
+		-- the ref slapping the canvas, a touch higher every count
+		play("Count", a, 0.95 + (tonumber(b) or 1) * 0.02)
 	elseif kind == "GetUp" and a == me then
 		shout("BACK UP!", Color3.fromRGB(255, 255, 255), 60)
 	elseif kind == "Special" and typeof(b) == "string" and Config.Specials[b] then
