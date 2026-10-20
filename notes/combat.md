@@ -194,7 +194,7 @@ type checking
   rojo sourcemap default.project.json -o build/types/sourcemap.json
 - check: luau-lsp analyze --definitions=build/types/globalTypes.d.luau --sourcemap=build/types/sourcemap.json --ignore="**/ProfileStore.luau" --flag:LuauSolverV2=true src
 - uses the new solver, the old one flags elseif chains that are fine. 0 errors as of now
-- still not strict: CombatHUD, CombatInput, FighterAnimator, ImpactFX, CombatServer, Dummies (older files, convert one at a time when i'm in them). ProfileStore is someone else's, skipped
+- still not strict: CombatHUD, CombatInput, FighterAnimator, ImpactFX (older client files, convert one at a time when i'm in them). CombatServer and Dummies went strict before release. ProfileStore is someone else's, skipped
 - swapped the deprecated LoadCharacter / GetHumanoidDescriptionFromUserId / CreateHumanoidModelFromDescription for their Async versions
 
 testing

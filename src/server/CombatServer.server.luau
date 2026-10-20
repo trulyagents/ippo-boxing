@@ -1,3 +1,4 @@
+--!strict
 -- Turns players into boxers and takes their inputs. Clients only ever say what they
 -- pressed; Fighters decides what actually happens.
 local Players = game:GetService("Players")

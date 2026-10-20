@@ -1,3 +1,4 @@
+--!strict
 -- Two practice opponents upstairs: a bag that only covers up, and a sparring
 -- partner that throws back, guards and slips.
 local Players = game:GetService("Players")
@@ -129,16 +130,16 @@ local function brain(model: Model, f: Fighters.Fighter, spars: boolean)
 				else
 					f.Humanoid:Move(Vector3.zero)
 				end
-				local action = target.Model:GetAttribute("Action")
+				local action = target.Model:GetAttribute("Action") :: string?
 				local token = target.Model:GetAttribute("ActionToken")
 				local fresh = targetState == "Windup" and token ~= decided[f]
 				if fresh then
 					decided[f] = token
 				end
-				if fresh and Config.ParryMoves[action] and not f.Guarding and random:NextNumber() < 0.2 then
+				if fresh and action and Config.ParryMoves[action] and not f.Guarding and random:NextNumber() < 0.2 then
 					-- time the guard to go up right before the straight lands
-					local startup = target.Model:GetAttribute("ActionLength") or Config.Moves[action].Startup
-					local started = target.Model:GetAttribute("ActionStart") or workspace:GetServerTimeNow()
+					local startup = (target.Model:GetAttribute("ActionLength") :: number?) or Config.Moves[action].Startup
+					local started = (target.Model:GetAttribute("ActionStart") :: number?) or workspace:GetServerTimeNow()
 					local raiseIn = started + startup - 0.07 - workspace:GetServerTimeNow()
 					task.delay(math.max(raiseIn, 0), function()
 						Fighters.setGuard(f, "High")
