@@ -120,7 +120,11 @@ function Shop.receipt(info: { PlayerId: number, ProductId: number, PurchaseId: s
 	while #data.Receipts > MAX_RECEIPTS do
 		table.remove(data.Receipts, 1)
 	end
-	PlayerData.save(player)
+	-- only tell roblox it's done once the save with this receipt has really landed. if it hasn't,
+	-- roblox asks again later and the receipt id above stops it paying out twice
+	if not PlayerData.saveReceipt(player, info.PurchaseId, 20) then
+		return Enum.ProductPurchaseDecision.NotProcessedYet
+	end
 	return Enum.ProductPurchaseDecision.PurchaseGranted
 end
 MarketplaceService.ProcessReceipt = function(info)

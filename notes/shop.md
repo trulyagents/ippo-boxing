@@ -8,7 +8,7 @@ made with tools/monetize.py through the open cloud key (ids in shared/Shop):
 
 how it works
 - server/Shop asks roblox for ownership on join, caches it, puts VIP / KOEffect / GloveColors on the player as attributes. a finished purchase grants it straight away
-- ProcessReceipt -> Shop.receipt: receipt ids are kept in the profile (last 50) so roblox retrying a receipt never pays twice. not loaded = NotProcessedYet, nothing lost. saves right after
+- ProcessReceipt -> Shop.receipt: receipt ids are kept in the profile (last 50) so roblox retrying a receipt never pays twice. not loaded = NotProcessedYet, nothing lost. it only says PurchaseGranted once the save holding that receipt has landed (PlayerData.saveReceipt waits on OnAfterSave, 20s), otherwise NotProcessedYet and roblox retries
 - prices on the buy buttons come from roblox (GetProductInfo), so changing a price on the website just works. studio showed 80% of the price for my account, the public store says the real one
 - the game's creator owns every pass automatically, so in studio i see everything as OWNED
 - QA cheats: Pass (act as owner this session), Receipt (run a product receipt through the real handler, studio only)

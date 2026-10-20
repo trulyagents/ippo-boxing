@@ -131,6 +131,28 @@ function PlayerData.save(player: Player)
 	end
 end
 
+-- for paid purchases: save now and wait until roblox has the version with this receipt in it.
+-- false if it didn't land in time (the caller says NotProcessedYet and roblox asks again)
+function PlayerData.saveReceipt(player: Player, purchaseId: string, timeout: number): boolean
+	local profile = profiles[player]
+	if not (profile and profile:IsActive()) then
+		return false
+	end
+	local landed = false
+	local conn = profile.OnAfterSave:Connect(function(saved)
+		if saved and saved.Receipts and table.find(saved.Receipts, purchaseId) then
+			landed = true
+		end
+	end)
+	profile:Save()
+	local untilTime = os.clock() + timeout
+	while not landed and os.clock() < untilTime do
+		task.wait(0.2)
+	end
+	conn:Disconnect()
+	return landed
+end
+
 -- training only counts if you've been fighting lately, so standing afk at a bag does nothing
 local landed: { [Player]: { count: number, at: number } } = {}
 function PlayerData.landed(player: Player)
