@@ -291,6 +291,11 @@ for name, id in ShopData.Passes do
 	end)
 end
 (shopPage:WaitForChild("StatRespec"):WaitForChild("Buy") :: TextButton).Activated:Connect(function()
+	-- not mid match: it empties your stats into the pool, you'd be boxing on nothing
+	local character = player.Character
+	if character and character:GetAttribute("InMatch") then
+		return
+	end
 	MarketplaceService:PromptProductPurchase(player, ShopData.Products.StatRespec)
 end)
 -- red is free, the rest need the pass (no pass: tapping a color offers it)

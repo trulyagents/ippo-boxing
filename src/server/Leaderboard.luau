@@ -58,9 +58,26 @@ local list = board:WaitForChild("Gui"):WaitForChild("List")
 local template = list:WaitForChild("Row") :: Frame
 local empty = list:WaitForChild("Empty") :: TextLabel
 
+local draw: () -> ()
+local busy = false
 local function refresh()
+	-- two refreshes at once would both clear and both draw, doubling every row
+	if busy then
+		return
+	end
+	busy = true
+	local ok, err = pcall(function()
+		draw()
+	end)
+	busy = false
+	if not ok then
+		warn("[Leaderboard] refresh failed: " .. tostring(err))
+	end
+end
+
+draw = function()
 	local ok, pages = pcall(function()
-		return store:GetSortedAsync(false, SHOWN)
+		return store:GetSortedAsync(false, SHOWN, 1) -- nobody with 0 points
 	end)
 	if not ok then
 		warn("[Leaderboard] couldn't read the board: " .. tostring(pages))

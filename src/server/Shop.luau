@@ -31,9 +31,10 @@ function Shop.owns(player: Player, pass: string): boolean
 		local ok, has = pcall(function()
 			return MarketplaceService:UserOwnsGamePassAsync(player.UserId, id)
 		end)
-		-- a failed check isn't cached, so the next ask tries again
-		if not ok then
-			return false
+		-- a failed check isn't cached, so the next ask tries again. someone who left while it
+		-- was checking doesn't get put back in the cache (that would hold on to them)
+		if not ok or player.Parent ~= Players then
+			return ok and has == true
 		end
 		mine[pass] = has == true
 		player:SetAttribute(pass, mine[pass])
@@ -114,6 +115,7 @@ function Shop.receipt(info: { PlayerId: number, ProductId: number, PurchaseId: s
 		data.StatPool += pool
 		player:SetAttribute("StatPool", data.StatPool)
 	else
+		warn("[Shop] no handler for product " .. tostring(info.ProductId) .. ", roblox will keep retrying it")
 		return Enum.ProductPurchaseDecision.NotProcessedYet
 	end
 	table.insert(data.Receipts, info.PurchaseId)

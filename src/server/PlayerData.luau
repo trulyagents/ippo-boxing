@@ -17,11 +17,11 @@ local template = {
 	Record = { Wins = 0, Losses = 0, Draws = 0, KOs = 0 },
 	RankPoints = 0,
 	Stance = "Orthodox", -- what you spawn in, your last pick
-	Daily = { Last = 0, Streak = 0 },
+	Daily = { Last = 0, Streak = 0 }, -- Last is the UTC day number of the last login that counted
 	Glove = "Red", -- shop glove color
 	FriendBonusDay = 0, -- utc day of the last play-with-a-friend bonus
 	StatPool = 0, -- points from a respec, waiting to be spent
-	Receipts = {} :: { string }, -- product purchase ids already paid out, newest last -- Last is the UTC day number of the last login that counted
+	Receipts = {} :: { string }, -- product purchase ids already paid out, newest last
 	Quest = { Step = 1, Count = 0 },
 }
 export type Data = typeof(template)
