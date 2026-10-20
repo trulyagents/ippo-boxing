@@ -127,7 +127,26 @@ MarketplaceService.ProcessReceipt = function(info)
 	return Shop.receipt(info)
 end
 
+-- a few shop clicks a second is plenty, and a glove swap rebuilds the gloves on the server
+local RATE, BURST = 4, 6
+local buckets: { [Player]: { tokens: number, time: number } } = {}
+local function allow(player: Player): boolean
+	local now = os.clock()
+	local b = buckets[player] or { tokens = BURST, time = now }
+	buckets[player] = b
+	b.tokens = math.min(BURST, b.tokens + (now - b.time) * RATE)
+	b.time = now
+	if b.tokens < 1 then
+		return false
+	end
+	b.tokens -= 1
+	return true
+end
+
 Remotes.Shop.OnServerEvent:Connect(function(player, kind, value)
+	if not allow(player) then
+		return
+	end
 	local data = PlayerData.data(player)
 	if not data or typeof(value) ~= "string" then
 		return
@@ -152,6 +171,7 @@ end)
 
 Players.PlayerRemoving:Connect(function(player)
 	owned[player] = nil
+	buckets[player] = nil
 end)
 
 return Shop

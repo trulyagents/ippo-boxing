@@ -21,3 +21,4 @@ launch kit
 - pass + product icons uploaded with the key (PATCH imageFile on game-passes and developer-products)
 - the game icon and thumbnails CAN'T go through the api key, roblox only takes them from a logged in browser. upload icon.png and thumbnail.png by hand in the creator hub
 - INVITE stamp next to MENU opens roblox's invite prompt (only on the live game, studio doesn't show it). playing in a server with a friend gives you both +1 on your weakest stat, once a day each
+- the Shop remote has its own rate limit (4/s, burst 6), a glove swap rebuilds the gloves on the server
