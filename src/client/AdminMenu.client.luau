@@ -21,6 +21,16 @@ end
 player:GetAttributeChangedSignal("Admin"):Connect(show)
 show()
 
+-- sits right after WATCH when that's up, or slides into its spot so there's no gap
+local watchButton = player.PlayerGui:WaitForChild("Spectate"):WaitForChild("WatchButton") :: GuiButton
+local withWatch = button.Position
+local withoutWatch = watchButton.Position
+local function slot()
+	button.Position = if watchButton.Visible then withWatch else withoutWatch
+end
+watchButton:GetPropertyChangedSignal("Visible"):Connect(slot)
+slot()
+
 local function toggle()
 	if button.Visible then
 		panel.Visible = not panel.Visible
