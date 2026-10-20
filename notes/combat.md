@@ -204,6 +204,7 @@ testing
 - lune run tools/test: requires every shared module (their asserts run) plus loop checks on rank bands, match points order, every quest's event/reward/drill being real, drill grades getting worse the further off, beats in order, jump rope only speeding up, stat bonuses capped. first run caught nothing real (my event list was missing PerfectDrill)
 - cheats: Cheat remote (server/Cheats.luau), Studio or my UserId only, checked on the server. SkipPhase ends the ring's intro/round/break now, Stat sets a stat, RankPoints adds points. all go through the real code (PlayerData, Career, Matches' own hold loop)
 - don't test live state from the command bar or mcp server require, that's a separate copy of the modules. fire the Cheat remote from a client instead
+- admin menu: StarterGui.AdminMenu (built in studio), P or the ADMIN stamp next to INVITE. only shows with the Admin attribute the server sets for the same people. buttons carry Cheat/A/B attributes, the client just fires them. Style switches to any style even locked (Fighters.setStance force), MaxStats caps every stat
 
 mobile
 - StarterGui.MobileControls (built in studio), driven by client/MobileControls. only on touch devices and only in fight mode, the street keeps roblox's normal controls

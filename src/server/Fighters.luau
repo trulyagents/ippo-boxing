@@ -698,9 +698,9 @@ function Fighters.switchStance(f: Fighter)
 end
 
 -- straight to a stance (the Styles tab, or the saved one on spawn with instant). players need it
--- unlocked. gives back whether it changed
-function Fighters.setStance(f: Fighter, stance: string, instant: boolean?): boolean
-	if not Config.Stances[stance] or stance == f.Stance or (f.Player and not Stats.unlocked(f.Stats, stance)) then
+-- unlocked (force skips that, for the admin menu). gives back whether it changed
+function Fighters.setStance(f: Fighter, stance: string, instant: boolean?, force: boolean?): boolean
+	if not Config.Stances[stance] or stance == f.Stance or (f.Player and not force and not Stats.unlocked(f.Stats, stance)) then
 		return false
 	end
 	-- out of a fight there's nothing to interrupt, so just change and remember it
