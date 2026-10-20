@@ -99,6 +99,9 @@ local function boxers(ring: Model): (Vector3?, number)
 end
 
 local angle = 0
+local rayParams = RaycastParams.new()
+rayParams.FilterType = Enum.RaycastFilterType.Include
+rayParams.FilterDescendantsInstances = { workspace:WaitForChild("Map"):WaitForChild("Gym") }
 local checkAt = 0
 RunService:BindToRenderStep("Spectate", Enum.RenderPriority.Camera.Value + 1, function(dt)
 	local now = os.clock()
@@ -120,9 +123,15 @@ RunService:BindToRenderStep("Spectate", Enum.RenderPriority.Camera.Value + 1, fu
 		return
 	end
 	angle += dt * 0.18
-	local distance = 14 + spread * 1.2
-	local eye = mid + Vector3.new(math.cos(angle) * distance, 7 + spread * 0.3, math.sin(angle) * distance)
-	camera.CFrame = camera.CFrame:Lerp(CFrame.lookAt(eye, mid + Vector3.new(0, 1, 0)), math.min(1, dt * 4))
+	local distance = math.min(11 + spread, 20)
+	local target = mid + Vector3.new(0, 1, 0)
+	local eye = mid + Vector3.new(math.cos(angle) * distance, math.min(5 + spread * 0.2, 7), math.sin(angle) * distance)
+	-- basement rings sit close to walls and a low ceiling, pull in in front of whatever's in the way
+	local hit = workspace:Raycast(target, eye - target, rayParams)
+	if hit then
+		eye = hit.Position + (target - eye).Unit * 1
+	end
+	camera.CFrame = camera.CFrame:Lerp(CFrame.lookAt(eye, target), math.min(1, dt * 4))
 end)
 
 player.CharacterAdded:Connect(function()

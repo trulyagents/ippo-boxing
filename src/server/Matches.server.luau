@@ -41,6 +41,13 @@ Remotes.Watch.OnServerEvent:Connect(function(player, ring)
 		local model = ring :: Instance
 		if model:IsA("Model") and model:HasTag(Rings.Tag) then
 			watching[player] = model
+			-- with streaming on, a far away watcher wouldn't have the ring or the boxers loaded
+			local at = model:GetPivot().Position
+			task.spawn(function()
+				pcall(function()
+					player:RequestStreamAroundAsync(at)
+				end)
+			end)
 		end
 	end
 end)
