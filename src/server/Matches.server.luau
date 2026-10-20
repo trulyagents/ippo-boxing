@@ -69,6 +69,9 @@ local function tell(text: string, sound: string?)
 	end
 end
 
+-- the VS cards fly off this long into the intro (MatchIntro), that's when FIGHT is called
+local INTRO = Config.Intro - 0.6
+
 local function runMatch(red: Pad, blue: Pad)
 	local redPlayer, bluePlayer = red.Player, blue.Player
 	local a, b = redPlayer and fighterOf(redPlayer), bluePlayer and fighterOf(bluePlayer)
@@ -165,7 +168,7 @@ local function runMatch(red: Pad, blue: Pad)
 	end
 	for i, f in fighters do
 		place(f, corners[i].Start, corners[3 - i].Start.Position)
-		Fighters.freeze(f, Config.Intro)
+		Fighters.freeze(f, INTRO)
 	end
 	for _, player in Players:GetPlayers() do
 		local character = player.Character
@@ -174,21 +177,25 @@ local function runMatch(red: Pad, blue: Pad)
 			fx:FireClient(player, "Intro", card(redPlayer), card(bluePlayer))
 		end
 	end
-	hold(Config.Intro)
+	hold(INTRO)
 
 	for round = 1, Config.Rounds do
 		for _, f in fighters do
 			roundTally[f] = tally()
 		end
+		-- round 1 goes straight from the VS cards to the bell, later rounds get a short countdown
+		local countdown = if round == 1 then 0 else Config.Countdown
 		for i, f in fighters do
 			place(f, corners[i].Start, corners[3 - i].Start.Position)
-			Fighters.freeze(f, Config.Countdown)
+			Fighters.freeze(f, countdown)
 		end
 		ring:SetAttribute("MatchRound", round)
-		ring:SetAttribute("MatchEndsAt", workspace:GetServerTimeNow() + Config.Countdown + Config.RoundTime)
-		tell(if round == Config.Rounds then "FINAL ROUND" else "ROUND " .. round)
-		if hold(Config.Countdown) then
-			break
+		ring:SetAttribute("MatchEndsAt", workspace:GetServerTimeNow() + countdown + Config.RoundTime)
+		if countdown > 0 then
+			tell(if round == Config.Rounds then "FINAL ROUND" else "ROUND " .. round)
+			if hold(countdown) then
+				break
+			end
 		end
 		tell("FIGHT!", "Bell")
 		fought = true
