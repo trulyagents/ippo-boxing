@@ -42,7 +42,7 @@ local Corner = {}
 -- returns the function that gets them up for the bell
 function Corner.open(f: Fighters.Fighter, card: { [string]: any }): () -> ()
 	local stool = stoolUnder(f)
-	f.Model:SetAttribute("Sitting", true)
+	Fighters.setSitting(f, true)
 	Fighters.rest(f)
 	local player = f.Player
 	if player then
@@ -51,7 +51,7 @@ function Corner.open(f: Fighters.Fighter, card: { [string]: any }): () -> ()
 	end
 	return function()
 		stool:Destroy()
-		f.Model:SetAttribute("Sitting", nil)
+		Fighters.setSitting(f, false)
 		if player and picking[player] == f then
 			picking[player] = nil
 		end

@@ -122,7 +122,8 @@ local function addCourage(f: Fighter, reason: string)
 end
 
 local function setWalk(f: Fighter)
-	if f.Drilling then
+	-- planted for a drill or sat on the corner stool: no walking, no turning
+	if f.Drilling or f.Model:GetAttribute("Sitting") then
 		f.Humanoid.WalkSpeed = 0
 		f.Humanoid.AutoRotate = false
 		return
@@ -925,6 +926,12 @@ local function updateFightMode(f: Fighter)
 		f.Guarding, f.GuardHeight, f.Weaving = false, nil, false
 		publish(f)
 	end
+	setWalk(f)
+end
+
+-- the corner stool between rounds (Corner)
+function Fighters.setSitting(f: Fighter, on: boolean)
+	f.Model:SetAttribute("Sitting", if on then true else nil)
 	setWalk(f)
 end
 
