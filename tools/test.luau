@@ -99,6 +99,25 @@ end
 check(Daily.next(last, streak, last + 2) == 1, "two days off starts over")
 check(Daily.reward(streak) == Daily.MaxDay * Daily.PerDay, "long streak reward is capped")
 
+-- shop: every pass and product has a real id, red gloves are free for everyone, colors don't repeat
+-- shop data uses Color3, which only exists inside roblox. lune's roblox library has it
+local env: any = getfenv(0)
+env.Color3 = require("@lune/roblox").Color3
+local Shop = require("../src/shared/Shop")
+for _, list in { Shop.Passes, Shop.Products } do
+	for name, id in list do
+		check(typeof(id) == "number" and id > 0 and id == math.floor(id), name .. " has a real id")
+	end
+end
+check(Shop.glove("Red") ~= nil and Shop.Gloves[1].Name == "Red", "red gloves exist and come first")
+local seenGlove = {}
+for _, g in Shop.Gloves do
+	check(not seenGlove[g.Name], "glove " .. g.Name .. " only listed once")
+	seenGlove[g.Name] = true
+end
+check(Shop.glove("Rainbow") == nil, "an unknown glove color isn't a glove")
+check(Shop.VIPDailyBonus > 0 and Shop.VIPDailyBonus < Daily.MaxDay * Daily.PerDay, "vip bonus helps but doesn't beat a long streak")
+
 print(if failed == 0 then "all checks passed" else failed .. " checks failed")
 if failed > 0 then
 	error("tests failed", 0)

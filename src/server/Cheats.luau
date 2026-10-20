@@ -6,6 +6,7 @@
 --   Cheat:FireServer("Stat", "Power", 25)      set a stat
 --   Cheat:FireServer("RankPoints", 100)        add rank points (negative takes them away)
 --   Cheat:FireServer("Pass", "VIP")             act as if you own a pass (this session only)
+--   Cheat:FireServer("StreakDays", 3)           pretend you last logged in yesterday on a 3 day streak (rejoin to see day 4)
 --   Cheat:FireServer("Receipt", "StatRespec", "id")  run a product receipt through the real handler
 local RunService = game:GetService("RunService")
 
@@ -15,6 +16,7 @@ local Career = require(script.Parent.Career)
 local Leaderboard = require(script.Parent.Leaderboard)
 local Shop = require(script.Parent.Shop)
 local ShopData = require(game:GetService("ReplicatedStorage").Shared.Shop)
+local Daily = require(game:GetService("ReplicatedStorage").Shared.Daily)
 
 local OWNERS: { [number]: boolean } = {
 	[1696717053] = true, -- trulyagents
@@ -43,6 +45,12 @@ Remotes.Cheat.OnServerEvent:Connect(function(player, command, a, b)
 		local id = ShopData.Products[a]
 		if id then
 			print("[Cheats] receipt", a, b, Shop.receipt({ PlayerId = player.UserId, ProductId = id, PurchaseId = b }))
+		end
+	elseif command == "StreakDays" and finite(a) then
+		local data = PlayerData.data(player)
+		if data then
+			data.Daily.Last = Daily.today(os.time()) - 1
+			data.Daily.Streak = math.clamp(math.floor(a :: number), 0, 1000)
 		end
 	elseif command == "Pass" and typeof(a) == "string" then
 		Shop.grant(player, a)

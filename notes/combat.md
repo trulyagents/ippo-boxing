@@ -213,3 +213,5 @@ mobile
 music
 - client/Music: APM tracks (roblox's licensed library, free, no credit) in ReplicatedStorage.BoxingSounds.Music. Gym1 Power Move, Gym2 Hot For a Minute play quietly anywhere (0.18). when the ring has a match on and you're within 70 studs, crossfades to Match1 Stomp and Swagger, Match2 Explosive Memories, Match3 Young Guns (0.32), back after. each list loops in order
 - no mute button yet
+- tools/test also checks the shop data: every pass/product has a real id, red gloves are free and first, no glove color twice, vip bonus helps but never beats a long streak. lune has no Color3, the test borrows it from @lune/roblox
+- cheat StreakDays n: pretend you last logged in yesterday on an n day streak, rejoin to see day n+1 (tested: 3 -> DAY 4, +3 with vip)
