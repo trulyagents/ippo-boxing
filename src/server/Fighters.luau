@@ -454,7 +454,9 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		mult, hitstun, counterName = Config.PunishBonus, 1.2, "PUNISHED"
 	end
 	local counter = counterName ~= nil
-	local damage = move.Damage
+	-- some styles hit harder with some punches (slugger hooks)
+	local styleMult = Config.Stances[attacker.Stance].DamageMult
+	local damage = move.Damage * (if styleMult then styleMult[moveName] or 1 else 1)
 		* mult
 		* (1 + Stats.bonus(attacker.Stats, "Power"))
 		* (1 - Stats.bonus(target.Stats, "Endurance"))

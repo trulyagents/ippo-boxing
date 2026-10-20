@@ -80,6 +80,15 @@ Stats.Unlocks = {
 	StepCounter = { Technique = 15 },
 	WeaveRoll = { Speed = 25, Stamina = 20 },
 	LungeUppercut = { Power = 20 },
+	OutBoxer = { Speed = 15, Stamina = 10 },
+	FlickerJab = { Speed = 20 },
+	PivotHook = { Technique = 20 },
+	Slugger = { Power = 15, Endurance = 10 },
+	Haymaker = { Power = 25 },
+	HookBarrage = { Stamina = 20, Power = 15 },
+	PhillyShell = { Technique = 20, Speed = 15 },
+	RollCounter = { Technique = 25 },
+	CheckHook = { Speed = 25 },
 } :: { [string]: { [string]: number } }
 
 -- seconds after the lead in for every beat of a Combo or Rhythm drill

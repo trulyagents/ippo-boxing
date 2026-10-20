@@ -69,5 +69,29 @@ return {
 	JumpRope = "rbxassetid://111205795682531",
 
 	-- ring. on the corner stool between rounds, arms back on the ropes, heavy breathing (blender)
+	-- the three new styles (tools/compose.py STYLE_SHAPES + styles_export.py) and their specials
+	CheckHook = "rbxassetid://120684585028036",
+	Haymaker = "rbxassetid://120649436442952",
+	OutGuard = "rbxassetid://99134446585087",
+	OutIdle = "rbxassetid://116303219098383",
+	OutWalkBack = "rbxassetid://132105530181155",
+	OutWalkForward = "rbxassetid://93182719630624",
+	OutWalkLeft = "rbxassetid://140687638418028",
+	OutWalkRight = "rbxassetid://71175935672736",
+	PhillyGuard = "rbxassetid://98769388964240",
+	PhillyIdle = "rbxassetid://76037473034306",
+	PhillyWalkBack = "rbxassetid://119494470469633",
+	PhillyWalkForward = "rbxassetid://99241436052326",
+	PhillyWalkLeft = "rbxassetid://130921643522390",
+	PhillyWalkRight = "rbxassetid://86344459047512",
+	PivotHook = "rbxassetid://76325731009715",
+	RollCounter = "rbxassetid://130807385708505",
+	SlugGuard = "rbxassetid://134761064093219",
+	SlugIdle = "rbxassetid://99509782642292",
+	SlugWalkBack = "rbxassetid://130826454065617",
+	SlugWalkForward = "rbxassetid://100958555517997",
+	SlugWalkLeft = "rbxassetid://132291432504771",
+	SlugWalkRight = "rbxassetid://114682698059995",
+
 	CornerSit = "rbxassetid://77870198491013",
 } :: { [string]: string }

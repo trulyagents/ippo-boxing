@@ -15,7 +15,7 @@ from retime import ease
 ROOT_C0 = JOINTS["Torso"][1]
 
 
-def torso_turn(lean=0.0, twist=0.0, side=0.0, drop=0.0, fwd=0.0, swing=None, lift=0.0, plant=None, slide=0.0, spread=None):
+def torso_turn(lean=0.0, twist=0.0, side=0.0, drop=0.0, fwd=0.0, swing=None, lift=0.0, plant=None, slide=0.0, spread=None, arm_in=None):
     """a torso move in roblox's world axes around the hips: lean - is forward, twist + turns left,
     side + leans left, drop + sinks, fwd + carries the body forward (studs). swing is handled in
     build (per joint), it's accepted here so a key can carry it"""
@@ -81,13 +81,17 @@ def blend(a, b, t):
     return out
 
 
-def swing_joint(joint, degrees):
+def swing_joint(joint, degrees, axis="x"):
     """swing a limb forward (+) or back (-) from its hip or shoulder, around the torso's left-right
-    axis. used for the lunge stride and to push a punch further out"""
+    axis. used for the lunge stride and to push a punch further out. axis "z" swings it in across
+    the body (+) or out to the side (-) instead"""
     c0 = JOINTS[joint][1]
     rot = [row[:3] + [0] for row in c0[:3]] + [[0, 0, 0, 1]]
     a = math.radians(degrees)
-    rx = [[1, 0, 0, 0], [0, math.cos(a), -math.sin(a), 0], [0, math.sin(a), math.cos(a), 0], [0, 0, 0, 1]]
+    if axis == "z":
+        rx = [[math.cos(a), -math.sin(a), 0, 0], [math.sin(a), math.cos(a), 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]
+    else:
+        rx = [[1, 0, 0, 0], [0, math.cos(a), -math.sin(a), 0], [0, math.sin(a), math.cos(a), 0], [0, 0, 0, 1]]
     return mul(mul(inv(rot), rx), rot)
 
 
@@ -156,6 +160,9 @@ def keyed_pose(lib, n, af, mv, floor=None):
     # legs out to the side, a wide stance drops the hips the same way a split does
     for leg, deg in (mv.get("spread") or {}).items():
         pose = swing_leg_world(pose, leg, deg, "z")
+    # arms in across the body (+) or out (-). the right arm's sign is flipped so + is always inward
+    for arm, deg in (mv.get("arm_in") or {}).items():
+        pose[arm] = mul(swing_joint(arm, -deg if arm == "Right Arm" else deg, "z"), pose[arm])
     if floor is not None and mv:
         pose = settle(pose, floor)
         # legs that should both stand: nudge each one's swing until its foot is on the floor too
@@ -288,7 +295,63 @@ PUNCHES["SlipDuck"] = [
 ]
 
 
+# the three new styles. each one is the orthodox loops with its own body shape on every key, so the
+# footwork and breathing underneath stay. walks don't plant (their feet are mid step), loops do
+STYLE_SHAPES = {
+    # out-boxer: tall and bladed side on, lead hand low and loose for the jab, light on the toes
+    "Out": dict(lean=3, twist=7, swing={"Left Arm": -22}, arm_in={"Left Arm": -6}),
+    # slugger: wide and planted, sat down a little, square to the opponent, hands high and wide
+    "Slug": dict(lean=-8, twist=-10, spread={"Right Leg": 9, "Left Leg": -9}, swing={"Right Arm": 10, "Left Arm": 10}, arm_in={"Right Arm": -10, "Left Arm": -10}),
+    # philly shell: leaning back off the front foot, shoulder high, lead arm down across the belly,
+    # rear glove up by the chin
+    "Philly": dict(lean=7, side=5, twist=18, swing={"Left Arm": -72, "Right Arm": 12}, arm_in={"Left Arm": 36, "Right Arm": 14}),
+}
+STYLE_LOOPS = {"Idle": (49, 4), "Guard": (61, 5), "WalkForward": (16, 1), "WalkBack": (16, 1), "WalkLeft": (16, 1), "WalkRight": (16, 1)}
 LOOPS = {"PaBGuard"}
+for style, shape in STYLE_SHAPES.items():
+    for base, (length, step) in STYLE_LOOPS.items():
+        mv = dict(shape)
+        if base.startswith("Walk"):
+            mv.pop("spread", None)
+        elif style != "Out":
+            # the out-boxer's light twist keeps both feet down already, planting it shoots a leg out
+            mv["plant"] = ["Right Leg", "Left Leg"]
+        frames = sorted(set([1] + list(range(1, length + 1, step)) + [length]))
+        PUNCHES[style + base] = [(f, base, f, mv, "smooth") for f in frames]
+        LOOPS.add(style + base)
+
+# their specials, built from the punches' own impact frames like the others
+SPECIALS.update({
+    # out-boxer pivot hook: step off to the side and turn the hook in from the new angle
+    "PivotHook": [
+        (1, "Idle", 1, {}, "linear"),
+        (5, "Idle", 1, dict(twist=-22, slide=0.7, swing={"Right Leg": -14, "Left Leg": 10}, plant=["Right Leg"]), "smooth"),
+        (9, "Hook", 6, dict(twist=14, slide=0.5, lean=-6, plant=["Right Leg"]), "in"),
+        (14, "Idle", 1, {}, "smooth"),
+    ],
+    # slugger haymaker: sit back loading the rear hand, then throw the whole body over the top
+    "Haymaker": [
+        (1, "Idle", 1, {}, "linear"),
+        (8, "Cross", 2, dict(lean=10, twist=-24, swing={"Right Arm": -30, "Right Leg": -12, "Left Leg": 12}, plant=["Right Leg", "Left Leg"]), "smooth"),
+        (13, "Cross", 8, dict(lean=-26, twist=20, fwd=0.6, side=-6, swing={"Right Arm": 14, "Right Leg": -30, "Left Leg": 24}, plant=["Left Leg"]), "in"),
+        (16, "Cross", 9, dict(lean=-22, twist=18, fwd=0.6, swing={"Right Leg": -26, "Left Leg": 20}, plant=["Left Leg"]), "linear"),
+        (24, "Idle", 1, {}, "smooth"),
+    ],
+    # philly shoulder roll counter: roll the punch off the lead shoulder, come back with the cross
+    "RollCounter": [
+        (1, "Idle", 1, {}, "linear"),
+        (5, "Idle", 1, dict(lean=10, side=8, twist=26, swing={"Left Arm": -40}, arm_in={"Left Arm": 30}, plant=["Right Leg", "Left Leg"]), "smooth"),
+        (9, "Cross", 7, dict(lean=-10, twist=4, fwd=0.3, swing={"Right Leg": -20, "Left Leg": 16}, plant=["Right Leg"]), "in"),
+        (16, "Idle", 1, {}, "smooth"),
+    ],
+    # philly check hook: pivot out on the front foot as they come in and hook on the turn
+    "CheckHook": [
+        (1, "Idle", 1, {}, "linear"),
+        (6, "Hook", 6, dict(twist=34, lean=-4, slide=-0.5, swing={"Right Leg": 18, "Left Leg": -6}, plant=["Left Leg"]), "in"),
+        (9, "Hook", 7, dict(twist=40, lean=-2, slide=-0.7, swing={"Right Leg": 24}, plant=["Left Leg"]), "linear"),
+        (15, "Idle", 1, {}, "smooth"),
+    ],
+})
 
 
 S = [[-1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]

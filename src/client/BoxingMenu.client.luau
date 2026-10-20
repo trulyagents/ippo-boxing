@@ -20,7 +20,7 @@ local sheet = menu:WaitForChild("Sheet") :: ImageLabel
 local tabs = sheet:WaitForChild("Tabs")
 local pages: { [string]: Frame } = {
 	Stats = sheet:WaitForChild("StatsPage") :: Frame,
-	Styles = sheet:WaitForChild("StylesPage") :: Frame,
+	Styles = sheet:WaitForChild("StylesPage") :: Frame, -- a sideways ScrollingFrame, five style cards
 	Record = sheet:WaitForChild("RecordPage") :: Frame,
 	Shop = sheet:WaitForChild("ShopPage") :: Frame,
 }
