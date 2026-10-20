@@ -25,7 +25,7 @@ local hint = gui:WaitForChild("Hint") :: TextLabel
 local thoughtLabel = gui:WaitForChild("Thought") :: TextLabel
 local roundClock = gui:WaitForChild("RoundClock") :: ImageLabel
 local roundText = roundClock:WaitForChild("Text") :: TextLabel
-local ring = workspace:WaitForChild("Ring")
+local Watch = require(script.Parent:WaitForChild("Watch"))
 
 local function fillOf(stat: string): ImageLabel
 	return bars:WaitForChild(stat):WaitForChild("Track"):WaitForChild("Clip"):WaitForChild("Fill") :: ImageLabel
@@ -412,12 +412,10 @@ local nearbyCheckAt, nearby = 0, nil :: Model?
 RunService:BindToRenderStep("BoxingHUD", Enum.RenderPriority.Camera.Value + 2, function(dt)
 	local me = player.Character
 	-- round clock while a ring match is on and you're close enough to watch it
-	local endsAt = ring:GetAttribute("MatchEndsAt")
-	local myRoot = me and me:FindFirstChild("HumanoidRootPart")
+	local ring = Watch.ring()
+	local endsAt = ring and ring:GetAttribute("MatchEndsAt")
 	roundClock.Visible = typeof(endsAt) == "number"
-		and myRoot ~= nil
-		and ((myRoot :: BasePart).Position - ring:GetPivot().Position).Magnitude < 70
-	if roundClock.Visible then
+	if ring and roundClock.Visible then
 		local left = math.max(0, math.ceil((endsAt :: number) - workspace:GetServerTimeNow()))
 		roundText.Text = string.format("ROUND %d  %d:%02d", ring:GetAttribute("MatchRound") or 1, left // 60, left % 60)
 	end

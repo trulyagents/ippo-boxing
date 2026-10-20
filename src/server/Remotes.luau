@@ -8,9 +8,10 @@
 --   CornerPick  both ways, the pick between rounds (Corner)
 --   Shop        client -> server, glove color and respec points (Shop)
 --   Cheat       client -> server, QA commands, Studio and the owner only (Cheats)
+--   Watch       client -> server, which ring you're spectating, or nil (Matches)
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local NAMES = { "Action", "Fx", "Training", "CornerPick", "Cheat", "Shop" }
+local NAMES = { "Action", "Fx", "Training", "CornerPick", "Cheat", "Shop", "Watch" }
 
 local folder = ReplicatedStorage:FindFirstChild("BoxingRemotes") or Instance.new("Folder")
 folder.Name = "BoxingRemotes"
@@ -30,4 +31,5 @@ return {
 	CornerPick = remotes.CornerPick,
 	Cheat = remotes.Cheat,
 	Shop = remotes.Shop,
+	Watch = remotes.Watch,
 }

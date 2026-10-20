@@ -2,7 +2,7 @@
 -- QA commands on the Cheat remote. Only work in Studio, or live for the owner, and the check is
 -- here on the server (any client can fire the remote). They go through the same code the game
 -- uses, so testing with them tests the real thing.
---   Cheat:FireServer("SkipPhase")              end the ring's intro, round or break now
+--   Cheat:FireServer("SkipPhase")              end the nearest ring's intro, round or break now
 --   Cheat:FireServer("Stat", "Power", 25)      set a stat
 --   Cheat:FireServer("RankPoints", 100)        add rank points (negative takes them away)
 --   Cheat:FireServer("Pass", "VIP")             act as if you own a pass (this session only)
@@ -21,6 +21,7 @@ local Shop = require(script.Parent.Shop)
 local ShopData = require(game:GetService("ReplicatedStorage").Shared.Shop)
 local Daily = require(game:GetService("ReplicatedStorage").Shared.Daily)
 local Stats = require(game:GetService("ReplicatedStorage").Shared.Stats)
+local Rings = require(game:GetService("ReplicatedStorage").Shared.Rings)
 local Fighters = require(script.Parent.Fighters)
 local Players = game:GetService("Players")
 
@@ -51,7 +52,8 @@ Remotes.Cheat.OnServerEvent:Connect(function(player, command, a, b)
 		return
 	end
 	if command == "SkipPhase" then
-		local ring = workspace:FindFirstChild("Ring")
+		local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart")
+		local ring = root and root:IsA("BasePart") and Rings.nearest(root.Position)
 		if ring and ring:GetAttribute("MatchOn") then
 			ring:SetAttribute("SkipPhase", true)
 		end

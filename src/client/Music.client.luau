@@ -2,17 +2,14 @@
 -- Background music, APM tracks from ReplicatedStorage.BoxingSounds.Music (roblox's licensed
 -- library, free to use). Gym1, Gym2... play quietly anywhere. When a ring match is on and you're
 -- close enough to watch it, it crossfades to Match1, Match2... and back once the match ends.
-local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
 
-local player = Players.LocalPlayer
 local folder = ReplicatedStorage:WaitForChild("BoxingSounds"):WaitForChild("Music")
-local ring = workspace:WaitForChild("Ring")
+local Watch = require(script.Parent:WaitForChild("Watch"))
 
 local VOLUME = { Gym = 0.45, Match = 0.6 }
-local WATCH_DISTANCE = 70 -- same as who hears the ring's shouts
 local FADE = TweenInfo.new(1.5, Enum.EasingStyle.Sine)
 
 -- each playlist has its own copy so a crossfade can play both for a moment
@@ -83,13 +80,10 @@ local function switchTo(name: string)
 	end
 end
 
+-- by a ring with a fight on, or spectating one
 local function watching(): boolean
-	if not ring:GetAttribute("MatchOn") then
-		return false
-	end
-	local character = player.Character
-	local root = character and character:FindFirstChild("HumanoidRootPart")
-	return root ~= nil and root:IsA("BasePart") and (root.Position - (ring :: any):GetPivot().Position).Magnitude < WATCH_DISTANCE
+	local ring = Watch.ring()
+	return ring ~= nil and ring:GetAttribute("MatchOn") == true
 end
 
 -- a few times a second is plenty for music

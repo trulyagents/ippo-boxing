@@ -536,6 +536,8 @@ CombatConfig.Match = {
 	KnockdownPoints = 15, -- on top of damage dealt, for the decision
 	EndTime = 7, -- result screen up, then both go back outside the ropes
 	PadLeaveDistance = 10, -- walk this far off your pad and you give it up
+	AIWait = 15, -- alone on a pad this long and an AI boxer takes the other corner
+	AIPoints = 0.5, -- share of the usual rank points a fight against the AI is worth
 }
 
 return CombatConfig

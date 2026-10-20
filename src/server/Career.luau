@@ -154,8 +154,9 @@ function CareerServer.event(player: Player, event: string, detail: string?)
 	CareerServer.show(player)
 end
 
--- after a ring match. result is "Win", "Loss" or "Draw". gives back the rank points it changed
-function CareerServer.matchResult(player: Player, result: string, ko: boolean): number
+-- after a ring match. result is "Win", "Loss" or "Draw". share scales the rank points (a fight
+-- against the AI is worth less). gives back the rank points it changed
+function CareerServer.matchResult(player: Player, result: string, ko: boolean, share: number?): number
 	local data = PlayerData.data(player)
 	if not data then
 		return 0
@@ -176,6 +177,7 @@ function CareerServer.matchResult(player: Player, result: string, ko: boolean): 
 		record.Draws += 1
 		points = Career.Points.Draw
 	end
+	points = math.round(points * (share or 1))
 	data.RankPoints = math.max(0, data.RankPoints + points)
 	CareerServer.show(player)
 	CareerServer.event(player, "Match")
