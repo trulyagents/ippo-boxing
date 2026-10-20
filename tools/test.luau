@@ -140,6 +140,14 @@ for _, role in { "Idle", "Guard", "LowGuard", "Weave", "CornerSit", "DownFall", 
 	check(AnimIds[role] ~= nil, role .. " has an anim")
 end
 
+-- a basic punch thrown back to back must leave a gap after its stun, or it stunlocks
+for name, move in Config.Moves :: { [string]: any } do
+	if not move.Special then
+		check(move.Hitstun < move.Startup + move.Recovery - 0.05, name .. " can't stunlock on its own")
+	end
+end
+check(Config.RepeatFloor > 0 and Config.RepeatFloor < 1 and Config.RepeatFalloff > 0, "spam falloff is sane")
+
 print(if failed == 0 then "all checks passed" else failed .. " checks failed")
 if failed > 0 then
 	error("tests failed", 0)

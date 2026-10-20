@@ -2,8 +2,8 @@
 -- Ring matches, in every ring tagged BoxingRing (the gym's and the basement ones, see
 -- Shared.Rings). Two boxers take the pads in the red and blue corners, then it's a few rounds
 -- scored on damage and knockdowns, a KO ends it early. Only the two of them can hit each other.
--- Alone on a pad for Config.AIWait and an AI boxer takes the other corner (AIBoxer), worth a
--- share of the rank points. Each ring carries MatchOn, MatchRound and MatchEndsAt for the clocks.
+-- Alone on a pad for Config.AIWait and an AI boxer takes the other corner (AIBoxer). That's
+-- practice: quests count it, the record and rank points don't. Each ring carries MatchOn, MatchRound and MatchEndsAt for the clocks.
 -- Spectators tell the server which ring they watch (Watch) so they get its shouts and screens.
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -330,12 +330,22 @@ local function setup(ring: Model)
 		for _, f in fighters do
 			if f.Player and not recorded[f.Player] and not noContest then
 				recorded[f.Player] = true
-				gained[f] = Career.matchResult(
-					f.Player,
-					if winner == nil then "Draw" elseif winner == f then "Win" else "Loss",
-					how == "K.O.",
-					if vsAI then Config.AIPoints else nil
-				)
+				if vsAI then
+					-- practice: no record or rank points, but it still counts for the quests
+					Career.event(f.Player, "Match")
+					if winner == f then
+						Career.event(f.Player, "Win")
+						if how == "K.O." then
+							Career.event(f.Player, "KO")
+						end
+					end
+				else
+					gained[f] = Career.matchResult(
+						f.Player,
+						if winner == nil then "Draw" elseif winner == f then "Win" else "Loss",
+						how == "K.O."
+					)
+				end
 			end
 		end
 		for i, f in fighters do
@@ -483,7 +493,10 @@ local function setup(ring: Model)
 	Players.PlayerRemoving:Connect(function(player)
 		if running and not recorded[player] and (pads[1].Player == player or pads[2].Player == player) then
 			recorded[player] = true
-			Career.matchResult(player, "Loss", false, if pads[1].AI or pads[2].AI then Config.AIPoints else nil)
+			-- walking out on the ai costs nothing, it was practice
+			if not (pads[1].AI or pads[2].AI) then
+				Career.matchResult(player, "Loss", false)
+			end
 		end
 	end)
 end

@@ -30,11 +30,11 @@ CombatConfig.Moves = {
 		Step = 4,
 		Recovery = 0.16,
 		Damage = 4,
-		Stamina = 4,
+		Stamina = 6,
 		GuardDamage = 6,
 		Range = 6,
 		Target = "Head",
-		Hitstun = 0.25,
+		Hitstun = 0.16, -- under the 0.28s it takes to throw the next one, so jabs alone can't stunlock
 		ThroughGuard = 0,
 		DodgedBy = { Left = true, Right = true, Back = true },
 	},
@@ -423,6 +423,11 @@ CombatConfig.CounterWindow = 0.7 -- after a clean slip, your next punch is a cou
 CombatConfig.CounterBonus = 1.6
 CombatConfig.SlipPunishBonus = 1.5 -- uppercut into a duck
 CombatConfig.InputBuffer = 0.3 -- a punch pressed this early still comes out
+-- the same punch thrown again within RepeatWindow loses RepeatFalloff of its damage and hitstun
+-- each time, down to RepeatFloor. mixing punches resets it
+CombatConfig.RepeatWindow = 1.2
+CombatConfig.RepeatFalloff = 0.15
+CombatConfig.RepeatFloor = 0.4
 
 -- lasting damage: clean head shots also eat into max health for the rest of the fight
 CombatConfig.LastingDamageShare = 0.2
@@ -537,7 +542,6 @@ CombatConfig.Match = {
 	EndTime = 7, -- result screen up, then both go back outside the ropes
 	PadLeaveDistance = 10, -- walk this far off your pad and you give it up
 	AIWait = 15, -- alone on a pad this long and an AI boxer takes the other corner
-	AIPoints = 0.5, -- share of the usual rank points a fight against the AI is worth
 }
 
 return CombatConfig

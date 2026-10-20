@@ -54,6 +54,9 @@ export type Fighter = {
 	Match: string?, -- fighters in a match only hit each other
 	FightMode: boolean, -- players only box inside a fight zone (the ring, upstairs), dummies always
 	Drilling: boolean, -- on a training drill: boxing stance, planted feet
+	RepeatMove: string?, -- the punch they keep throwing, for the spam falloff
+	RepeatCount: number,
+	RepeatAt: number,
 }
 
 local Fighters = {}
@@ -205,6 +208,9 @@ function Fighters.register(model: Model, player: Player?, stats: { [string]: num
 		Match = nil,
 		FightMode = true,
 		Drilling = false,
+		RepeatMove = nil,
+		RepeatCount = 0,
+		RepeatAt = 0,
 	}
 	byModel[model] = f
 	-- Roblox health isn't used for boxing, keep the humanoid alive
@@ -409,6 +415,19 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 	local now = os.clock()
 	target.LastHit = now
 	target.LastTaken = move.Target
+	-- the same punch over and over hits softer and stuns shorter each time, so jab spam doesn't
+	-- stunlock. specials are built chains and don't count
+	local fresh = 1
+	if not move.Special then
+		local base = Config.feelOf(moveName)
+		if attacker.RepeatMove == base and now - attacker.RepeatAt < Config.RepeatWindow then
+			attacker.RepeatCount += 1
+		else
+			attacker.RepeatMove, attacker.RepeatCount = base, 0
+		end
+		attacker.RepeatAt = now
+		fresh = math.max(Config.RepeatFloor, 1 - Config.RepeatFalloff * attacker.RepeatCount)
+	end
 	attacker.Opponent = target.Model
 	target.Opponent = attacker.Model
 
@@ -460,6 +479,7 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		* mult
 		* (1 + Stats.bonus(attacker.Stats, "Power"))
 		* (1 - Stats.bonus(target.Stats, "Endurance"))
+		* fresh
 
 	local result = if counter then "Counter" else "Clean"
 	local covering = target.Guarding and target.State ~= "Stunned" and now >= target.GuardReadyAt
@@ -511,7 +531,7 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 	end
 
 	if result == "Clean" or result == "Counter" or result == "Open" then
-		stun(target, move.Hitstun * hitstun)
+		stun(target, move.Hitstun * hitstun * fresh)
 		addCourage(attacker, if result == "Counter" then "CounterLanded" else "CleanLanded")
 		addCourage(target, "CleanTaken")
 		if attacker.Player then

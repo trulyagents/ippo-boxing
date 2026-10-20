@@ -227,3 +227,4 @@ new styles (out-boxer, slugger, philly shell)
 - stances can boost a punch's damage now (DamageMult): out jab x1.15, slug hook x1.25 cross/uppercut x1.2, philly cross x1.1
 - unlocks: out speed 15 stamina 10, slug power 15 endurance 10, philly technique 20 speed 15. styles tab scrolls sideways for the 5 cards
 - gotcha: deleting a folder rojo is still syncing crashes rojo serve (change_processor unwrap). let it settle first
+- jab spam: it took 0.28s to throw and stunned 0.25s, so jabs alone stunlocked. jab stun is 0.16 now and costs 6 stamina. and the same punch again within 1.2s (Config.RepeatWindow) loses 15% damage and stun each time down to 40%, mixing punches resets it. specials don't count. test.luau checks no basic punch stuns longer than its own throw

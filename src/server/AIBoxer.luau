@@ -32,11 +32,11 @@ AIBoxer.Easy = { Gap = { 1.1, 2.2 }, Parry = 0.2, Slip = 0.3, Cover = 0.35, Mash
 function AIBoxer.ringSkill(level: number): Skill
 	local t = math.clamp((level - 1) / 5, 0, 1)
 	return {
-		Gap = { 1.3 - 0.7 * t, 2.2 - 1.1 * t },
-		Parry = 0.15 + 0.3 * t,
-		Slip = 0.2 + 0.3 * t,
-		Cover = 0.3 + 0.2 * t,
-		Mash = 0.35 + 0.45 * t,
+		Gap = { 0.9 - 0.4 * t, 1.6 - 0.7 * t },
+		Parry = 0.25 + 0.3 * t,
+		Slip = 0.3 + 0.25 * t,
+		Cover = 0.35 + 0.2 * t,
+		Mash = 0.5 + 0.4 * t,
 		Chase = true,
 	}
 end
