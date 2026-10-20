@@ -11,7 +11,7 @@ local player = Players.LocalPlayer
 local folder = ReplicatedStorage:WaitForChild("BoxingSounds"):WaitForChild("Music")
 local ring = workspace:WaitForChild("Ring")
 
-local VOLUME = { Gym = 0.18, Match = 0.32 }
+local VOLUME = { Gym = 0.45, Match = 0.6 }
 local WATCH_DISTANCE = 70 -- same as who hears the ring's shouts
 local FADE = TweenInfo.new(1.5, Enum.EasingStyle.Sine)
 
