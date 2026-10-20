@@ -150,7 +150,7 @@ def settle(pose, floor):
     return out
 
 
-def keyed_pose(lib, n, af, mv, floor=None):
+def keyed_pose(lib, n, af, mv, floor=None, memo=None):
     pose = with_torso(lib.pose(n, af), torso_turn(**{k: v for k, v in mv.items() if k != "drop"}))
     for joint, deg in (mv.get("swing") or {}).items():
         if joint.endswith("Leg"):
@@ -168,13 +168,18 @@ def keyed_pose(lib, n, af, mv, floor=None):
         # legs that should both stand: nudge each one's swing until its foot is on the floor too
         # (a foot hangs in the air when the leg is swung further from straight down than the other)
         for leg in mv.get("plant") or []:
-            best = (abs(leg_low(pose, leg) - floor), 0)
+            tries = []
             for d in [x * 0.5 for x in range(-120, 121)]:
                 trial = settle(swing_leg_world(pose, leg, d), floor)
-                err = abs(leg_low(trial, leg) - floor)
-                if err < best[0]:
-                    best = (err, d)
-            pose = settle(swing_leg_world(pose, leg, best[1]), floor)
+                tries.append((abs(leg_low(trial, leg) - floor), d))
+            # several swings put the foot down about as well, so take the one nearest the last key's.
+            # picking the exact best flipped between them key to key and the legs jittered
+            low = min(t[0] for t in tries)
+            prev = (memo or {}).get(leg, 0.0)
+            d = min((t for t in tries if t[0] <= low + 0.01), key=lambda t: abs(t[1] - prev))[1]
+            if memo is not None:
+                memo[leg] = d
+            pose = settle(swing_leg_world(pose, leg, d), floor)
         # a key can still lift off on purpose (the trailing foot at contact)
         if mv.get("lift"):
             pose = dict(pose)
@@ -182,11 +187,13 @@ def keyed_pose(lib, n, af, mv, floor=None):
     return pose
 
 
-def build(keys, lib):
+def build(keys, lib, steady=False):
     """keys: (frame, anim, anim frame, torso move dict, ease into this key). every key is settled so
     its lowest foot stands where the first key's does"""
     floor = lowest_foot(lib.pose(keys[0][1], keys[0][2]))
-    poses = [(f, keyed_pose(lib, n, af, mv, floor), e) for f, n, af, mv, e in keys]
+    # loops keep each planted leg's swing steady key to key, specials want the exact best each key
+    memo = {} if steady else None
+    poses = [(f, keyed_pose(lib, n, af, mv, floor, memo), e) for f, n, af, mv, e in keys]
     frames = []
     for (f0, p0, _), (f1, p1, e) in zip(poses, poses[1:]):
         for f in range(f0, f1):
@@ -389,7 +396,7 @@ def main():
     lib = Library(sys.argv[1])
     result = {"fps": FPS, "anims": {}}
     for name, keys in list(SPECIALS.items()) + list(PUNCHES.items()):
-        frames = build(keys, lib)
+        frames = build(keys, lib, name in LOOPS)
         if name in LOOPS:
             # foot planting can land a hair differently at each end, so the seam gets an exact copy
             frames[-1] = frames[0]

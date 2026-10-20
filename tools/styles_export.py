@@ -12,9 +12,9 @@ from parts_to_keyframes import cframe_xml
 NAMES = [s + b for s in compose.STYLE_SHAPES for b in compose.STYLE_LOOPS] + ["PivotHook", "Haymaker", "RollCounter", "CheckHook"]
 
 
-# same priority as the anim each one is built on: idle 0, walks 1, guard 2, punches and specials 3
+# same priority as the anim each one is built on: idle 0, walks and weave 1, guard 2, punches and specials 3
 def priority(name):
-    for base, p in (("Idle", 0), ("Walk", 1), ("Guard", 2)):
+    for base, p in (("Idle", 0), ("Walk", 1), ("Weave", 1), ("Guard", 2)):
         if base in name:
             return p
     return 3
@@ -51,8 +51,8 @@ def main():
     os.makedirs(out, exist_ok=True)
     every = dict(compose.SPECIALS, **compose.PUNCHES)
     for name in NAMES:
-        frames = compose.build(every[name], lib)
         loop = name in compose.LOOPS
+        frames = compose.build(every[name], lib, loop)
         if loop:
             frames[-1] = frames[0]
         write(name, frames, loop, os.path.join(out, name + ".rbxmx"))

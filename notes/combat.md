@@ -54,11 +54,14 @@ knockdowns
 - studio only "TEST SECOND WIND" button bottom right: drops you at 100 courage so it always fires (server checks IsStudio)
 
 client
-- LowGuard anim is g1's "low guard" (one pose, i added an end keyframe so it loops), Weave is g2's peek a boo stance bob
+- LowGuard anim is g1's "low guard" (one pose, i added an end keyframe so it loops). Weave started as g2's peek a boo bob (9 linear keys, a stiff diamond). tools/weave.py rebuilds it as a smooth 30fps loop that leans into each side
 - FighterAnimator: plays keyframed anims from ReplicatedStorage.BoxingAnims (bought game 2's set, renamed by role: Idle, Guard, Walk*, Jab, Cross, Hook, Uppercut, Body, Slip*, HitHead*, HitBody, Block*, Stunned, DownFall/Loop, KOFall/Loop). code poses are gone
 - each punch anim has an Impact attribute (when the hand is furthest out). track speed = Impact / startup so the anim lands when the server lands the hit, and it skips ahead by however late the attribute arrived
 - i animate my own character and the dummies. other players' tracks replicate from their own client, so i don't touch them
 - hit reactions come from Feel.reactions, played at 1.8x since their hit anims are a second long
+- tools/retime_seq.py is a second pass straight on finished one-shots: slower PaBCross recovery, RollLeft eases in, right head snaps pushed to match the left
+- compose.py planting: loops keep each planted leg's swing near the last key's. picking the exact best foot height each key flipped between near ties and the philly and slugger idles jittered 10 to 30 degrees a frame
+- tools/test.luau checks every move, stance anim and special has a published anim
 - walk anims blend by velocity in the fighter's facing space. the default Animate script gets disabled
 - published ids go in Shared.AnimIds (one line per role). empty = registered on the fly, studio only
 - all 28 published to my account through open cloud (assets api, assetType Animation, rbxmx file). they work in live servers now

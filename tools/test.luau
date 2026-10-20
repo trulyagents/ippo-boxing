@@ -118,6 +118,28 @@ end
 check(Shop.glove("Rainbow") == nil, "an unknown glove color isn't a glove")
 check(Shop.VIPDailyBonus > 0 and Shop.VIPDailyBonus < Daily.MaxDay * Daily.PerDay, "vip bonus helps but doesn't beat a long streak")
 
+-- every anim the combat code can ask for has a published id
+local AnimIds = require("../src/shared/AnimIds")
+for name, move in Config.Moves :: { [string]: any } do
+	local anim = move.Anim or name
+	check(AnimIds[anim] ~= nil, "move " .. name .. " has an anim (" .. anim .. ")")
+end
+for stance, s in Config.Stances :: { [string]: any } do
+	for base, anim in s.Anims do
+		check(AnimIds[anim] ~= nil, stance .. " " .. base .. " has an anim (" .. anim .. ")")
+	end
+	for _, special in s.Specials do
+		local sp = (Config :: any).Specials[special]
+		check(sp ~= nil, stance .. " special " .. special .. " exists")
+		for _, step in (sp and sp.Chain) or { special } do
+			check(Config.Moves[step] ~= nil, special .. " step " .. step .. " is a move")
+		end
+	end
+end
+for _, role in { "Idle", "Guard", "LowGuard", "Weave", "CornerSit", "DownFall", "DownLoop", "KOFall", "KOLoop", "Stunned", "Gassed", "Hurt", "JumpRope" } do
+	check(AnimIds[role] ~= nil, role .. " has an anim")
+end
+
 print(if failed == 0 then "all checks passed" else failed .. " checks failed")
 if failed > 0 then
 	error("tests failed", 0)
