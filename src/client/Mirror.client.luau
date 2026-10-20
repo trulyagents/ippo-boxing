@@ -218,18 +218,34 @@ local function setOn(want: boolean)
 end
 
 -- shortcut: a twin is rebuilt when someone respawns or re-gears; fine for a handful of boxers
+-- every fighter and its root, kept up to date by the tag instead of rebuilt every frame
+local fighters: { [Model]: BasePart } = {}
+local function track(model: Instance)
+	if model:IsA("Model") then
+		local root = model:WaitForChild("HumanoidRootPart", 5)
+		if root and root:IsA("BasePart") and model.Parent then
+			fighters[model] = root
+		end
+	end
+end
+CollectionService:GetInstanceAddedSignal("Fighter"):Connect(function(model)
+	task.spawn(track, model)
+end)
+CollectionService:GetInstanceRemovedSignal("Fighter"):Connect(function(model)
+	fighters[model :: Model] = nil
+end)
+for _, model in CollectionService:GetTagged("Fighter") do
+	task.spawn(track, model)
+end
+
 RunService.RenderStepped:Connect(function()
 	local camera = workspace.CurrentCamera
 	setOn(inRoom(camera.CFrame.Position))
 	if not on then
 		return
 	end
-	for _, model in CollectionService:GetTagged("Fighter") do
-		if not model:IsA("Model") then
-			continue
-		end
-		local root = model:FindFirstChild("HumanoidRootPart")
-		local here = root and root:IsA("BasePart") and inRoom(root.Position)
+	for model, root in fighters do
+		local here = root.Parent ~= nil and inRoom(root.Position)
 		if here and not twins[model] then
 			twins[model] = makeTwin(model) :: Twin
 		elseif not here and twins[model] then
@@ -245,6 +261,7 @@ RunService.RenderStepped:Connect(function()
 	for model in twins do
 		if not model.Parent then
 			dropTwin(model)
+			fighters[model] = nil
 		end
 	end
 end)
