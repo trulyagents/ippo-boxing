@@ -215,3 +215,11 @@ music
 - no mute button yet
 - tools/test also checks the shop data: every pass/product has a real id, red gloves are free and first, no glove color twice, vip bonus helps but never beats a long streak. lune has no Color3, the test borrows it from @lune/roblox
 - cheat StreakDays n: pretend you last logged in yesterday on an n day streak, rejoin to see day n+1 (tested: 3 -> DAY 4, +3 with vip)
+
+new styles (out-boxer, slugger, philly shell)
+- loops: tools/compose.py STYLE_SHAPES puts a body shape on every key of the orthodox idle, guard and 4 walks, so the footwork and breathing underneath stay. out = tall, a bit bladed, lead hand low. slug = wide, sat down, square, hands up. philly = leaning back, bladed, lead arm low across the belly, rear glove at the chin
+- tools/styles_export.py writes them straight to KeyframeSequences (compose works in Motor6D transforms already), published like the rest. 22 anims, ids in AnimIds, sequences in BoxingAnims (in the place)
+- specials: out = Flicker Jab (3 quick jabs) + Pivot Hook, slug = Haymaker (slow, 26 dmg, easy to slip) + Hook Barrage (3 quick hooks), philly = Roll Counter (needs a counter window like step counter) + Check Hook
+- stances can boost a punch's damage now (DamageMult): out jab x1.15, slug hook x1.25 cross/uppercut x1.2, philly cross x1.1
+- unlocks: out speed 15 stamina 10, slug power 15 endurance 10, philly technique 20 speed 15. styles tab scrolls sideways for the 5 cards
+- gotcha: deleting a folder rojo is still syncing crashes rojo serve (change_processor unwrap). let it settle first
