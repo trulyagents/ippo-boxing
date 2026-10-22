@@ -3,7 +3,7 @@
 i work on this from my home pc and my laptop. code goes through github, the place itself goes through roblox.
 
 ## once per machine
-1. install: git, github cli (`gh`), rokit, python 3 (`pip install pillow` if i'll redraw the hud art), roblox studio, claude code
+1. install: git, github cli (`gh`), rokit, python 3 (`pip install pillow` if i'll redraw the hud art), roblox studio
 2. `gh auth login`
 3. clone it: `gh repo clone trulyagents/ippo-boxing "<Desktop>/Ippo Boxing"`
 4. in that folder: `rokit install` (gets rojo, lune, selene, stylua, wally). if it says a tool isn't trusted: `rokit trust rojo-rbx/rojo lune-org/lune JohnnyMorganz/StyLua Kampfkarren/selene UpliftGames/wally` then `rokit install` again
