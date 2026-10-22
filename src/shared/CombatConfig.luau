@@ -1,5 +1,5 @@
 --!strict
--- All the combat numbers in one place. Times are in seconds.
+-- every combat number in one place, times in seconds
 
 export type Move = {
 	Startup: number, -- wind up before the punch can land

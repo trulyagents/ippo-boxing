@@ -1,7 +1,5 @@
 --!strict
--- Computer boxers: the bag and sparring partner upstairs, and ring opponents when nobody else
--- shows up. One brain for all of them, ticking every 0.12s. Skill sets how often it punches,
--- how well it reads punches and how fast it beats the count.
+-- one brain for every computer boxer, ticking every 0.12s. skill sets punch rate, reads and count speed
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 

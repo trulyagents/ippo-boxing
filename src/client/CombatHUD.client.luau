@@ -1,5 +1,4 @@
--- Fills in the fight HUD (your bars, their name, call-outs, the ref count), plays punch
--- sounds and shakes the screen.
+-- fills in the fight hud, plays punch sounds and shakes the screen
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -65,6 +64,7 @@ end
 
 -- controls card: up for the first few seconds, then H toggles it
 local UserInputService = game:GetService("UserInputService")
+local Sounds = require(script.Parent:WaitForChild("Sounds"))
 local controls = gui:WaitForChild("Controls") :: CanvasGroup
 local controlsOpen = true
 local CARD = TweenInfo.new(0.25, Enum.EasingStyle.Quad)
@@ -265,12 +265,7 @@ end
 local function play(name: string, at: Instance?, pitch: number?)
 	local template = sounds:FindFirstChild(name)
 	if not template then
-		local pool = {}
-		for _, s in sounds:GetChildren() do
-			if s.Name:match("^" .. name .. "%d+$") then
-				table.insert(pool, s)
-			end
-		end
+		local pool = Sounds.numbered(sounds, name)
 		template = pool[math.random(math.max(#pool, 1))]
 	end
 	if not template then

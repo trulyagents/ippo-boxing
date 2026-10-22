@@ -1,5 +1,5 @@
 --!strict
--- Ranks and the quest line. Shared so the menu can show them.
+-- ranks and the quest line
 local Career = {}
 
 -- rank points from ring matches

@@ -1,8 +1,6 @@
 --!strict
--- The ranked board on the gym wall (Workspace.Map.Gym.RankBoard, built in studio): the top 10 by
--- rank points from an OrderedDataStore. Points get written after every match and on join (so
--- people who ranked before the board existed show up), the board refreshes every couple of
--- minutes. Studio uses its own store so test points never reach the real board.
+-- top 10 rank board on the gym wall from an OrderedDataStore. written per match and on join,
+-- refreshed every couple of minutes. studio uses its own store
 local DataStoreService = game:GetService("DataStoreService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

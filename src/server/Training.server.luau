@@ -1,7 +1,5 @@
 --!strict
--- Every gym station runs its own short minigame (see Stats.Drills). The server picks the beats
--- and cue times and grades every press, the client only says what was pressed and when.
--- Better grades, bigger gain.
+-- each gym station runs a short minigame. the server picks the beats and grades every press
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
@@ -178,7 +176,6 @@ local function begin(player: Player, stat: string, part: BasePart)
 		CueAt = nil,
 	}
 	sessions[player] = s
-	-- how long it can run at most
 	local length = Stats.DrillLeadIn
 		+ if drill.Kind == "Charge"
 			then #times * (Stats.ChargeMax + 1.5)

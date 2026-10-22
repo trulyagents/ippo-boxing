@@ -1,8 +1,6 @@
 --!strict
--- Watch a fight in any ring from anywhere. StarterGui.Spectate (built in studio): the WATCH stamp
--- shows while some ring has a match on and you're not in one. K or the stamp goes to the next live
--- ring, past the last one it stops. The camera circles the two boxers. The server is told which
--- ring (Watch remote) so its shouts, intro and round calls reach you too.
+-- K or the WATCH stamp cycles live rings, past the last one it stops. tells the server
+-- which ring (Watch) so its shouts and screens reach you
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

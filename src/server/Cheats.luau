@@ -1,7 +1,5 @@
 --!strict
--- QA commands on the Cheat remote. Only work in Studio, or live for the owner, and the check is
--- here on the server (any client can fire the remote). They go through the same code the game
--- uses, so testing with them tests the real thing.
+-- QA commands, studio or the owner only, checked here. they run the real game code
 --   Cheat:FireServer("SkipPhase")              end the nearest ring's intro, round or break now
 --   Cheat:FireServer("Stat", "Power", 25)      set a stat
 --   Cheat:FireServer("RankPoints", 100)        add rank points (negative takes them away)

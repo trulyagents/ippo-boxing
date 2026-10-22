@@ -1,6 +1,5 @@
 --!strict
--- Two practice opponents upstairs: a bag that only covers up, and a sparring
--- partner that throws back, guards and slips. The brain is AIBoxer's.
+-- two practice opponents upstairs, a bag that covers up and a partner that fights back
 local RunService = game:GetService("RunService")
 
 local Fighters = require(script.Parent.Fighters)

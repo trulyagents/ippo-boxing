@@ -1,6 +1,5 @@
 --!strict
--- The result screen after a ring match (StarterGui.MatchResult, built in studio): win, loss or
--- draw and how, both boxers' fight numbers, rank points and the new record.
+-- result screen after a ring match: how it ended, both boxers' numbers, rank points, record
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")

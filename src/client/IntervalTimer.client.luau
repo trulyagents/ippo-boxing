@@ -1,7 +1,5 @@
 --!strict
--- The gym's wall interval timer (Map.GymRing.IntervalTimer, g2's prop). It shows the ring match
--- clock: the round, minutes and seconds left, and the 10 bars going out as the round runs down.
--- Between fights it sits at 0:00. Reads the ring's MatchRound and MatchEndsAt, same as the hud.
+-- the gym wall timer. shows the ring match clock off MatchRound and MatchEndsAt, 0:00 between fights
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 

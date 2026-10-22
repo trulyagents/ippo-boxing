@@ -1,7 +1,5 @@
 --!strict
--- The VS screen before a ring match (StarterGui.MatchIntro, built in studio): both boxers'
--- names, ranks and records slide in from their corners, VS pops in the middle with the bell,
--- then it all clears before round 1.
+-- VS screen before a ring match, clears before round 1
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -48,7 +46,6 @@ local function fill(card: ImageLabel, info: any)
 	end
 	local nameLabel = card:WaitForChild("Name") :: TextLabel
 	nameLabel.Text = string.upper(tostring(info.Name or "?"))
-	-- VIPs show in gold
 	nameLabel.TextColor3 = if info.VIP == true then Color3.fromRGB(196, 140, 20) else Color3.fromRGB(14, 13, 12);
 	(card:WaitForChild("Rank") :: TextLabel).Text = tostring(info.Rank or "ROOKIE");
 	(card:WaitForChild("Record") :: TextLabel).Text = string.format(

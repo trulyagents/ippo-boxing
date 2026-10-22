@@ -1,6 +1,5 @@
 --!strict
--- Boxing gloves and trunks for R6 fighters. Glove meshes come from models/glove (Blender),
--- imported into ReplicatedStorage.BoxingGear.GloveParts.
+-- gloves and trunks for R6 fighters, glove meshes in BoxingGear.GloveParts
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Gear = {}

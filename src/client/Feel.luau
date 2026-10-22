@@ -1,14 +1,12 @@
 --!strict
--- Local "game feel" clock shared by the animator, effects and camera on this client.
--- Hit-stop freezes poses for a few frames, slow-mo stretches them. The server never
--- slows down, this is only how it looks for you.
+-- local hit-stop and slow-mo clock for the animator, fx and camera. the server never slows down
 local Feel = {}
 
 local hitstopUntil = 0
 local slowUntil = 0
 local slowScale = 1
 
--- freeze animation for a moment, the classic fighting game punch pause
+-- freeze poses for a moment on a hit
 function Feel.hitstop(seconds: number)
 	hitstopUntil = math.max(hitstopUntil, os.clock() + seconds)
 end

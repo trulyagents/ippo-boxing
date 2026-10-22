@@ -1,7 +1,5 @@
 --!strict
--- Every RemoteEvent the game uses, made here and nowhere else (ReplicatedStorage.BoxingRemotes).
--- Built on the first require, which needs nothing else, so no script waits on another to make
--- them. Clients find them by name with WaitForChild.
+-- every RemoteEvent, made on first require so nothing waits on another script
 --   Action      client -> server, combat inputs (CombatServer, rate limited)
 --   Fx          server -> client, hits, shouts, match screens
 --   Training    both ways, drill inputs and cues (Training)

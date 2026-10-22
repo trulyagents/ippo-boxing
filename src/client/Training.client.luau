@@ -1,7 +1,5 @@
 --!strict
--- Shows the training minigames (StarterGui.BoxingMenu.Drill, built in studio). Each station has
--- its own: notes on a lane (Rhythm, Combo), a hold meter (Charge) or a mitt that flashes up
--- (Reaction). The server grades everything, this only draws and sends what you pressed.
+-- draws the drill minigames and sends presses, the server grades everything
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

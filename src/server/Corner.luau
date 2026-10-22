@@ -1,8 +1,6 @@
 --!strict
--- A boxer's corner between rounds: a stool under them, sitting (CornerSit anim off the Sitting
--- attribute), guard back, the round card (Fx "Corner") and one pick on CornerPick (hydrate,
--- treatment or a pep talk, applied by Fighters.corner). Matches opens one per boxer per break and
--- calls what open returns at the bell.
+-- a boxer's corner between rounds: stool, sit anim, guard back, round card and one pick.
+-- open returns the function that stands them up at the bell
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Fighters = require(script.Parent.Fighters)

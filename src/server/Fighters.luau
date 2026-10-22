@@ -1,6 +1,5 @@
 --!strict
--- Every boxer (player or dummy) is a Fighter. The server owns all of this; the character
--- just carries attributes so clients can animate it and draw the HUD.
+-- every boxer, player or dummy, is a Fighter. the server owns it, attributes are for clients
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -336,7 +335,6 @@ local function knockDown(target: Fighter, attacker: Fighter)
 				return
 			end
 		end
-		-- counted out
 		target.Model:SetAttribute("DownCount", nil)
 		setState(target, "KO")
 		broadcast("KO", target.Model, attacker.Model)
@@ -436,7 +434,6 @@ local function resolveHit(attacker: Fighter, moveName: string, slipBonus: number
 		mult, hitstun, counterName = slipBonus, 1.4, "COUNTER"
 	end
 
-	-- slips
 	if target.Slip and now < target.SlipUntil then
 		if move.BeatsSlip and move.BeatsSlip[target.Slip] then
 			mult, hitstun, counterName = math.max(mult, Config.SlipPunishBonus), 1.4, "COUNTER"

@@ -1,7 +1,5 @@
 --!strict
--- Fight record, rank points and the quest line, saved in the player's profile. Everything is
--- also put on the player as attributes (Wins, Rank, QuestStep...) for the menu, and Wins and
--- Rank go in leaderstats so they show in the player list.
+-- fight record, rank points and quests, saved in the profile and mirrored as attributes and leaderstats
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local Career = require(ReplicatedStorage.Shared.Career)

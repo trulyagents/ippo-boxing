@@ -1,6 +1,5 @@
 --!strict
--- The daily login streak. Days are counted in UTC from os.time(), so everyone rolls over at the
--- same moment. Pure numbers so tools/test can check it.
+-- daily login streak, days counted in utc from os.time() so everyone rolls over together
 local Daily = {}
 
 Daily.MaxDay = 7 -- the reward grows up to this streak day, then stays there

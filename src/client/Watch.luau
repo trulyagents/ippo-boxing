@@ -1,6 +1,5 @@
 --!strict
--- The ring this client follows: the one it's spectating (Spectate sets Watch.Spectating), else the
--- one it's standing by. The round clock and the music read it.
+-- the ring this client follows: the spectated one, else the one it's standing by
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 

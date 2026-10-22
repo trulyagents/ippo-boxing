@@ -1,6 +1,5 @@
 --!strict
--- What's for sale (made on the experience with tools/monetize.py) and the glove colors. Shared so
--- the shop tab can show it. Nothing here gives you anything: the server checks ownership itself.
+-- passes, products (made with tools/monetize.py) and glove colors. the server checks ownership itself
 local Shop = {}
 
 Shop.Passes = {
@@ -12,7 +11,7 @@ Shop.Products = {
 	StatRespec = 3720142839,
 } :: { [string]: number }
 
--- Red is everyone's, the rest come with GloveColors
+-- red is everyone's, the rest come with GloveColors
 Shop.Gloves = {
 	{ Name = "Red", Color = Color3.fromRGB(150, 18, 18) },
 	{ Name = "Blue", Color = Color3.fromRGB(25, 60, 150) },

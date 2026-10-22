@@ -1,10 +1,6 @@
 --!strict
--- The mirror wall upstairs (Map.Gym.Upstairs.Mirror) actually reflects. Roblox can't render a
--- reflection, so this builds one for real on this client only: a mirrored copy of the room behind
--- the glass, a mirror-sized hole in the wall behind it, and a mirrored twin of every boxer in the
--- room that copies their pose each frame. It's real 3d, so it looks right from any angle.
--- Only switched on while you're upstairs: the outside parts that sit where the copy goes are
--- hidden then, and come back when you leave.
+-- roblox can't render reflections, so this builds a mirrored copy of the room and every boxer
+-- behind the glass, client only, and only while i'm upstairs
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")

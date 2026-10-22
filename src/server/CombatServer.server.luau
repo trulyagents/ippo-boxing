@@ -1,6 +1,5 @@
 --!strict
--- Turns players into boxers and takes their inputs. Clients only ever say what they
--- pressed; Fighters decides what actually happens.
+-- makes players into boxers and takes their inputs, Fighters decides what happens
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

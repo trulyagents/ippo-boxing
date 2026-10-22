@@ -1,6 +1,5 @@
 --!strict
--- Loads and saves each player's stats with ProfileStore. Stats are also put on the player as
--- attributes (StatPower and so on) so a stats screen can show them.
+-- loads and saves stats with ProfileStore, mirrored as attributes (StatPower...)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

@@ -1,7 +1,5 @@
 --!strict
--- The card that pops when training opens up a new stance or special, and the daily streak
--- reward (StarterGui.UnlockCard, built in studio). The server sends Fx "Unlocked" with the name,
--- or Fx "Daily" with the streak day, the stat, how much, and what tomorrow pays.
+-- the card for a new stance or special (Fx "Unlocked") and the daily reward (Fx "Daily")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")

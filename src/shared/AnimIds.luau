@@ -1,7 +1,6 @@
 --!strict
--- Published animation ids, one per KeyframeSequence in ReplicatedStorage.BoxingAnims.
--- An empty one gets registered on the fly, which only plays in Studio. Any id listed in
--- the OriginalIds attribute is someone else's and gets skipped the same way.
+-- published anim ids, one per KeyframeSequence in BoxingAnims. empty or OriginalIds ones
+-- get registered on the fly and only play in studio
 return {
 	Idle = "rbxassetid://78797780707371",
 	Guard = "rbxassetid://121959437597638",

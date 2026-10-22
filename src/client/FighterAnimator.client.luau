@@ -1,6 +1,5 @@
--- Plays the keyframed boxing anims (ReplicatedStorage.BoxingAnims) on fighters, driven by
--- the attributes the server sets. Runs on my own character and on dummies. Other players
--- animate their own characters and those tracks replicate to me, so I leave them alone.
+-- plays the boxing anims off server attributes, on my character and dummies only.
+-- other players animate themselves and it replicates
 local CollectionService = game:GetService("CollectionService")
 local KeyframeSequenceProvider = game:GetService("KeyframeSequenceProvider")
 local Players = game:GetService("Players")

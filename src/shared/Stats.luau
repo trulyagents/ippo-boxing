@@ -1,5 +1,5 @@
 --!strict
--- The 6 boxer stats, what raises them and what they unlock. Shared so a stats screen can read it.
+-- the 6 boxer stats, what raises them and what they unlock
 local Stats = {}
 
 Stats.Names = { "Power", "Stamina", "Technique", "Endurance", "Speed", "Willpower" }

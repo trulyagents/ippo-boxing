@@ -1,6 +1,5 @@
 --!strict
--- A gold [VIP] in front of VIP pass owners' chat messages. The server sets the VIP attribute
--- after checking the pass (server/Shop).
+-- gold [VIP] before chat from pass owners (the server sets the VIP attribute)
 local Players = game:GetService("Players")
 local TextChatService = game:GetService("TextChatService")
 

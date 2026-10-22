@@ -1,12 +1,11 @@
 --!strict
--- The corner between rounds (StarterGui.MatchCorner, built in studio): how the round went,
--- who's ahead, the clock to the next bell, and one pick: hydrate, treatment or a pep talk
--- (1/2/3 or click). the server applies it and answers on CornerPick.
+-- the corner screen between rounds. one pick (1/2/3 or click), the server answers on CornerPick
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
+local Sounds = require(script.Parent:WaitForChild("Sounds"))
 
 local player = Players.LocalPlayer
 local fx = ReplicatedStorage:WaitForChild("BoxingRemotes"):WaitForChild("Fx") :: RemoteEvent
@@ -26,12 +25,7 @@ local POP = TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.Out)
 local PICK_SOUNDS = { Hydrate = { "Squirt" }, Treatment = { "Tape" }, PepTalk = { "Pep", "Clap" } }
 local sounds = ReplicatedStorage:WaitForChild("BoxingSounds")
 local function play(name: string)
-	local pool: { Sound } = {}
-	for _, x in sounds:GetChildren() do
-		if x:IsA("Sound") and x.Name:match("^" .. name .. "%d+$") then
-			table.insert(pool, x)
-		end
-	end
+	local pool = Sounds.numbered(sounds, name)
 	if #pool == 0 then
 		return
 	end

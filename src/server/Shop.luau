@@ -1,8 +1,6 @@
 --!strict
--- Passes and products (ids in Shared.Shop). Ownership is asked from roblox and cached per player,
--- and put on the player as attributes (VIP, KOEffect, GloveColors) for clients to show. The Stat
--- Respec product goes through ProcessReceipt: receipt ids are kept in the profile so a retried
--- receipt never pays out twice. The Shop remote does the rest:
+-- passes and products. ownership is cached per player and put on attributes. respec receipts
+-- are kept in the profile so a retry never pays twice. the Shop remote does the rest:
 --   Shop:FireServer("Glove", "Blue")     wear a glove color (needs the pass, Red is free)
 --   Shop:FireServer("Spend", "Power")    put 1 point from the respec pool into a stat
 local MarketplaceService = game:GetService("MarketplaceService")

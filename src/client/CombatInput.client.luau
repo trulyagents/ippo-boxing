@@ -1,4 +1,4 @@
--- Keybinds. Only sends what was pressed; the server decides the rest. Lock-on lives in LockOn.
+-- keybinds. only sends what was pressed, the server decides the rest
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")

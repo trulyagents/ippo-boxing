@@ -1,6 +1,5 @@
 --!strict
--- Drives the menu (StarterGui.BoxingMenu, built in studio, copy in ui/). M or the corner button
--- opens it, it won't open mid fight. Also pops "+1 POWER" when training lands.
+-- drives StarterGui.BoxingMenu. M or the corner button opens it, not mid fight
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")

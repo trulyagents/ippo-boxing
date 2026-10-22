@@ -1,10 +1,6 @@
 --!strict
--- Ring matches, in every ring tagged BoxingRing (the gym's and the basement ones, see
--- Shared.Rings). Two boxers take the pads in the red and blue corners, then it's a few rounds
--- scored on damage and knockdowns, a KO ends it early. Only the two of them can hit each other.
--- Alone on a pad for Config.AIWait and an AI boxer takes the other corner (AIBoxer). That's
--- practice: quests count it, the record and rank points don't. Each ring carries MatchOn, MatchRound and MatchEndsAt for the clocks.
--- Spectators tell the server which ring they watch (Watch) so they get its shouts and screens.
+-- ring matches in every BoxingRing. two boxers take the corner pads, a few rounds scored on
+-- damage and knockdowns, KO ends it. alone too long and an AIBoxer steps in (practice, no rank)
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 

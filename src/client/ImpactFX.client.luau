@@ -1,6 +1,4 @@
--- Makes punches feel like punches: sparks, sweat, a shockwave ring and a white flash on
--- the target, hit-stop on every clean hit, and slow-mo with an impact frame and a camera
--- cut on counters, knockdowns and KOs. All local, the server never slows down.
+-- hit fx: sparks, sweat, shockwave, flash, hit-stop, and slow-mo cuts on counters and KOs. all local
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -114,7 +112,6 @@ local function burst(position: Vector3, facing: Vector3, result: string, move: s
 		sweat:Emit(if counter then 26 else 12)
 	end
 
-	-- shockwave ring
 	local ring = Instance.new("Part")
 	ring.Shape = Enum.PartType.Cylinder
 	ring.Anchored = true

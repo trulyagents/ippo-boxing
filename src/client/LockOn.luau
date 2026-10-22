@@ -1,7 +1,5 @@
 --!strict
--- Lock-on camera. Framing scales with how far apart the two fighters are (idea from the
--- bought game 1, numbers in between theirs and mine), follows on a dt spring, turns the body
--- at a capped speed, pulls in past posts and walls, and marks who you're locked on to.
+-- lock-on camera. framing scales with distance, follows on a dt spring, pulls in past walls
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -114,7 +112,6 @@ function LockOn.toggle()
 		set(nil)
 		return
 	end
-	-- nearest one
 	local me = rootOf(character())
 	local best, bestDistance = nil, math.huge
 	for _, model in candidates() do

@@ -1,8 +1,6 @@
 --!strict
--- The rope in your hands during the jump rope drill, for anyone you can see skipping. The server
--- puts Skipping on the character, this clones the handles off a rope on the gym rack into the
--- gloves and draws the rope as a Beam between them. The rope's swing follows the skip anim, so it
--- passes under the feet right when they're off the floor.
+-- the rope during the jump rope drill, a Beam between handles in the gloves.
+-- its swing follows the skip anim so it passes under the feet
 local CollectionService = game:GetService("CollectionService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -63,7 +61,7 @@ local function build(model: Model): Rope?
 	return { Folder = folder, Left = a, Right = b }
 end
 
--- where the skip anim is, from its playing track (other players' anims replicate to us)
+-- where the skip anim is, from its playing track (other players' anims replicate to me)
 local function skipTime(model: Model): number
 	local humanoid = model:FindFirstChildOfClass("Humanoid")
 	local animator = humanoid and humanoid:FindFirstChildOfClass("Animator")

@@ -1,7 +1,6 @@
 --!strict
--- The admin menu (StarterGui.AdminMenu, built in studio). Only shows for players the server marks
--- Admin (studio, or the owner). Each button carries a Cheat attribute plus optional A and B, and
--- just fires that on the Cheat remote, so the server still checks everything. P or the button opens it.
+-- admin menu, only for players the server marks Admin. buttons just fire their Cheat attribute,
+-- the server checks everything. P or the button opens it
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")

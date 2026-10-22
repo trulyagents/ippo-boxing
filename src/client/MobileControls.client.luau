@@ -1,7 +1,5 @@
 --!strict
--- Touch buttons for boxing (StarterGui.MobileControls, built in studio). Only on touch devices
--- and only while in fight mode, out on the street roblox's normal controls are enough. Sends the
--- same Action messages as the keyboard (CombatInput), the server checks all of it.
+-- touch buttons for fight mode, same Action messages as CombatInput
 --   punches bottom right, hold GUARD (look down for low guard, same as pc)
 --   slip arrows on the left: a tap is weave on, slip, weave off. hold WEAVE to stay in weave mode
 --   knocked down: any punch button mashes to get up. KO'd outside a match: JAB goes again
@@ -112,7 +110,6 @@ end, function()
 	sendGuard(nil)
 end)
 
--- weave and slips
 local weaveHeld = false
 bind(button(slips, "Weave"), function()
 	weaveHeld = true
@@ -136,7 +133,6 @@ for _, dir in { "Left", "Right", "Duck", "Back" } do
 	end)
 end
 
--- specials, lock on, side, stance
 bind(button(extras, "Special1"), function()
 	action:FireServer("Special", 1)
 end)

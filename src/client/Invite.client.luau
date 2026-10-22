@@ -1,7 +1,5 @@
 --!strict
--- The INVITE stamp next to MENU (StarterGui.BoxingMenu.InviteButton, built in studio) opens
--- roblox's own friend invite. Playing in the same server as a friend gives you both a small
--- stat boost once a day (server/Career).
+-- INVITE stamp opens roblox's friend invite. same server as a friend gives a daily boost (server/Career)
 local Players = game:GetService("Players")
 local SocialService = game:GetService("SocialService")
 

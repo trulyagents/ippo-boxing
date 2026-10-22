@@ -1,13 +1,12 @@
 --!strict
--- Background music, APM tracks from ReplicatedStorage.BoxingSounds.Music (roblox's licensed
--- library, free to use). Gym1, Gym2... play quietly anywhere. When a ring match is on and you're
--- close enough to watch it, it crossfades to Match1, Match2... and back once the match ends.
+-- background music from BoxingSounds.Music. crossfades from Gym tracks to Match tracks near a live ring
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local SoundService = game:GetService("SoundService")
 local TweenService = game:GetService("TweenService")
 
 local folder = ReplicatedStorage:WaitForChild("BoxingSounds"):WaitForChild("Music")
 local Watch = require(script.Parent:WaitForChild("Watch"))
+local Sounds = require(script.Parent:WaitForChild("Sounds"))
 
 local VOLUME = { Gym = 0.45, Match = 0.6 }
 local FADE = TweenInfo.new(1.5, Enum.EasingStyle.Sine)
@@ -15,13 +14,11 @@ local FADE = TweenInfo.new(1.5, Enum.EasingStyle.Sine)
 -- each playlist has its own copy so a crossfade can play both for a moment
 local function playlist(prefix: string): { Sound }
 	local list: { Sound } = {}
-	for _, s in folder:GetChildren() do
-		if s:IsA("Sound") and s.Name:match("^" .. prefix .. "%d+$") then
-			local copy = s:Clone()
-			copy.Volume = 0
-			copy.Parent = SoundService
-			table.insert(list, copy)
-		end
+	for _, s in Sounds.numbered(folder, prefix) do
+		local copy = s:Clone()
+		copy.Volume = 0
+		copy.Parent = SoundService
+		table.insert(list, copy)
 	end
 	table.sort(list, function(a: Sound, b: Sound)
 		return a.Name < b.Name

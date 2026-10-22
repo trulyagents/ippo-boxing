@@ -1,8 +1,6 @@
 --!strict
--- Every boxing ring is a model tagged BoxingRing: the gym's (workspace.Ring) and the four in the
--- basement. While a fight is on it carries MatchOn, MatchRound and MatchEndsAt, and Label names it.
--- A spot belongs to the nearest ring, with height counting triple so the gym and the basement
--- under it don't hear each other's fights.
+-- rings are models tagged BoxingRing. a spot belongs to the nearest one, height counts triple
+-- so the gym and the basement under it don't hear each other's fights
 local CollectionService = game:GetService("CollectionService")
 
 local Rings = {}
